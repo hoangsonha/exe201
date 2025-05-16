@@ -1,48 +1,45 @@
 services:
-  employee_db:
+  exe201_db:
     image: mysql:9.0.1
-    container_name: employee_db
+    container_name: exe201_db
     restart: always
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - ./mysql_data_exe201:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456789
-      MYSQL_DATABASE: sgiant_project
-      # SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/sgiant_project
-      # SPRING_DATASOURCE_USERNAME: root
-      # SPRING_DATASOURCE_PASSWORD: 123456789
+      MYSQL_DATABASE: exe201_project
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
-      - app-network
+      - exe291-network
 
-  backend:
-    container_name: backend
+  backend_exe201:
+    container_name: backend_exe201
     build:
-      context: ./project
+      context: ./project_BE
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
-      - employee_db
+      - exe201_db
     restart: always
     networks:
-      - app-network
+      - exe291-network
 
-  frontend:
-    container_name: frontend
+  frontend_exe201:
+    container_name: frontend_exe201
     build:
       context: ./project_FE
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "3001:81"
     restart: always
     networks:
-      - app-network
+      - exe291-network
 
 volumes:
-  mysql_data:
+  mysql_data_exe201:
 
 networks:
-  app-network:
+  exe291-network:
     driver: bridge

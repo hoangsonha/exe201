@@ -1,26 +1,13 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
-    name: Project HSH
-
-  #  # MAIL
-  #  mail:
-  #    host: smtp.gmail.com
-  #    port: 587
-  #    username: theanh08042004@gmail.com
-  #    password: lywt qpvr vklq fiuc
-  #    protocol: smtp
-  #    properties:
-  #      mail:
-  #        smtp:
-  #          auth: true
-  #          starttls.enable: true
+    name: Project Exe201
 
   # DATABASE
   datasource:
-    url: jdbc:mysql://employee_db:3306/sgiant_project
-    # url: jdbc:mysql://localhost:3306/sgiant_project
+    url: jdbc:mysql://exe201_db:3306/exe201_project
+    # url: jdbc:mysql://localhost:3306/exe201_project
     username: root
     password: 123456789
   jpa:

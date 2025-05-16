@@ -1,0 +1,48 @@
+services:
+  employee_db:
+    image: mysql:9.0.1
+    container_name: employee_db
+    restart: always
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: sgiant_project
+      # SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/sgiant_project
+      # SPRING_DATASOURCE_USERNAME: root
+      # SPRING_DATASOURCE_PASSWORD: 123456789
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  backend:
+    container_name: backend
+    build:
+      context: ./project
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - employee_db
+    restart: always
+    networks:
+      - app-network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./project_FE
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: always
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

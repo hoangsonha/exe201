@@ -1,10 +1,7 @@
 
 import { Container } from "react-bootstrap";
 
-
 function CompanyManagement() {
-
-
 
   return (
     <Container className="mt-4">

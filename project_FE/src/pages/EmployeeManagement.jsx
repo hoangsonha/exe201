@@ -23,10 +23,8 @@ import {
   FaFilter,
   FaSync,
   FaEye,
-  FaUserCircle
 } from "react-icons/fa";
 import {
-  getEmployees,
   deleteEmployee,
   createEmployee,
   updateEmployee,
@@ -37,6 +35,7 @@ import {
 } from "../serviceAPI/employeeService";
 import { useToast } from '../component/Toast';
 import { UserContext } from '../App';
+import Informations from "../component/Informations";
 
 function EmployeeManagement() {
 
@@ -399,42 +398,7 @@ function EmployeeManagement() {
                 <p className="mt-3">Loading...</p>
               </div>
             ) : selectedEmployee ? (
-              <Card className="shadow">
-                <Card.Header className="bg-primary text-white d-flex align-items-center">
-                  <FaUserCircle size={24} className="me-2" />
-                  <h5 className="mb-0">Infomation</h5>
-                </Card.Header>
-                <Card.Body>
-                  <Row className="mb-3">
-                    <Col md={6}><strong>User name:</strong> {selectedEmployee.userName}</Col>
-                    <Col md={6}><strong>Full name:</strong> {selectedEmployee.fullName}</Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col md={6}><strong>Email:</strong> {selectedEmployee.email}</Col>
-                    <Col md={6}><strong>Phone:</strong> {selectedEmployee.phone}</Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col md={6}><strong>Code:</strong> {selectedEmployee.code}</Col>
-                    <Col md={6}>
-                      <strong>Role:</strong> <Badge bg="info">{selectedEmployee.roleName}</Badge>
-                    </Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col md={6}>
-                      <strong>Status:</strong>{" "}
-                      <Badge bg={selectedEmployee.enabled ? "success" : "secondary"}>
-                        {selectedEmployee.enabled ? "Actived" : "Inactived"}
-                      </Badge>
-                    </Col>
-                    <Col md={6}>
-                      <strong>Locked:</strong>{" "}
-                      <Badge bg={selectedEmployee.nonLocked ? "success" : "danger"}>
-                        {selectedEmployee.nonLocked ? "Non locked" : "Locked"}
-                      </Badge>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
+              <Informations employee={selectedEmployee} />
             ) : (
               <p className="text-danger text-center">Cannot load this employee</p>
             )}

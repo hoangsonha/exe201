@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hsh</groupId>
-	<artifactId>project</artifactId>
+	<artifactId>project_BE</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Project HSH</name>
+	<name>Project EXE</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

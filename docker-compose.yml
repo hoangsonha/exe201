@@ -42,4 +42,5 @@ volumes:
 
 networks:
   exe291-network:
+    name: exe291-network
     driver: bridge

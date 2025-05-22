@@ -48,7 +48,7 @@ const Login = () => {
         <div className="login-background">
             <div className="login-container">
                 <div className="login-form">
-                    <h1>quay lại rồi hả !!</h1>
+                    <h1>xin chào tỏi mới !!</h1>
 
                     {show && (
                         <Alert 
@@ -66,7 +66,7 @@ const Login = () => {
                         <Form.Group className="mb-4">
                             <Form.Label htmlFor="phonenumber">
                                 <i className="bi bi-person-fill me-2"></i>
-                                tên tài khoản
+                                số điện thoại
                             </Form.Label>
                             <Form.Control
                                 type="text"
@@ -95,17 +95,15 @@ const Login = () => {
                             />
                         </Form.Group>
 
-                        <div className="text-center forgot-password">
-                            <a href="/" className="link-secondary">
-                                quên mật khẩu?
-                            </a>
+                        <div className="terms">
+                            <span>tôi đồng ý với mọi <strong>điều khoản sử dụng</strong></span>
                         </div>
 
                         <Button 
                             variant="primary" 
                             type="submit" 
                             disabled={loading}
-                            className="py-3 login-btn"
+                            className="w-100 py-3 login-btn"
                         >
                             {loading ? (
                                 <>
@@ -117,24 +115,20 @@ const Login = () => {
                                         aria-hidden="true"
                                         className="me-2"
                                     />
-                                    đang đăng nhập...
+                                    loading...
                                 </>
                             ) : (
                                 <>
-                                    đăng nhập
+                                    tiếp tục
                                 </>
                             )}
                         </Button>
-
-                        <div className="text-center mt-2 link-secondary or-text">
-                            hoặc là
-                        </div>
-
-                        <Button className="py-3 signup-btn">
-                            <a href="/signup" className="text-decoration-none">
-                                tạo tài khoản mới
+                        
+                        <div className="text-center mt-4">
+                            <a href="/" className="text-decoration-none link-secondary">
+                                bạn đã có tài khoản?
                             </a>
-                        </Button>
+                        </div>
                     </Form>
                 </div>
             </div>

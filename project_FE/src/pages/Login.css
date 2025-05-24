@@ -14,21 +14,59 @@
 .login-form {
   padding: 2rem;
   color: #000000;
-  max-width: 700px;
+  max-width: 450px;
+  min-width: 450px;
   margin-right: 15vw;
-  margin-bottom: 10vh;
+  margin-bottom: 20vh;
 }
 
 .login-form h1 {
   font-size: 2.7rem;
   font-weight: bold;
-  margin-bottom: 3rem;
   margin-left: 5rem;
+  margin-bottom: 0;
+}
+
+.alert-wrapper {
+  min-height: 70px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.custom-alert {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: 2px solid #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+
+.alert-wrapper-absolute {
+  position: relative;
+  height: 0;
+}
+
+.custom-alert-absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word;
+  margin: 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0 !important;
 }
 
 label {
   display: block;
-  /* margin-top: 1rem; */
   font-style: italic;
   color: #5d5d5d;
 }
@@ -41,37 +79,40 @@ label {
 
 input, select, .form-control {
   width: 115%;
-  border-radius: 4px;
+  border-radius: 0 !important;
   outline: none;
   background-color: white;
   flex: 1;
   padding: 0.5rem;
   padding-left: 2rem;
   font-size: 1.5rem;
-  border: 2px solid #000000;
+  border: 2px solid #000000 !important;
   box-shadow: none !important;
+  transition: all 0.2s;
 }
 
-.terms {
-  font-style: italic;
-  margin-top: 1rem;
-  margin-bottom: 1.3rem;
-  font-size: 1.2rem;
-  color: #5B3A29;
+input:focus, select:focus, .form-control:focus {
+  border: 2px solid #ff6418 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .login-btn, .signup-btn {
   width: 100%;
   background: #ff6418;
-  border: 3px solid #000000;
+  border: 3px solid #414040;
   font-weight: 600;
   font-size: 1.6rem;
   letter-spacing: 1px;
-  transition: all 0.3s;
+  transition: all 0.2s;
   box-shadow: none;
-  border-radius: 4px;
-  padding: 0.5rem;
+  border-radius: 0 !important;
+  padding: 0.25rem 0.5rem !important;
   margin-left: 2rem;
+  position: relative;
+  overflow: hidden;
+  height: auto !important;
+  line-height: 1.7 !important;
 }
 
 .login-btn {
@@ -80,11 +121,14 @@ input, select, .form-control {
   margin-top: 2rem;
 }
 
-.login-btn:hover, .signup-btn:hover {
-  background-color: #ff6418;
+.login-btn:hover, .login-btn:focus, .login-btn:active {
+  background-color: #ff6418 !important;
+  border: 3px solid #000000 !important;
   transform: translateY(-2px);
-  border: 3px solid #ff6418;
-  box-shadow: 0 7px 20px rgba(232, 76, 0, 0.4);
+  box-shadow: 4px 4px 0px #000000 !important;
+  color: white !important;
+  outline: none !important;
+  padding: 0.25rem 0.5rem !important;
 }
 
 .signup-btn {
@@ -93,13 +137,23 @@ input, select, .form-control {
   margin-top: 0.5rem;
 }
 
+.signup-btn:hover, .signup-btn:focus, .signup-btn:active {
+  background-color: white !important;
+  border: 3px solid #000000 !important;
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px #000000 !important;
+  color: black !important;
+  outline: none !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
 .signup-btn a {
   color: inherit !important;
   display: block;
 }
 
-.signup-btn:hover a {
-  color: white !important;
+.signup-btn:hover a, .signup-btn:focus a, .signup-btn:active a {
+  color: black !important;
 }
 
 .or-text {
@@ -108,9 +162,42 @@ input, select, .form-control {
 }
 
 .forgot-password {
-  font-size: 1.4rem;
+  font-size: large;
   color: #5B3A29;
-  margin-left: 14rem;
+  margin-left: 25rem;
   margin-top: -1rem;
   width: calc(100%);
+}
+
+.forgot-password a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+  color: #ff6418;
+}
+
+i {
+  padding-right: 10px;
+  font-size: 1.5rem;
+  padding-left: 1rem;
+}
+
+* {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.btn:focus, .btn:active, .btn.active {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
 }

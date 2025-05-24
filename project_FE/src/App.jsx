@@ -9,6 +9,7 @@ import Login from './pages/Login.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import NotFound from './pages/NotFound.jsx';
 import InformationUser from './pages/InformationUser.jsx';
+import SignUp from './pages/signup/Signup.jsx'
 
 export const UserContext = createContext(null);
 
@@ -51,6 +52,7 @@ function App() {
                     <Route path="/profile" element={<InformationUser />} />
 
                     <Route path="/" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
                     <Route path="/403" element={<Forbidden />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import "./Login.css";
 
 const Login = () => {
-    const [inputPhonenumber, setInputPhonenumber] = useState("");
+    const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const userData = await login({ phone: inputPhonenumber, password: inputPassword });
+            const userData = await login({ username: inputUsername, password: inputPassword });
             const userFetch = userData.data;
             const decodedToken = jwtDecode(userFetch['token']);
             const role = decodedToken.role?.[0]?.authority;
@@ -48,32 +48,34 @@ const Login = () => {
         <div className="login-background">
             <div className="login-container">
                 <div className="login-form">
-                    <h1>quay lại rồi hả !!</h1>
+                    {/* <h1>quay lại rồi hả !!</h1> */}
 
-                    {show && (
-                        <Alert 
-                            variant="danger" 
-                            onClose={() => setShow(false)} 
-                            dismissible
-                            className="animate__animated animate__shakeX"
-                        >
-                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                            Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!
-                        </Alert>
-                    )}
+                    <div className="alert-wrapper">
+                        {show && (
+                            <Alert 
+                                variant="danger" 
+                                onClose={() => setShow(false)} 
+                                dismissible
+                                className="animate__animated animate__shakeX custom-alert"
+                            >
+                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!
+                            </Alert>
+                        )}
+                    </div>
 
                     <Form onSubmit={handleSubmit} className="mt-4">
                         <Form.Group className="mb-4">
-                            <Form.Label htmlFor="phonenumber">
+                            <Form.Label htmlFor="username">
                                 <i className="bi bi-person-fill me-2"></i>
                                 tên tài khoản
                             </Form.Label>
                             <Form.Control
                                 type="text"
-                                id="phonenumber"
-                                value={inputPhonenumber}
+                                id="username"
+                                value={inputUsername}
                                 placeholder=" "
-                                onChange={(e) => setInputPhonenumber(e.target.value)}
+                                onChange={(e) => setInputUsername(e.target.value)}
                                 required
                                 className="form-control-lg"
                             />
@@ -95,7 +97,7 @@ const Login = () => {
                             />
                         </Form.Group>
 
-                        <div className="text-center forgot-password">
+                        <div className="forgot-password">
                             <a href="/" className="link-secondary">
                                 quên mật khẩu?
                             </a>

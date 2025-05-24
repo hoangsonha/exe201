@@ -1,18 +1,15 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { Form, Button, Alert, Container, Row, Col, Spinner } from "react-bootstrap";
-import { UserContext } from "../App";
-import { DEFAULT_PATHS } from "../auth/Roles";
-import { login } from "../serviceAPI/loginApi";
-import { jwtDecode } from "jwt-decode";
-import "./Login.css";
+import { UserContext } from "../../App";
+import "./Signup.css";
 
-const Login = () => {
+const SignUp = () => {
     const [inputPhonenumber, setInputPhonenumber] = useState("");
     const [inputPassword, setInputPassword] = useState("");
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { signIn } = useContext(UserContext);
+    const { signUp } = useContext(UserContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
@@ -20,22 +17,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const userData = await login({ phone: inputPhonenumber, password: inputPassword });
-            const userFetch = userData.data;
-            const decodedToken = jwtDecode(userFetch['token']);
-            const role = decodedToken.role?.[0]?.authority;
-
-            const user = {
-                accessToken: userFetch['token'],
-                refreshToken: userFetch['refreshToken'],
-                email: userFetch['email'],
-                id: userFetch['userId'],
-                role: role
-            }
-
-            signIn(user);
-            setShow(false);
-            navigate(DEFAULT_PATHS[role]);
+            
         } catch (error) {
             console.log(error);
             setShow(true);
@@ -46,26 +28,12 @@ const Login = () => {
 
     return (
         <div className="login-background">
-            <div className="login-container">
-                <div className="login-form">
-                    <h1>xin chào tỏi mới !!</h1>
-
-                    {show && (
-                        <Alert 
-                            variant="danger" 
-                            onClose={() => setShow(false)} 
-                            dismissible
-                            className="animate__animated animate__shakeX"
-                        >
-                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                            Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!
-                        </Alert>
-                    )}
-
+            <div className="sign-up-container">
+                <div className="sign-up-form">
                     <Form onSubmit={handleSubmit} className="mt-4">
                         <Form.Group className="mb-4">
                             <Form.Label htmlFor="phonenumber">
-                                <i className="bi bi-person-fill me-2"></i>
+                                <i className="bi bi-telephone-fill me-2"></i>
                                 số điện thoại
                             </Form.Label>
                             <Form.Control
@@ -103,7 +71,7 @@ const Login = () => {
                             variant="primary" 
                             type="submit" 
                             disabled={loading}
-                            className="w-100 py-3 login-btn"
+                            className="py-3 login-btn"
                         >
                             {loading ? (
                                 <>
@@ -115,7 +83,7 @@ const Login = () => {
                                         aria-hidden="true"
                                         className="me-2"
                                     />
-                                    loading...
+                                    đang xử lý...
                                 </>
                             ) : (
                                 <>
@@ -124,8 +92,8 @@ const Login = () => {
                             )}
                         </Button>
                         
-                        <div className="text-center mt-4">
-                            <a href="/" className="text-decoration-none link-secondary">
+                        <div className="mt-3 already-have-account">
+                            <a href="/" className="link-secondary">
                                 bạn đã có tài khoản?
                             </a>
                         </div>
@@ -136,4 +104,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default SignUp;

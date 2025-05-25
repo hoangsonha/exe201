@@ -11,27 +11,21 @@
   padding: 2rem
 }
 
-.login-form {
-  padding: 2rem;
+.login-form, .sign-up-form {
+  padding: 1rem;
   color: #000000;
   max-width: 450px;
   min-width: 450px;
   margin-right: 15vw;
-  margin-bottom: 20vh;
-}
-
-.login-form h1 {
-  font-size: 2.7rem;
-  font-weight: bold;
-  margin-left: 5rem;
-  margin-bottom: 0;
+  margin-bottom: 10vh;
 }
 
 .alert-wrapper {
-  min-height: 70px;
   width: 100%;
   overflow: hidden;
   margin-bottom: 1rem;
+  margin-left: 2.5rem;
+  width: calc(100% - 0.2rem);
 }
 
 .custom-alert {
@@ -180,7 +174,7 @@ input:focus, select:focus, .form-control:focus {
   color: #ff6418;
 }
 
-i {
+.submit-form i {
   padding-right: 10px;
   font-size: 1.5rem;
   padding-left: 1rem;
@@ -200,4 +194,16 @@ i {
 .btn:focus-visible {
   box-shadow: none !important;
   outline: none !important;
+}
+
+.App span {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000000;
+  padding-left: 8rem;
+}
+
+.form-control {
+  padding-right: 4.5rem;
+  padding-left: 3rem;
 }

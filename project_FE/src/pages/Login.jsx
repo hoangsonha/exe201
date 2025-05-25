@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Form, Button, Alert, Container, Row, Col, Spinner } from "react-bootstrap";
 import { UserContext } from "../App";
 import { DEFAULT_PATHS } from "../auth/Roles";
 import { login } from "../serviceAPI/loginApi";
 import { jwtDecode } from "jwt-decode";
+import Typed from 'typed.js';
 import "./Login.css";
 
 const Login = () => {
@@ -14,6 +15,39 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const { signIn } = useContext(UserContext);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const el = useRef(null);
+
+    const handleUsernameChange = (e) => {
+        setInputUsername(e.target.value);
+        if (show) setShow(false);
+    };
+
+    const handlePasswordChange = (e) => {
+        setInputPassword(e.target.value);
+        if (show) setShow(false);
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+    };
+
+    useEffect(() => {
+        if (!show && el.current) {
+            const typed = new Typed(el.current, {
+                strings: ['quay lại rồi hả !!'],
+                typeSpeed: 50,
+                loop: true,
+                backSpeed: 30,
+                startDelay: 500,
+                showCursor: false
+            });
+
+            return () => {
+                typed.destroy();
+            };
+        }
+    }, [show]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -48,7 +82,11 @@ const Login = () => {
         <div className="login-background">
             <div className="login-container">
                 <div className="login-form">
-                    {/* <h1>quay lại rồi hả !!</h1> */}
+                    {!show && (
+                        <div className="App">
+                            <span ref={el} />
+                        </div>
+                    )}
 
                     <div className="alert-wrapper">
                         {show && (
@@ -64,7 +102,7 @@ const Login = () => {
                         )}
                     </div>
 
-                    <Form onSubmit={handleSubmit} className="mt-4">
+                    <Form onSubmit={handleSubmit} className="mt-4 submit-form">
                         <Form.Group className="mb-4">
                             <Form.Label htmlFor="username">
                                 <i className="bi bi-person-fill me-2"></i>
@@ -75,26 +113,29 @@ const Login = () => {
                                 id="username"
                                 value={inputUsername}
                                 placeholder=" "
-                                onChange={(e) => setInputUsername(e.target.value)}
                                 required
                                 className="form-control-lg"
+                                onChange={handleUsernameChange}
                             />
                         </Form.Group>
                         
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-4 password-group">
                             <Form.Label htmlFor="password">
                                 <i className="bi bi-lock-fill me-2"></i>
                                 mật khẩu
                             </Form.Label>
                             <Form.Control
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 value={inputPassword}
                                 placeholder=" "
-                                onChange={(e) => setInputPassword(e.target.value)}
                                 required
                                 className="form-control-lg"
+                                onChange={handlePasswordChange}
                             />
+                            <span onClick={togglePasswordVisibility} style={{ cursor: "pointer" }} >
+                                <i className={`bi ${showPassword ? "bi-eye-fill" : "bi-eye-slash-fill"} eye-icon`} />
+                            </span>
                         </Form.Group>
 
                         <div className="forgot-password">

@@ -1,7 +1,7 @@
 package com.hsh.project.configuration;
 
-import com.hsh.project.pojo.Employee;
-import com.hsh.project.repository.EmployeeRepository;
+import com.hsh.project.pojo.User;
+import com.hsh.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomAccountDetailService implements UserDetailsService {
 
-    private final EmployeeRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Employee user = userRepository.getAccountByEmail(username);
+        User user = userRepository.getAccountByEmail(username);
         if(user != null) {
             return CustomAccountDetail.mapAccountToAccountDetail(user);
         }

@@ -1,10 +1,10 @@
 package com.hsh.project.service.spec;
 
-import com.hsh.project.dto.AccountDTO;
+import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
 import com.hsh.project.dto.request.CreateEmployeeRequest;
 import com.hsh.project.dto.request.UpdateEmployeeRequest;
-import com.hsh.project.pojo.Employee;
+import com.hsh.project.pojo.User;
 import org.apache.coyote.BadRequestException;
 
 import java.util.List;
@@ -15,15 +15,15 @@ public interface EmployeeService {
 
     PagingResponse searchEmployees(Integer currentPage, Integer pageSize, String userName, String fullName, String email);
 
-    List<AccountDTO> getAccounts();
+    List<UserDTO> getAccounts();
 
-    AccountDTO getAccountById(int id);
+    UserDTO getAccountById(int id);
 
-    AccountDTO createEmployee(CreateEmployeeRequest request) throws BadRequestException;
+    UserDTO createEmployee(CreateEmployeeRequest request) throws BadRequestException;
 
-    AccountDTO updateEmployee(UpdateEmployeeRequest request, int id);
+    UserDTO updateEmployee(UpdateEmployeeRequest request, int id);
 
-    Employee getEmployeeById(int id);
+    User getEmployeeById(int id);
 
-    Employee saveEmployee(Employee employee);
+    User saveEmployee(User user);
 }

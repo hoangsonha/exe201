@@ -1,11 +1,11 @@
 package com.hsh.project.utils;
 
-import com.hsh.project.pojo.Employee;
+import com.hsh.project.pojo.User;
 import org.springframework.data.jpa.domain.Specification;
 
 public class EmployeeSpecification {
 
-    public static Specification<Employee> searchByField(String field, String value) {
+    public static Specification<User> searchByField(String field, String value) {
         return (root, query, criteriaBuilder) -> {
             if (value == null || value.trim().isEmpty()) {
                 return criteriaBuilder.conjunction();

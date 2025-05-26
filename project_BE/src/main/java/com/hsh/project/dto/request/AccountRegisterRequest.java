@@ -23,11 +23,7 @@ public class AccountRegisterRequest {
 
     @NotBlank(message = "Vui lòng nhập tên")
     @Size(min = 2, max = 255, message = "Tên phải từ 2 tới 255 kí tự")
-    private String firstName;
-
-    @NotBlank(message = "Vui lòng nhập họ")
-    @Size(min = 2, max = 255, message = "Họ phải từ 2 tới 255 kí tự")
-    private String lastName;
+    private String userName;
 
     @NotBlank(message = "Vui lòng nhập số điện thoại")
     @Pattern(regexp = "^[0-9]{10,15}$", message = "Số điện thoại không hợp lệ (chỉ chứa số, từ 10-15 chữ số)")

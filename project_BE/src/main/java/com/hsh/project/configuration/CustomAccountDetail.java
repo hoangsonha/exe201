@@ -1,6 +1,6 @@
 package com.hsh.project.configuration;
 
-import com.hsh.project.pojo.Employee;
+import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.Role;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +18,8 @@ import java.util.List;
 @Setter
 @Builder
 public class CustomAccountDetail implements UserDetails {
-    private int id;
-    private String fullName;
+    private Long id;
+    private String userName;
     private String email;
     private String password;
     private String phoneNumber;
@@ -29,15 +29,15 @@ public class CustomAccountDetail implements UserDetails {
     private boolean enabled;
     private Collection<GrantedAuthority> grantedAuthorities;
 
-    public static CustomAccountDetail mapAccountToAccountDetail(Employee user) {
+    public static CustomAccountDetail mapAccountToAccountDetail(User user) {
         Role role = user.getRole();
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role.getRoleName().name());
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.add(simpleGrantedAuthority);
 
         return CustomAccountDetail.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
+                .id(user.getUserId())
+                .userName(user.getUserName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .phoneNumber(user.getPhone())

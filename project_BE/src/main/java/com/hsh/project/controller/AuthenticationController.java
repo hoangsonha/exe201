@@ -1,6 +1,6 @@
 package com.hsh.project.controller;
 
-import com.hsh.project.dto.AccountDTO;
+import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.request.AccountLoginRequest;
 import com.hsh.project.dto.request.AccountRegisterRequest;
@@ -31,7 +31,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody AccountRegisterRequest accountRegisterRequest) {
         try {
-            AccountDTO account = accountService.registerAccount(accountRegisterRequest);
+            UserDTO account = accountService.registerAccount(accountRegisterRequest);
             return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đăng ký tài khoản thành công", account));
         } catch (Exception e) {
             log.error("Error register user", e);

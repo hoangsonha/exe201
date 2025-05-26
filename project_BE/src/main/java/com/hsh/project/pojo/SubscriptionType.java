@@ -1,6 +1,5 @@
 package com.hsh.project.pojo;
 
-import com.hsh.project.pojo.enums.EnumRoleNameType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,21 +7,23 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Role extends BaseEntity{
+public class SubscriptionType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    Long id;
 
-    @Enumerated(EnumType.STRING)
-    EnumRoleNameType roleName;
+    String name;
 
-    @OneToMany(mappedBy = "role")
-    List<User> users;
+    Float price;
 
+    Integer duration; // days
+
+    @OneToMany(mappedBy = "subscriptionType")
+    List<UserSubscription> subscriptions;
 }

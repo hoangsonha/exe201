@@ -84,7 +84,7 @@ const Login = () => {
                                     />
                                     <Form.Label htmlFor="username">
                                         <i className="bi bi-person-fill me-2"></i>
-                                        Tài khoản
+                                        Email
                                     </Form.Label>
                                 </Form.Group>
                                 

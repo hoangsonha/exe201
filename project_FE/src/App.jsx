@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { ProtectedRoutes } from './auth/ProtectedRoutes.jsx';
 import { FULL_PATHS_LIST } from './auth/Paths.jsx';
-import Login from './pages/Login.jsx';
+import Login from './pages/login/Login.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import NotFound from './pages/NotFound.jsx';
 import InformationUser from './pages/InformationUser.jsx';
@@ -51,7 +51,7 @@ function App() {
                     
                     <Route path="/profile" element={<InformationUser />} />
 
-                    <Route path="/" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/403" element={<Forbidden />} />
                     <Route path="*" element={<NotFound />} />

@@ -151,7 +151,7 @@ const SignUp = () => {
                         </Button>
                         
                         <div className="mt-3 already-have-account">
-                            <a href="/" className="link-secondary">
+                            <a href="/login" className="link-secondary">
                                 bạn đã có tài khoản?
                             </a>
                         </div>

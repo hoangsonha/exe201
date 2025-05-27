@@ -1,7 +1,7 @@
 .login-background {
   background: 
-    url("../assets/toi_hello.gif") no-repeat right bottom,
-    url("../assets/loginBackground.svg") no-repeat center center;
+    url("src/assets/toi_hello.gif") no-repeat right bottom,
+    url("src/assets/loginBackground.svg") no-repeat center center;
   background-size: 38% auto, 90% auto;
   background-position: left 8% top 100%, left center;
   min-height: 100vh;

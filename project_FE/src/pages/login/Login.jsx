@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Form, Button, Alert, Container, Row, Col, Spinner } from "react-bootstrap";
-import { UserContext } from "../App";
-import { DEFAULT_PATHS } from "../auth/Roles";
-import { login } from "../serviceAPI/loginApi";
+import { UserContext } from "../../App";
+import { DEFAULT_PATHS } from "../../auth/Roles";
+import { login } from "../../serviceAPI/loginApi";
 import { jwtDecode } from "jwt-decode";
 import Typed from 'typed.js';
 import "./Login.css";

@@ -88,3 +88,72 @@
   border-radius: 0 0.375rem 0.375rem 0;
   border-left: none;
 }
+
+.verification-title-custom {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.verification-description-custom {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+  font-style: italic;
+}
+
+.verification-form-custom {
+  margin-top: 1.5rem;
+}
+
+.verification-inputs-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.verification-input {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  margin: 0 5px;
+}
+
+.verification-timer-custom {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.timer-text {
+  font-weight: bold;
+  color: #FF6B35;
+}
+
+.verification-resend-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.resend-link-custom {
+  color: #6665DD;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.avatar-background-custom {
+  background: url("src/assets/avatarBackground.svg") no-repeat center center;
+  background-size: 90% auto;
+  background-position: left center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2rem
+}

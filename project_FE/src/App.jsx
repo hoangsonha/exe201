@@ -9,7 +9,7 @@ import Login from './pages/login/Login.jsx';
 import Forbidden from './pages/Forbidden.jsx';
 import NotFound from './pages/NotFound.jsx';
 import InformationUser from './pages/InformationUser.jsx';
-import SignUp from './pages/signup/Signup.jsx'
+import SignUp from './pages/signup/Signup.jsx';
 
 export const UserContext = createContext(null);
 

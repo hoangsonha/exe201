@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { createContext, useState } from "react";
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ProtectedRoutes } from './auth/ProtectedRoutes.jsx';
 import { FULL_PATHS_LIST } from './auth/Paths.jsx';
@@ -10,6 +10,7 @@ import Forbidden from './pages/Forbidden.jsx';
 import NotFound from './pages/NotFound.jsx';
 import InformationUser from './pages/InformationUser.jsx';
 import SignUp from './pages/signup/Signup.jsx';
+import Home from './pages/home/Home.jsx';
 
 export const UserContext = createContext(null);
 
@@ -50,9 +51,9 @@ function App() {
                     </Route>
                     
                     <Route path="/profile" element={<InformationUser />} />
-
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="/403" element={<Forbidden />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>

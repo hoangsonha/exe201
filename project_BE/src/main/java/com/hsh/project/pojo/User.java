@@ -98,4 +98,8 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     List<Rating> ratings;
+
+    @OneToMany(mappedBy = "user")
+    List<BlockReview> blockReviews;
+
 }

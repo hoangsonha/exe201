@@ -1,7 +1,10 @@
 package com.hsh.project.dto;
 
+import com.hsh.project.dto.response.HashTagResponseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Value
 @NoArgsConstructor(force = true)
@@ -19,4 +22,6 @@ public class UserDTO {
     boolean enabled;
     boolean nonLocked;
     boolean deleted;
+
+    List<HashTagResponseDTO> listHashTagUser;
 }

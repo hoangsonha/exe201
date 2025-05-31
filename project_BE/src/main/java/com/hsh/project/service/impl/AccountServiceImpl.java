@@ -5,6 +5,7 @@ import com.hsh.project.configuration.JWTAuthenticationFilter;
 import com.hsh.project.configuration.JWTToken;
 import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.request.AccountRegisterRequest;
+import com.hsh.project.dto.request.AccountVerificationRequest;
 import com.hsh.project.dto.response.TokenResponse;
 import com.hsh.project.exception.ElementExistException;
 import com.hsh.project.exception.ElementNotFoundException;
@@ -17,8 +18,15 @@ import com.hsh.project.pojo.enums.EnumTokenType;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.service.spec.AccountService;
 import com.hsh.project.service.spec.RoleService;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,12 +34,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     private final UserRepository userRepository;
@@ -41,41 +55,120 @@ public class AccountServiceImpl implements AccountService {
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationManager authenticationManager;
 
-    public AccountServiceImpl(UserRepository userRepository, RoleService roleService,
-                              BCryptPasswordEncoder bCryptPasswordEncoder,
-                              JWTToken jwtToken, JWTAuthenticationFilter jwtAuthenticationFilter,
-                              AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.roleService = roleService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtToken = jwtToken;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationManager = authenticationManager;
-    }
+
+    private final JavaMailSender javaMailSender;
+
+    private final SpringTemplateEngine templateEngine;
+    private final UserMapper userMapper;
+
+    @Value("${spring.mail.username}")
+    private String from;
+
 
     @Override
-    public UserDTO registerAccount(AccountRegisterRequest accountRegisterRequest) {
+    public boolean registerAccount(AccountRegisterRequest accountRegisterRequest) {
         User checkExistingUser = userRepository.getAccountByEmail(accountRegisterRequest.getEmail());
         if (checkExistingUser != null) {
             throw new ElementExistException("Tài khoản đã tồn tại");
         }
         Role role = roleService.getRoleByRoleName(EnumRoleNameType.ROLE_USER);
 
-        int calculatedAge = Period.between(accountRegisterRequest.getDob(), LocalDate.now()).getYears();
-
         User user = User.builder()
                 .email(accountRegisterRequest.getEmail())
                 .password(bCryptPasswordEncoder.encode(accountRegisterRequest.getPassword()))
-                .userName(accountRegisterRequest.getUserName())
-                .phone(accountRegisterRequest.getPhone())
                 .accessToken(null)
                 .refreshToken(null)
-                .enabled(true)
-                .nonLocked(true)
+                .enabled(false)
+                .nonLocked(false)
                 .role(role)
+                .codeVerify(generateSixDigitCode())
                 .build();
+        User u = userRepository.save(user);
 
-        return UserMapper.INSTANCE.accountToAccountDTO(userRepository.save(user));
+        return sendVerificationEmail(u.getEmail(), u.getCodeVerify());
+    }
+
+    @Override
+    public TokenResponse verificationUser(AccountVerificationRequest request) {
+        User user = userRepository.getAccountByEmail(request.getEmail());
+
+        if (user == null) {
+            return null;
+        }
+
+        if (request.getVerificationCode().equals(user.getCodeVerify())) {
+            user.setCodeVerify(null);
+            user.setEnabled(true);
+            user.setNonLocked(true);
+
+            CustomAccountDetail accountDetail = CustomAccountDetail.mapAccountToAccountDetail(user);
+            String token = jwtToken.generatedToken(accountDetail);
+            String refreshToken = jwtToken.generatedRefreshToken(accountDetail);
+
+            user.setRefreshToken(refreshToken);
+            user.setAccessToken(token);
+            userRepository.save(user);
+
+            return TokenResponse.builder()
+                    .code("Success")
+                    .message("Success")
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .token(token)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
+        return null;
+    }
+
+    public String generateSixDigitCode() {
+        Random random = new Random();
+        int number = random.nextInt(1_000_000);
+        return String.format("%06d", number);
+    }
+
+    private boolean sendVerificationEmail(String email, String content) {
+//        String recipient, String subject, String content, MultipartFile[] files
+        if (email == null) {
+            return false;
+        }
+        try {
+            String verifyURL = "Verify di ne";
+
+            Context context = new Context();
+            context.setVariable("link", verifyURL);
+            context.setVariable("name", "HoangSonHaHoangSOnHaHoangSonHaNe");
+            context.setVariable("button", "Bam di ne");
+
+            String mailne = templateEngine.process(content, context);
+
+            String title = "Test ne";
+            String senderName = "HoangSonHa";
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setFrom(from, senderName);
+
+            if(email.contains(",")) {
+                helper.setTo(InternetAddress.parse(email));
+            } else {
+                helper.setTo(email);
+            }
+
+//            if(request.getFiles() != null) {
+//                for(MultipartFile file : request.getFiles()) {
+//                    helper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), file);
+//                }
+//            }
+
+            helper.setSubject(title);
+            helper.setText(mailne, true);
+            javaMailSender.send(mimeMessage);
+            log.error("Send mail to {}", email);
+            return true;
+        } catch (Exception e) {
+            log.error("Can not send mail {}", e.toString());
+            return false;
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.hsh.project.pojo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -38,5 +39,10 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment")
     List<Report> reports;
+
+    @OneToMany
+    @JoinColumn(name = "targetId", referencedColumnName = "commentID", insertable = false, updatable = false)
+    @Where(clause = "target_type = 'COMMENT'")
+    List<Like> likes;
 
 }

@@ -1,9 +1,11 @@
 package com.hsh.project.pojo;
 
 import com.hsh.project.pojo.enums.EnumReviewStatus;
+import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -23,8 +25,6 @@ public class Review extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     String content;
-
-    String urlImageGIFVideo;
 
     String perspective;
 
@@ -51,6 +51,9 @@ public class Review extends BaseEntity {
     List<HistoryPoint> historyPoints;
 
     @OneToMany(mappedBy = "review")
+    List<ReviewMedia> reviewMedias;
+
+    @OneToMany(mappedBy = "review")
     List<SavedReview> savedReviews;
 
     @OneToMany(mappedBy = "review")
@@ -62,7 +65,15 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<Rating> ratings;
 
+    @OneToMany(mappedBy = "review")
+    List<BlockReview> blockReviews;
+
     @OneToOne(mappedBy = "review")
     CheckReviewAI checkReviewAI;
+
+    @OneToMany
+    @JoinColumn(name = "targetId", referencedColumnName = "reviewID", insertable = false, updatable = false)
+    @Where(clause = "target_type = 'REVIEW'")
+    List<Like> likes;
 
 }

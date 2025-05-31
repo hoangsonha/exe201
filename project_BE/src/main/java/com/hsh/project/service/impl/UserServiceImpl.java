@@ -5,16 +5,20 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
 import com.hsh.project.dto.request.CreateEmployeeRequest;
 import com.hsh.project.dto.request.UpdateEmployeeRequest;
+import com.hsh.project.dto.request.UserRegisterHashTagRequest;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementExistException;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.mapper.UserMapper;
+import com.hsh.project.pojo.Hashtag;
 import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.Role;
+import com.hsh.project.pojo.UserHashtag;
 import com.hsh.project.pojo.enums.EnumRoleNameType;
+import com.hsh.project.repository.HashtagRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.repository.RoleRepository;
-import com.hsh.project.service.spec.EmployeeService;
+import com.hsh.project.service.spec.UserService;
 import com.hsh.project.utils.EmployeeSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -31,11 +35,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class EmployeeServiceImpl implements EmployeeService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
+    private final HashtagRepository hashtagRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -238,6 +243,31 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public User saveEmployee(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserDTO createHashTagUser(UserRegisterHashTagRequest request) {
+
+        User user = getEmployeeById(request.getUserId());
+
+        if (user == null) {
+            throw new ElementNotFoundException("Employee not found");
+        }
+
+        List<Hashtag> lists = hashtagRepository.findAllById(request.getHashtagID());
+
+        List<UserHashtag> userHashtagList = new ArrayList<>();
+
+        for (Hashtag hashtag : lists) {
+            UserHashtag userHashtag = UserHashtag.builder()
+                    .hashtag(hashtag)
+                    .user(user)
+                    .build();
+            userHashtagList.add(userHashtag);
+        }
+        user.setUserHashtags(userHashtagList);
+
+        return userMapper.accountToAccountDTO(user);
     }
 
 

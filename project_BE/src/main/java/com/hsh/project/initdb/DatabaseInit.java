@@ -5,11 +5,11 @@ import com.hsh.project.pojo.enums.*;
 import com.hsh.project.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -36,6 +36,7 @@ public class DatabaseInit implements CommandLineRunner {
     private final NotificationRepository notificationRepository;
     private final AdvertiseRepository advertiseRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ReviewMediaRepository reviewMediaRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -249,10 +250,10 @@ public class DatabaseInit implements CommandLineRunner {
             User premiumUser = userRepository.findByUserName("premium_user");
             User regularUser = userRepository.findByUserName("regular_user");
 
+            // Tạo review
             Review techReview = new Review();
             techReview.setTitle("Great new smartphone");
             techReview.setContent("The camera quality is amazing and battery lasts all day");
-            techReview.setUrlImageGIFVideo("smartphone.jpg");
             techReview.setPerspective("As a photographer");
             techReview.setStatus(EnumReviewStatus.PUBLISHED);
             techReview.setRelevantStar(4.5f);
@@ -262,9 +263,8 @@ public class DatabaseInit implements CommandLineRunner {
             Review foodReview = new Review();
             foodReview.setTitle("Disappointing restaurant experience");
             foodReview.setContent("The food was cold and service was slow");
-            foodReview.setUrlImageGIFVideo("restaurant.jpg");
             foodReview.setPerspective("As a food critic");
-            foodReview.setStatus(EnumReviewStatus.ACTIVATED);
+            foodReview.setStatus(EnumReviewStatus.PENDING);
             foodReview.setRelevantStar(2.0f);
             foodReview.setObjectiveStar(3.0f);
             foodReview.setUser(regularUser);
@@ -272,15 +272,37 @@ public class DatabaseInit implements CommandLineRunner {
             Review travelReview = new Review();
             travelReview.setTitle("Beautiful beach destination");
             travelReview.setContent("The water was crystal clear and the sand was perfect");
-            travelReview.setUrlImageGIFVideo("beach.mp4");
             travelReview.setPerspective("As a frequent traveler");
-            travelReview.setStatus(EnumReviewStatus.ACTIVATED);
+            travelReview.setStatus(EnumReviewStatus.PUBLISHED);
             travelReview.setRelevantStar(5.0f);
             travelReview.setObjectiveStar(4.5f);
             travelReview.setUser(premiumUser);
 
+            // Lưu review trước
             reviewRepository.saveAll(List.of(techReview, foodReview, travelReview));
+
+            // Tạo media tương ứng
+            List<ReviewMedia> mediaList = new ArrayList<>();
+
+            mediaList.add(createMedia(techReview, "smartphone1.jpg", EnumReviewUploadType.IMAGE, 1));
+            mediaList.add(createMedia(techReview, "smartphone2.jpg", EnumReviewUploadType.IMAGE, 2));
+
+            mediaList.add(createMedia(foodReview, "restaurant.jpg", EnumReviewUploadType.IMAGE, 1));
+
+            mediaList.add(createMedia(travelReview, "beach.mp4", EnumReviewUploadType.VIDEO, 1));
+            mediaList.add(createMedia(travelReview, "beach_thumbnail.jpg", EnumReviewUploadType.IMAGE, 2));
+
+            reviewMediaRepository.saveAll(mediaList);
         }
+    }
+
+    private ReviewMedia createMedia(Review review, String url, EnumReviewUploadType type, int order) {
+        ReviewMedia media = new ReviewMedia();
+        media.setReview(review);
+        media.setUrlImageGIFVideo(url);
+        media.setTypeUploadReview(type);
+        media.setOrderDisplay(order);
+        return media;
     }
 
     private void initReviewHashtags() {
@@ -334,30 +356,104 @@ public class DatabaseInit implements CommandLineRunner {
         }
     }
 
+//    private void initComments() {
+//        if (commentRepository.count() == 0) {
+//            User admin = userRepository.findByUserName("admin");
+//            User premiumUser = userRepository.findByUserName("premium_user");
+//            Review techReview = reviewRepository.findAll().get(0);
+//            Review foodReview = reviewRepository.findAll().get(1);
+//
+//            Comment mainComment = new Comment();
+//            mainComment.setContent("I agree with your review!");
+//            mainComment.setUser(admin);
+//            mainComment.setReview(techReview);
+//
+//            Comment replyComment = new Comment();
+//            replyComment.setContent("Thanks for your feedback!");
+//            replyComment.setUser(premiumUser);
+//            replyComment.setReview(techReview);
+//            replyComment.setParentComment(mainComment);
+//
+//            Comment foodComment = new Comment();
+//            foodComment.setContent("I had a similar experience last week");
+//            foodComment.setUser(premiumUser);
+//            foodComment.setReview(foodReview);
+//
+//            commentRepository.saveAll(List.of(mainComment, replyComment, foodComment));
+//        }
+//    }
+
     private void initComments() {
         if (commentRepository.count() == 0) {
             User admin = userRepository.findByUserName("admin");
             User premiumUser = userRepository.findByUserName("premium_user");
-            Review techReview = reviewRepository.findAll().get(0);
-            Review foodReview = reviewRepository.findAll().get(1);
+            User user1 = userRepository.findByUserName("regular_user");
+            User user2 = userRepository.findByUserName("moderator");
 
-            Comment mainComment = new Comment();
-            mainComment.setContent("I agree with your review!");
-            mainComment.setUser(admin);
-            mainComment.setReview(techReview);
+            List<Review> reviews = reviewRepository.findAll();
+            if (reviews.size() < 2) return;
 
-            Comment replyComment = new Comment();
-            replyComment.setContent("Thanks for your feedback!");
-            replyComment.setUser(premiumUser);
-            replyComment.setReview(techReview);
-            replyComment.setParentComment(mainComment);
+            Review techReview = reviews.get(0);
+            Review foodReview = reviews.get(1);
 
-            Comment foodComment = new Comment();
-            foodComment.setContent("I had a similar experience last week");
-            foodComment.setUser(premiumUser);
-            foodComment.setReview(foodReview);
+            List<Comment> comments = new ArrayList<>();
 
-            commentRepository.saveAll(List.of(mainComment, replyComment, foodComment));
+            // ===== Comment cho Tech Review =====
+            Comment main1 = new Comment();
+            main1.setContent("Bài viết rất hay, cảm ơn bạn!");
+            main1.setUser(admin);
+            main1.setReview(techReview);
+            comments.add(main1);
+
+            Comment reply1_1 = new Comment();
+            reply1_1.setContent("Mình cũng thấy vậy.");
+            reply1_1.setUser(user1);
+            reply1_1.setReview(techReview);
+            reply1_1.setParentComment(main1);
+            comments.add(reply1_1);
+
+            Comment reply1_2 = new Comment();
+            reply1_2.setContent("Tác giả có vẻ rất hiểu chủ đề này.");
+            reply1_2.setUser(user2);
+            reply1_2.setReview(techReview);
+            reply1_2.setParentComment(main1);
+            comments.add(reply1_2);
+
+            // Một comment khác (main)
+            Comment main2 = new Comment();
+            main2.setContent("Mình không đồng tình lắm, thiếu dẫn chứng.");
+            main2.setUser(premiumUser);
+            main2.setReview(techReview);
+            comments.add(main2);
+
+            Comment reply2_1 = new Comment();
+            reply2_1.setContent("Mỗi người một quan điểm thôi.");
+            reply2_1.setUser(user1);
+            reply2_1.setReview(techReview);
+            reply2_1.setParentComment(main2);
+            comments.add(reply2_1);
+
+            // ===== Comment cho Food Review =====
+            Comment foodMain1 = new Comment();
+            foodMain1.setContent("Quán này mình ăn rồi, ngon thật.");
+            foodMain1.setUser(user1);
+            foodMain1.setReview(foodReview);
+            comments.add(foodMain1);
+
+            Comment foodReply1 = new Comment();
+            foodReply1.setContent("Bạn ăn món gì vậy?");
+            foodReply1.setUser(user2);
+            foodReply1.setReview(foodReview);
+            foodReply1.setParentComment(foodMain1);
+            comments.add(foodReply1);
+
+            Comment foodMain2 = new Comment();
+            foodMain2.setContent("Chưa ăn nhưng đọc review là thèm rồi.");
+            foodMain2.setUser(admin);
+            foodMain2.setReview(foodReview);
+            comments.add(foodMain2);
+
+            commentRepository.saveAll(comments);
         }
     }
 

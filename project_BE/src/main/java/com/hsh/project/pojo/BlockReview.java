@@ -11,17 +11,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReviewHashtag extends BaseEntity {
+public class BlockReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long ratingID;
 
     @ManyToOne
-    @JoinColumn(name = "hashtag_id", referencedColumnName = "hashtagID")
-    Hashtag hashtag;
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    User user;
 
     @ManyToOne
     @JoinColumn(name = "review_id", referencedColumnName = "reviewID")
     Review review;
-
 }

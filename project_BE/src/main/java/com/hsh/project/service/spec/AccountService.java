@@ -2,6 +2,7 @@ package com.hsh.project.service.spec;
 
 import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.request.AccountRegisterRequest;
+import com.hsh.project.dto.request.AccountVerificationRequest;
 import com.hsh.project.dto.response.TokenResponse;
 import com.hsh.project.pojo.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface AccountService {
 
-    UserDTO registerAccount(AccountRegisterRequest accountRegisterRequest);
+    boolean registerAccount(AccountRegisterRequest accountRegisterRequest);
+
+    TokenResponse verificationUser(AccountVerificationRequest request);
 
     TokenResponse refreshToken(String refreshToken);
 

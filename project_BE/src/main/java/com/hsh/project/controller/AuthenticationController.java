@@ -4,6 +4,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.request.AccountLoginRequest;
 import com.hsh.project.dto.request.AccountRegisterRequest;
+import com.hsh.project.dto.request.AccountVerificationRequest;
 import com.hsh.project.dto.response.TokenResponse;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.service.spec.AccountService;
@@ -31,11 +32,28 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody AccountRegisterRequest accountRegisterRequest) {
         try {
-            UserDTO account = accountService.registerAccount(accountRegisterRequest);
-            return ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đăng ký tài khoản thành công", account));
+            boolean account = accountService.registerAccount(accountRegisterRequest);
+            return account ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đăng ký tài khoản thành công", account)) :
+                    ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", "Đăng ký tài khoản thất bại", null));
         } catch (Exception e) {
             log.error("Error register user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", "Đăng ký tài khoản thất bại", null));
+        }
+    }
+
+    @PostMapping("/register/verification")
+    public ResponseEntity<TokenResponse> userRegister(@Valid @RequestBody AccountVerificationRequest accountRegisterRequest) {
+        try {
+            TokenResponse tokenResponse = accountService.verificationUser(accountRegisterRequest);
+            return ResponseEntity.status(tokenResponse.getCode().equals("Success") ? HttpStatus.OK : HttpStatus.UNAUTHORIZED).body(tokenResponse);
+        } catch (Exception e) {
+            log.error("Cannot verification : {}", e.toString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    TokenResponse.builder()
+                            .code("FAILED")
+                            .message("Mã không trùng khớp")
+                            .build()
+            );
         }
     }
 

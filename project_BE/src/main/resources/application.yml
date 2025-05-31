@@ -60,12 +60,8 @@ springdoc:
 firebase:
   bucket:
     name: swp391-f046d.appspot.com
-  content:
-    type: image/png
   get:
-    stream: firebase-SWD391.json
+    stream: exe201-firebase.json
     url: https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/%s?alt=media
     folder: exe201_project
-  file:
-    format: .png
 

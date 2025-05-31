@@ -55,9 +55,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Value("${firebase.bucket.name}")
     private String bucketName;
 
-    @Value("${firebase.content.type}")
-    private String contentType;
-
     @Value("${firebase.get.stream}")
     private String fileConfigFirebase;
 
@@ -67,16 +64,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Value("${firebase.get.folder}")
     private String folderContainImage;
 
-    @Value("${firebase.file.format}")
-    private String fileFormat;
-
-    private boolean isImage(String extension) {
-        return extension.matches("(?i)\\.(jpg|jpeg|png|gif)$");
-    }
-
-    private boolean isVideo(String extension) {
-        return extension.matches("(?i)\\.(mp4|mov|avi|mkv)$");
-    }
 
 
     @Override
@@ -116,10 +103,28 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(review);
 
         // Lưu media
+
+        long videoCount = mediaFiles.stream()
+                .filter(file -> {
+                    String contentType = file.getContentType();
+                    return contentType != null && contentType.startsWith("video");
+                })
+                .count();
+
+        if (videoCount > 1) {
+            throw new BadRequestException("Chỉ được phép upload tối đa 1 video.");
+        }
+
         int order = 1;
         for (MultipartFile file : mediaFiles) {
             String fileName = storeFile(file); // bạn tự xử lý phần lưu file
             EnumReviewUploadType type = detectType(file); // ví dụ: IMAGE/VIDEO
+
+            if (type == EnumReviewUploadType.IMAGE) {
+                uploadImages(file);
+            } else if (type == EnumReviewUploadType.VIDEO) {
+                uploadSingleVideo(file);
+            }
 
             ReviewMedia media = new ReviewMedia();
             media.setReview(review);
@@ -130,48 +135,31 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-    private String storeFile(MultipartFile file) {
-        return file.getOriginalFilename();
-    }
-
-    private EnumReviewUploadType detectType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType == null) return EnumReviewUploadType.IMAGE;
-
-        if (contentType.startsWith("image")) return EnumReviewUploadType.IMAGE;
-        if (contentType.startsWith("video")) return EnumReviewUploadType.VIDEO;
-        return EnumReviewUploadType.IMAGE;
-    }
-
-    public List<String> uploadImages(MultipartFile[] imageFiles) {
-        List<String> urls = new ArrayList<>();
+    public String uploadImages(MultipartFile imageFile) {
         try {
-            for (MultipartFile file : imageFiles) {
-                String extension = getExtension(file.getOriginalFilename());
-                if (!isImage(extension)) continue;
+            String extension = getExtension(imageFile.getOriginalFilename());
+            if (!isImage(extension)) throw new BadRequestException("Must be an image");
 
-                String fileName = UUID.randomUUID() + extension;
-                File convertedFile = convertToFile(file, fileName);
-                String url = uploadFile(convertedFile, fileName);
-                urls.add(url);
-                convertedFile.delete();
-            }
+            String fileName = UUID.randomUUID() + extension;
+            File convertedFile = convertToFile(imageFile, fileName);
+            String url = uploadFile(convertedFile, fileName, imageFile.getContentType());  // <-- lấy đúng content-type
+            convertedFile.delete();
+            return url;
+
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return urls;
     }
 
     public String uploadSingleVideo(MultipartFile videoFile) {
         try {
             String extension = getExtension(videoFile.getOriginalFilename());
-            if (!isVideo(extension)) {
-                throw new IllegalArgumentException("Chỉ cho phép upload video (.mp4, .mov, ...)");
-            }
+            if (!isVideo(extension)) throw new BadRequestException("Chỉ cho phép upload video");
 
             String fileName = UUID.randomUUID() + extension;
             File convertedFile = convertToFile(videoFile, fileName);
-            String url = uploadFile(convertedFile, fileName);
+            String url = uploadFile(convertedFile, fileName, videoFile.getContentType());  // <-- lấy đúng content-type
             convertedFile.delete();
             return url;
         } catch (Exception e) {
@@ -180,24 +168,23 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+    private String uploadFile(File file, String fileName, String contentType) throws IOException {
+        String folder = folderContainImage + "/" + fileName;
+        BlobId blobId = BlobId.of(bucketName, folder);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(contentType)  // <-- đúng loại file thật
+                .build();
+
+        try (InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase)) {
+            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        }
+
+        return String.format(urlFirebase, URLEncoder.encode(folder, StandardCharsets.UTF_8));
     }
 
-    private String uploadFile(File file, String fileName) throws IOException {  // file vs fileName is equal
-        String folder = folderContainImage + "/" + fileName;  // 1 is folder and fileName is "randomString + "extension""
-        BlobId blobId = BlobId.of(bucketName, folder); // blodId is a path to file in firebase
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();  // blodInfo contains blodID and more
-        InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase); // change the file name with your one
-        Credentials credentials = GoogleCredentials.fromStream(inputStream);
-        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-        // saved image on firebase
-        String DOWNLOAD_URL = urlFirebase;
-        return String.format(DOWNLOAD_URL, URLEncoder.encode(folder, StandardCharsets.UTF_8));
-    }
-
-    private boolean deleteImageOnFireBase(String urlImage) throws IOException {
+    private boolean deleteImageOnFireBase(String urlImage, String contentType) throws IOException {
         String folder = folderContainImage + "/" + urlImage;
         BlobId blobId = BlobId.of(bucketName, folder); // Replace with your bucker name
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();
@@ -214,6 +201,85 @@ public class ReviewServiceImpl implements ReviewService {
         }
         return tempFile;
     }
+
+    private String storeFile(MultipartFile file) {
+        return file.getOriginalFilename();
+    }
+
+    private String getExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+    }
+
+    private EnumReviewUploadType detectType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null) return EnumReviewUploadType.IMAGE;
+
+        if (contentType.startsWith("image")) return EnumReviewUploadType.IMAGE;
+        if (contentType.startsWith("video")) return EnumReviewUploadType.VIDEO;
+        return EnumReviewUploadType.IMAGE;
+    }
+
+    private boolean isImage(String extension) {
+        return extension.matches("(?i)\\.(jpg|jpeg|png|gif)$");
+    }
+
+    private boolean isVideo(String extension) {
+        return extension.matches("(?i)\\.(mp4|mov|avi|mkv)$");
+    }
+
+//    public List<String> uploadImages(MultipartFile imageFiles) {
+//        List<String> urls = new ArrayList<>();
+//        try {
+//
+//                String extension = getExtension(imageFiles.getOriginalFilename());
+//                if (!isImage(extension)) throw new BadRequestException("Must be an image");
+//
+//                String fileName = UUID.randomUUID() + extension;
+//                File convertedFile = convertToFile(imageFiles, fileName);
+//                String url = uploadFile(convertedFile, fileName);
+//                urls.add(url);
+//                convertedFile.delete();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return urls;
+//    }
+//
+//    public String uploadSingleVideo(MultipartFile videoFile) {
+//        try {
+//            String extension = getExtension(videoFile.getOriginalFilename());
+//            if (!isVideo(extension)) {
+//                throw new IllegalArgumentException("Chỉ cho phép upload video (.mp4, .mov, ...)");
+//            }
+//
+//            String fileName = UUID.randomUUID() + extension;
+//            File convertedFile = convertToFile(videoFile, fileName);
+//            String url = uploadFile(convertedFile, fileName);
+//            convertedFile.delete();
+//            return url;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return "Video upload thất bại";
+//        }
+//    }
+
+
+
+//    private String uploadFile(File file, String fileName, String contentType) throws IOException {  // file vs fileName is equal
+//        String folder = folderContainImage + "/" + fileName;  // 1 is folder and fileName is "randomString + "extension""
+//        BlobId blobId = BlobId.of(bucketName, folder); // blodId is a path to file in firebase
+//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();  // blodInfo contains blodID and more
+//        InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase); // change the file name with your one
+//        Credentials credentials = GoogleCredentials.fromStream(inputStream);
+//        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+//        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+//        // saved image on firebase
+//        String DOWNLOAD_URL = urlFirebase;
+//        return String.format(DOWNLOAD_URL, URLEncoder.encode(folder, StandardCharsets.UTF_8));
+//    }
+
+
 
     @Override
     public ReviewResponseDTO getReviewById(Long reviewId) {

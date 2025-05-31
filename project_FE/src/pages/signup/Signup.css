@@ -253,7 +253,7 @@
   padding: 0.25rem 0.5rem !important;
 }
 
-.topic-background{
+.topic-background {
   background: url("@/assets/background/topicBackground.svg") no-repeat center center;
   background-size: 100% auto;
   background-position: center;

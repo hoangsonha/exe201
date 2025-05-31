@@ -3,18 +3,41 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #f8f6ef;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.topic-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
 }
 
 .home-content {
   display: flex;
   flex: 1;
   margin-top: 70px;
+  position: relative;
+  z-index: 2;
 }
 
 .home-header {
   background-color: #a08ee1;
   padding: 10px 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 3;
 }
 
 .header-logo {
@@ -81,6 +104,8 @@
   border-radius: 10px;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .sidebar-menu {
@@ -116,7 +141,6 @@
 
 .main-content {
   flex: 1;
-  background-color: #4a72c4;
   min-height: calc(100vh - 70px);
   margin-left: 205px;
   background-image: 
@@ -124,6 +148,8 @@
     linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
   background-size: 50px 50px;
   padding: 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .content-container {

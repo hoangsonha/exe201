@@ -1,16 +1,17 @@
 import React from 'react';
 import './Sidebar.css';
+import { FaBell, FaBookmark, FaQuestionCircle, FaSearch, FaAd, FaFileAlt, FaFileContract, FaInfoCircle } from 'react-icons/fa';
 
 const Sidebar = () => {
   const menuItems = [
-    { id: 'notification', icon: '🔔', label: 'thông báo' },
-    { id: 'bookmarks', icon: '🔖', label: 'lưu trữ' },
-    { id: 'help', icon: '❓', label: 'trợ giúp' },
-    { id: 'explore', icon: '🔍', label: 'khám phá' },
-    { id: 'ads', icon: '📢', label: 'quảng cáo' },
-    { id: 'privacy', icon: '📋', label: 'chính sách quyền riêng tư' },
-    { id: 'terms', icon: '📜', label: 'điều khoản sử dụng' },
-    { id: 'about', icon: 'ℹ️', label: 'về chúng tôi' },
+    { id: 'notification', icon: <FaBell />, label: 'thông báo' },
+    { id: 'bookmarks', icon: <FaBookmark />, label: 'lưu trữ' },
+    { id: 'help', icon: <FaQuestionCircle />, label: 'trợ giúp' },
+    { id: 'explore', icon: <FaSearch />, label: 'khám phá' },
+    { id: 'ads', icon: <FaAd />, label: 'quảng cáo' },
+    { id: 'privacy', icon: <FaFileAlt />, label: 'chính sách quyền riêng tư' },
+    { id: 'terms', icon: <FaFileContract />, label: 'điều khoản sử dụng' },
+    { id: 'about', icon: <FaInfoCircle />, label: 'về chúng tôi' },
   ];
 
   return (

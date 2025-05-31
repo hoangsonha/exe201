@@ -34,3 +34,14 @@ a {
     text-decoration: none;
     color: $textColor;
 }
+
+/* Override Bootstrap's focus styles */
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}

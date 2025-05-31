@@ -1,12 +1,12 @@
-/* Sidebar styles */
 .sidebar {
-  width: 205px;
-  background-color: #f8f6ef;
+  width: 250px;
+  background-color: #f8eee5;
   border-right: 1px solid #eaeaea;
-  height: calc(100vh - 53px);
+  height: 100%;
   position: fixed;
   left: 0;
-  top: 53px;
+  top: 0;
+  padding: 0;
 }
 
 .sidebar-menu {
@@ -18,7 +18,7 @@
 .sidebar-item {
   display: flex;
   align-items: center;
-  padding: 15px;
+  padding: 10px 15px;
   border-bottom: 1px solid #eaeaea;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -41,6 +41,9 @@
 
 .sidebar-icon {
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-label {
@@ -49,7 +52,6 @@
   color: #333;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .sidebar {
     width: 60px;

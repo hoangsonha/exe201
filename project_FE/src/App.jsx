@@ -53,7 +53,7 @@ function App() {
                     <Route path="/profile" element={<InformationUser />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
-                    <Route path="/home" element={<Home />} />
+                    <Route path="/" element={<Home />} />
                     <Route path="/403" element={<Forbidden />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -1,0 +1,46 @@
+services:
+  exe201_db:
+    image: mysql:9.0.1
+    container_name: exe201_db
+    restart: always
+    volumes:
+      - ./mysql_data_exe201:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: exe201_project
+    ports:
+      - "3307:3306"
+    networks:
+      - exe291-network
+
+  backend_exe201:
+    container_name: backend_exe201
+    build:
+      context: ./project_BE
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - exe201_db
+    restart: always
+    networks:
+      - exe291-network
+
+  frontend_exe201:
+    container_name: frontend_exe201
+    build:
+      context: ./project_FE
+      dockerfile: Dockerfile
+    ports:
+      - "3001:81"
+    restart: always
+    networks:
+      - exe291-network
+
+volumes:
+  mysql_data_exe201:
+
+networks:
+  exe291-network:
+    name: exe291-network
+    driver: bridge

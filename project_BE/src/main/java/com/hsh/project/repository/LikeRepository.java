@@ -1,0 +1,20 @@
+package com.hsh.project.repository;
+
+import com.hsh.project.pojo.Like;
+import com.hsh.project.pojo.enums.EnumTargetType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface LikeRepository extends JpaRepository<Like, Integer> {
+    List<Like> findByTargetTypeAndTargetId(EnumTargetType targetType, Long targetId);
+
+    Optional<Like> findByUserUserIdAndTargetTypeAndTargetId(Long userId, EnumTargetType targetType, Long targetId);
+
+    void deleteByUserIdAndTargetTypeAndTargetId(Long userId, String targetType, Long targetId);
+
+    long countByTargetTypeAndTargetId(EnumTargetType targetType, Long targetId);
+}

@@ -1,0 +1,71 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: Project Exe201
+
+  # DATABASE
+  datasource:
+#    url: jdbc:mysql://exe201_db:3306/exe201_project
+    url: jdbc:mysql://localhost:3306/exe201_project
+    username: root
+    password: 123456789
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+      dialect: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+#    username: hoangsonhadiggory@gmail.com
+    username: hoangsonha21022002492@gmail.com
+#    password: tciw skmo qqop lele
+    password: ejao nlge azdk aznz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+    main:
+      allow-bean-definition-overriding: true
+
+# JWT
+jwt:
+  secret: 753474857438754387594385743975348574893759843753498776576576575765634545435365346534645645364565465347657547465
+  expiration: 863999999
+  refresh:
+    secret: 123454857438754387594385743975348574893759843753498776576576575765634545435365346534645645364565465347657554321
+    expiration: 864000000
+  algorithms: HmacSHA256
+application:
+  default-current-page: 1
+  default-page-size: 30
+
+# SWAGGER
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /api-docs
+  default-produces-media-type: application/json
+
+# Firebase
+firebase:
+  bucket:
+    name: swp391-f046d.appspot.com
+  content:
+    type: image/png
+  get:
+    stream: firebase-SWD391.json
+    url: https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/%s?alt=media
+    folder: exe201_project
+  file:
+    format: .png
+

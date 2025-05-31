@@ -1,0 +1,38 @@
+name: 🚀 Auto Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📡 SSH & Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          port: ${{ secrets.VPS_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
+            BACKUP_DIR=~/exe201/db_backups
+            mkdir -p $BACKUP_DIR
+            echo "🔹 Backup MySQL database exe201_project ..."
+            docker exec exe201_db sh -c 'exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" exe201_project' | gzip > $BACKUP_DIR/backup_${TIMESTAMP}.sql.gz
+            echo "🔹 Cleaning old backups, keep only 5 newest ..."
+            cd $BACKUP_DIR
+            ls -1t | tail -n +6 | xargs -r rm --
+            echo "🔹 Pull latest code ..."
+            cd ~/exe201
+            git pull origin main
+            echo "🔹 Restart docker compose ..."
+            docker compose down
+            docker compose up -d --build

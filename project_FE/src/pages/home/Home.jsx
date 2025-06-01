@@ -27,7 +27,7 @@ const Home = () => {
         <img src={topicBackground} alt="Background" className="topic-background" />
       </div>
       <Header />
-      <div className="home-content">
+      {/* <div className="home-content">
         <Sidebar />
         <div className="main-content">
           <div className="content-container">
@@ -83,7 +83,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

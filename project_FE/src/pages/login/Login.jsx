@@ -103,39 +103,43 @@ const Login = () => {
                     </div>
 
                     <Form onSubmit={handleSubmit} className="mt-4 submit-form">
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-4 position-relative">
                             <Form.Label htmlFor="username">
                                 <i className="bi bi-person-fill me-2"></i>
                                 tên tài khoản
                             </Form.Label>
-                            <Form.Control
-                                type="text"
-                                id="username"
-                                value={inputUsername}
-                                placeholder=" "
-                                required
-                                className="form-control-lg"
-                                onChange={handleUsernameChange}
-                            />
+                            <div className="position-relative">
+                                <Form.Control
+                                    type="text"
+                                    id="username"
+                                    value={inputUsername}
+                                    placeholder=" "
+                                    required
+                                    className="form-control-lg login-input"
+                                    onChange={handleUsernameChange}
+                                />
+                            </div>
                         </Form.Group>
                         
-                        <Form.Group className="mb-4 password-group">
+                        <Form.Group className="mb-4 password-group position-relative">
                             <Form.Label htmlFor="password">
                                 <i className="bi bi-lock-fill me-2"></i>
                                 mật khẩu
                             </Form.Label>
-                            <Form.Control
-                                type={showPassword ? "text" : "password"}
-                                id="password"
-                                value={inputPassword}
-                                placeholder=" "
-                                required
-                                className="form-control-lg"
-                                onChange={handlePasswordChange}
-                            />
-                            <span onClick={togglePasswordVisibility} style={{ cursor: "pointer" }} >
-                                <i className={`bi ${showPassword ? "bi-eye-fill" : "bi-eye-slash-fill"} eye-icon`} />
-                            </span>
+                            <div className="position-relative">
+                                <Form.Control
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    value={inputPassword}
+                                    placeholder=" "
+                                    required
+                                    className="form-control-lg login-input"
+                                    onChange={handlePasswordChange}
+                                />
+                                <span onClick={togglePasswordVisibility} style={{ cursor: "pointer", position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}>
+                                    <i className={`bi ${showPassword ? "bi-eye-fill" : "bi-eye-slash-fill"} eye-icon`} />
+                                </span>
+                            </div>
                         </Form.Group>
 
                         <div className="forgot-password">

@@ -28,7 +28,7 @@
 
 .search-container {
   flex: 1;
-  max-width: 900px;
+  max-width: 950px;
   display: flex;
   align-items: center;
   gap: 25px;
@@ -225,34 +225,34 @@ input::-moz-focus-inner {
 }
 
 .category-item:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
 }
 
 .category-icon-container {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
-  font-size: 40px;
+  font-size: 35px;
   color: rgb(0, 0, 0);
   border: 2px solid transparent;
-  opacity: 0.7;
+  opacity: 0.75;
   position: relative;
 }
 
 .category-icon-container::before {
   content: '';
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background-color: #ffee33;
   left: -15px;
   z-index: -1;
-  opacity: 0.7;
+  
 }
 
 .category-item:hover .category-icon-container {

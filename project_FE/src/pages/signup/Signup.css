@@ -182,7 +182,7 @@
   height: 60px;
   text-align: start;
   font-size: 1.5rem;
-  border: 1px solid #ced4da;
+  border: 2px solid #000000 !important;
   border-radius: 8px;
   margin: 0 5px;
   box-shadow: 3px 3px 0px #000000 !important;
@@ -263,6 +263,7 @@
   align-items: center;
   justify-content: flex-start;
   padding-top: 50px;
+  opacity: 1 !important;
 }
 
 .topic-container {
@@ -292,8 +293,8 @@
 }
 
 .topic-item {
-  background: #e5fe37;
-  border: 2px solid #000;
+  background: #e5fe37 !important;
+  border: 2px solid #000 !important;
   border-radius: 0;
   padding: 1rem;
   text-align: center;
@@ -302,7 +303,7 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 1rem;
-  box-shadow: 3px 3px 0px #000;
+  box-shadow: 3px 3px 0px #000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,13 +312,14 @@
 
 .topic-item:hover {
   transform: translateY(-2px);
+  box-shadow: 4px 4px 0px #000 !important;
 }
 
 .topic-item.selected {
-  background-color: #ff6418;
+  background-color: #ff6418 !important;
   color: white;
-  border: 2px solid #000;
-  box-shadow: 4px 4px 0px #000;
+  border: 2px solid #000 !important;
+  box-shadow: 4px 4px 0px #000 !important;
 }
 
 .selected-topics-count {
@@ -328,9 +330,9 @@
 }
 
 .topic-continue-btn {
-  background: #ff6418;
-  color: white;
-  border: 3px solid #414040;
+  background: #ff6418 !important;
+  color: white !important;
+  border: 3px solid #414040 !important;
   font-weight: 600;
   font-size: 1.5rem;
   letter-spacing: 1px;
@@ -358,4 +360,37 @@
   font-weight: bold;
   font-size: 2.5rem;
   margin-left: 0;
+}
+
+input:-internal-autofill-selected,
+select:-internal-autofill-selected,
+.form-control:-internal-autofill-selected {
+  border: 2px solid #000000 !important;
+  appearance: none;
+  background-color: white !important;
+  background-image: none !important;
+  color: #000000 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.sign-up-form .form-control {
+  border: 2px solid #000000 !important;
+}
+
+.sign-up-form .form-control:focus {
+  border: 2px solid #ff6418 !important;
+}
+
+.verification-input:focus {
+  border: 2px solid #ff6418 !important;
+  outline: none !important;
+  box-shadow: none !important;
 }

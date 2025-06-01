@@ -39,7 +39,7 @@ const SignUp = () => {
             selectedTopics
         });
         
-        navigate("/home");
+        navigate("/");
     };
     
     const handlePhoneChange = (phone) => {

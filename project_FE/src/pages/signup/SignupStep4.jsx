@@ -41,7 +41,7 @@ const SignupStep4 = ({ onComplete }) => {
     };
 
     return (
-        <div className="topic-background">
+        <div className="topic-background" style={{ opacity: 1 }}>
             <Container className="topic-container">
                 <h2 className="topic-title-custom">bạn hay đọc review topic nào?</h2>
                 

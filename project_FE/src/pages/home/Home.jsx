@@ -2,8 +2,8 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import Header from '@/component/layout/Header';
 import Sidebar from '@/component/layout/Sidebar';
+import Advertisement from './Advertisement';
 import './Home.css';
-import topicBackground from '../../assets/background/topicBackground.svg';
 
 const Home = () => {
   const recentReviews = [
@@ -23,13 +23,10 @@ const Home = () => {
 
   return (
     <div className="home-page">
-      <div className="background-container">
-        <img src={topicBackground} alt="Background" className="topic-background" />
-      </div>
       <Header />
       <div className="home-content">
         <Sidebar />
-        {/* <div className="main-content">
+        <div className="main-content">
           <div className="content-container">
             <div className="trending-header">
               <div className="fire-icon">🔥</div>
@@ -80,9 +77,41 @@ const Home = () => {
                   </Card.Body>
                 </Card>
               ))}
+              
+              {[...Array(5)].map((_, index) => (
+                <Card key={`dummy-${index}`} className="review-card">
+                  <Card.Body>
+                    <div className="review-header">
+                      <div className="review-tag">toireview</div>
+                      <div className="review-options">•••</div>
+                    </div>
+                    <h4 className="review-title">Sample post {index + 1}</h4>
+                    <p className="review-content">This is a sample post to test scrolling functionality.</p>
+                    <div className="review-actions">
+                      <div className="action-item">
+                        <span className="heart-icon">♥</span> 123
+                      </div>
+                      <div className="action-item">
+                        <span className="comment-icon">💬</span> 45
+                      </div>
+                      <div className="action-item">
+                        <span className="star-icon">★</span> 98%
+                      </div>
+                      <div className="action-item">
+                        <span className="time-icon">🕒</span> 2h trước
+                      </div>
+                      <div className="action-item bookmark">
+                        <span className="bookmark-icon">🔖</span>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
             </div>
           </div>
-        </div> */}
+        </div>
+        
+        <Advertisement />
       </div>
     </div>
   );

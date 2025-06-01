@@ -20,16 +20,6 @@
   height: calc(100vh);
 }
 
-.upgrade-btn {
-  background-color: #ffea00 !important;
-  border: none !important;
-  color: black !important;
-  font-weight: bold;
-  border-radius: 25px;
-  padding: 8px 16px;
-  margin-right: 15px;
-}
-
 .user-avatar {
   width: 40px;
   height: 40px;
@@ -54,23 +44,6 @@
   position: relative;
 }
 
-.left-sidebar {
-  width: 200px;
-  flex-shrink: 0;
-  background-color: white;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 2;
-}
-
-.sidebar-menu {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -80,20 +53,6 @@
   border-radius: 5px;
   margin-bottom: 5px;
   transition: background-color 0.2s;
-}
-
-.sidebar-item:hover {
-  background-color: #f5f5f5;
-}
-
-.sidebar-item i {
-  margin-right: 10px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffcc00;
 }
 
 .main-content {
@@ -130,7 +89,7 @@
   color: #ff6c00;
 }
 
-.trending-title, .home-title {
+.trending-title {
   flex: 1;
   margin: 0;
   font-size: 20px;
@@ -139,7 +98,7 @@
   color: black;
 }
 
-.trending-button, .home-button {
+.trending-button {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -194,37 +153,6 @@
   scrollbar-width: none;
 }
 
-.right-sidebar {
-  width: 300px;
-  flex-shrink: 0;
-  padding: 20px;
-  background-color: #f8f6ef;
-}
-
-.ad-container {
-  background-color: transparent;
-  border-radius: 0 !important;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.ad-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 0 !important;
-}
-
-.food-ad {
-  border-radius: 0 !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.sale-ad {
-  border-radius: 0 !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
 @media (max-width: 992px) {
   .main-content {
     margin-left: 60px;
@@ -235,72 +163,6 @@
   .trending-button {
     display: none;
   }
-}
-
-.floating-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.floating-shape {
-  position: absolute;
-  opacity: 0.7;
-}
-
-.shape1 {
-  top: 15%;
-  left: 5%;
-  width: 30px;
-  height: 30px;
-  background-color: #ff6c00;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  animation: float 8s ease-in-out infinite;
-}
-
-.shape2 {
-  top: 60%;
-  right: 10%;
-  width: 40px;
-  height: 40px;
-  background-color: #ff8f70;
-  border-radius: 8px;
-  transform: rotate(45deg);
-  animation: float 10s ease-in-out infinite;
-}
-
-.shape3 {
-  top: 30%;
-  right: 25%;
-  width: 25px;
-  height: 25px;
-  background-color: #5de0e6;
-  border-radius: 50%;
-  animation: float 7s ease-in-out infinite;
-}
-
-.shape4 {
-  bottom: 15%;
-  left: 15%;
-  width: 35px;
-  height: 35px;
-  background-color: #7f6eed;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  animation: float 9s ease-in-out infinite;
-}
-
-.shape5 {
-  top: 10%;
-  right: 5%;
-  width: 25px;
-  height: 25px;
-  background-color: #ff9f2f;
-  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-  animation: float 12s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -321,7 +183,6 @@
   }
 }
 
-/* Review card styles */
 .review-card {
   margin-bottom: 20px;
   border-radius: 10px;

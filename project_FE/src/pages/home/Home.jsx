@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import Header from '../../component/layout/Header';
-import Sidebar from '../../component/layout/Sidebar';
+import Header from '@/component/layout/Header';
+import Sidebar from '@/component/layout/Sidebar';
 import './Home.css';
 import topicBackground from '../../assets/background/topicBackground.svg';
 
@@ -27,9 +27,9 @@ const Home = () => {
         <img src={topicBackground} alt="Background" className="topic-background" />
       </div>
       <Header />
-      {/* <div className="home-content">
+      <div className="home-content">
         <Sidebar />
-        <div className="main-content">
+        {/* <div className="main-content">
           <div className="content-container">
             <div className="trending-header">
               <div className="fire-icon">🔥</div>
@@ -82,8 +82,8 @@ const Home = () => {
               ))}
             </div>
           </div>
-        </div>
-      </div> */}
+        </div> */}
+      </div>
     </div>
   );
 };

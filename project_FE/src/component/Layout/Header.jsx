@@ -69,12 +69,14 @@ const Header = () => {
   };
   
   const toggleUserMenu = () => {
-    setShowUserMenu(!showUserMenu);
+    setShowUserMenu(prev => !prev);
     console.log("Avatar clicked, showUserMenu:", !showUserMenu);
   };
 
   const handleAvatarClick = (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    console.log("Avatar clicked, current showUserMenu:", showUserMenu);
     toggleUserMenu();
   };
 
@@ -123,7 +125,7 @@ const Header = () => {
               )}
             </div>
             
-            <Button variant="warning" className="upgrade-btn">
+            <Button className="upgrade-btn">
               Nâng cấp gói
             </Button>
           </div>
@@ -131,16 +133,19 @@ const Header = () => {
         
         <div className="controls-container">
           <div 
-            className="user-avatar"
-            onClick={handleAvatarClick}
+            className="user-avatar-container"
             ref={avatarRef}
           >
-            <img 
-              src={avatar} 
-              alt="User Avatar" 
-              className="avatar-img" 
+            <div 
+              className="user-avatar"
               onClick={handleAvatarClick}
-            />
+            >
+              <img 
+                src={avatar} 
+                alt="User Avatar" 
+                className="avatar-img"
+              />
+            </div>
             
             {showUserMenu && (
               <div className="user-menu" ref={userMenuRef}>

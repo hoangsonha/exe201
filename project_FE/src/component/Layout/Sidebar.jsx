@@ -1,17 +1,19 @@
 import React from 'react';
 import './Sidebar.css';
-import { FaBell, FaBookmark, FaQuestionCircle, FaSearch, FaAd, FaFileAlt, FaFileContract, FaInfoCircle } from 'react-icons/fa';
+import { BiBell, BiBookmark, BiQuestionMark, BiSearch, BiFile, BiFileBlank, BiInfoCircle } from 'react-icons/bi';
+import { IoMegaphoneOutline } from "react-icons/io5";
+import toi from '../../assets/toi.png';
 
 const Sidebar = () => {
   const menuItems = [
-    { id: 'notification', icon: <FaBell />, label: 'thông báo' },
-    { id: 'bookmarks', icon: <FaBookmark />, label: 'lưu trữ' },
-    { id: 'help', icon: <FaQuestionCircle />, label: 'trợ giúp' },
-    { id: 'explore', icon: <FaSearch />, label: 'khám phá' },
-    { id: 'ads', icon: <FaAd />, label: 'quảng cáo' },
-    { id: 'privacy', icon: <FaFileAlt />, label: 'chính sách quyền riêng tư' },
-    { id: 'terms', icon: <FaFileContract />, label: 'điều khoản sử dụng' },
-    { id: 'about', icon: <FaInfoCircle />, label: 'về chúng tôi' },
+    { id: 'notification', icon: <BiBell />, label: 'thông báo' },
+    { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ' },
+    { id: 'help', icon: <BiQuestionMark />, label: 'trợ giúp' },
+    { id: 'explore', icon: <BiSearch />, label: 'khám phá' },
+    { id: 'ads', icon: <IoMegaphoneOutline />, label: 'quảng cáo' },
+    { id: 'privacy', icon: <BiFile />, label: 'chính sách quyền riêng tư' },
+    { id: 'terms', icon: <BiFileBlank />, label: 'điều khoản sử dụng' },
+    { id: 'about', icon: <BiInfoCircle />, label: 'về chúng tôi' },
   ];
 
   return (
@@ -26,6 +28,9 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
+      <div className="sidebar-toi-container">
+        <img src={toi} alt="Toi" className="sidebar-toi-image" />
+      </div>
     </div>
   );
 };

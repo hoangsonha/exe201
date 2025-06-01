@@ -24,13 +24,13 @@
   image-rendering: auto;
   height: 8.8rem;
   width: auto;
-  margin-left: 5rem;
+  margin-left: 4rem;
   margin-top: 1rem;
 }
 
 .search-container {
   flex: 1;
-  max-width: 950px;
+  max-width: 940px;
   display: flex;
   align-items: center;
   gap: 25px;

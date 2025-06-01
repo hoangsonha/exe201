@@ -13,34 +13,11 @@
 .home-content {
   display: flex;
   flex: 1;
-  margin-top: 7rem;
+  margin-top: 9rem;
   margin-left: 0.5rem;
   position: relative;
   z-index: 2;
-  height: calc(100vh - 7rem);
-}
-
-.header-logo {
-  max-width: 100%;
-  height: auto;
-}
-
-.search-bar {
-  background-color: white;
-  border-radius: 25px;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.search-input {
-  border: none;
-  border-radius: 25px !important;
-  padding: 10px 15px;
-  font-size: 16px;
-}
-
-.search-input:focus {
-  box-shadow: none;
+  height: calc(100vh);
 }
 
 .upgrade-btn {

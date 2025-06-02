@@ -1,41 +1,73 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
-import './Header.css';
 import logo from '../../assets/logo3.png';
 import avatar from '../../assets/toi.png';
-import { FaGamepad, FaLaptopCode, FaTv, FaGraduationCap, FaPalette, 
-         FaBriefcase, FaTshirt, FaHamburger, FaHome, FaTree, 
-         FaMusic, FaCar, FaBalanceScale, FaAtom, FaMapMarkerAlt, 
-         FaVolleyballBall, FaEllipsisH, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaEllipsisH, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import gamesIcon from '../../assets/categories/games.svg';
+import techIcon from '../../assets/categories/technology.svg';
+import tvIcon from '../../assets/categories/tv.svg';
+import eduIcon from '../../assets/categories/edu.svg';
+import artsIcon from '../../assets/categories/arts.svg';
+import jobsIcon from '../../assets/categories/jobs.svg';
+import fashionIcon from '../../assets/categories/fashion.svg';
+import foodIcon from '../../assets/categories/food.svg';
+import householdIcon from '../../assets/categories/household.svg';
+import natureIcon from '../../assets/categories/nature.svg';
+import musicIcon from '../../assets/categories/music.svg';
+import trafficIcon from '../../assets/categories/traffic.svg';
+import lawIcon from '../../assets/categories/law.svg';
+import scienceIcon from '../../assets/categories/science.svg';
+import travelIcon from '../../assets/categories/travel.svg';
+import sportIcon from '../../assets/categories/sport.svg';
+import './Header.css';
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
   const avatarRef = useRef(null);
   const userMenuRef = useRef(null);
   
-  const categories = [
-    { id: 'games', icon: <FaGamepad />, name: 'games' },
-    { id: 'tech', icon: <FaLaptopCode />, name: 'công nghệ' },
-    { id: 'tv', icon: <FaTv />, name: 'phim & tv' },
-    { id: 'education', icon: <FaGraduationCap />, name: 'giáo dục' },
-    { id: 'art', icon: <FaPalette />, name: 'hội họa' },
-    { id: 'career', icon: <FaBriefcase />, name: 'nghề nghiệp' },
-    { id: 'fashion', icon: <FaTshirt />, name: 'thời trang' },
-    { id: 'food', icon: <FaHamburger />, name: 'đồ ăn' },
-    { id: 'home', icon: <FaHome />, name: 'gia dụng' },
-    { id: 'nature', icon: <FaTree />, name: 'tự nhiên' },
-    { id: 'music', icon: <FaMusic />, name: 'âm nhạc' },
-    { id: 'car', icon: <FaCar />, name: 'xe cộ' },
-    { id: 'law', icon: <FaBalanceScale />, name: 'luật pháp' },
-    { id: 'science', icon: <FaAtom />, name: 'khoa học' },
-    { id: 'travel', icon: <FaMapMarkerAlt />, name: 'du lịch' },
-    { id: 'sports', icon: <FaVolleyballBall />, name: 'thể thao' },
-    { id: 'others', icon: <FaEllipsisH />, name: 'khác' },
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        setTimeout(() => {
+          const mockCategories = [
+            { id: 'games', icon: gamesIcon, name: 'games' },
+            { id: 'tech', icon: techIcon, name: 'công nghệ' },
+            { id: 'tv', icon: tvIcon, name: 'phim & tv' },
+            { id: 'education', icon: eduIcon, name: 'giáo dục' },
+            { id: 'art', icon: artsIcon, name: 'hội họa' },
+            { id: 'career', icon: jobsIcon, name: 'nghề nghiệp' },
+            { id: 'fashion', icon: fashionIcon, name: 'thời trang' },
+            { id: 'food', icon: foodIcon, name: 'đồ ăn' },
+            { id: 'home', icon: householdIcon, name: 'gia dụng' },
+            { id: 'nature', icon: natureIcon, name: 'tự nhiên' },
+            { id: 'music', icon: musicIcon, name: 'âm nhạc' },
+            { id: 'car', icon: trafficIcon, name: 'xe cộ' },
+            { id: 'law', icon: lawIcon, name: 'luật pháp' },
+            { id: 'science', icon: scienceIcon, name: 'khoa học' },
+            { id: 'travel', icon: travelIcon, name: 'du lịch' },
+            { id: 'sports', icon: sportIcon, name: 'thể thao' },
+            { id: 'others', icon: <FaEllipsisH />, name: 'khác' },
+          ];
+          
+          setCategories(mockCategories);
+          setLoading(false);
+        }, 500);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -70,13 +102,11 @@ const Header = () => {
   
   const toggleUserMenu = () => {
     setShowUserMenu(prev => !prev);
-    console.log("Avatar clicked, showUserMenu:", !showUserMenu);
   };
 
   const handleAvatarClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Avatar clicked, current showUserMenu:", showUserMenu);
     toggleUserMenu();
   };
 
@@ -111,16 +141,24 @@ const Header = () => {
                   ref={dropdownRef}
                   className="categories-dropdown"
                 >
-                  <div className="categories-grid">
-                    {categories.map(category => (
-                      <div key={category.id} className="category-item">
-                        <div className="category-icon-container">
-                          {category.icon}
+                  {loading ? (
+                    <div className="categories-loading">Loading categories...</div>
+                  ) : (
+                    <div className="categories-grid">
+                      {categories.map(category => (
+                        <div key={category.id} className="category-item">
+                          <div className="category-icon-container">
+                            {typeof category.icon === 'string' ? (
+                              <img src={category.icon} alt={category.name} className="category-svg-icon" />
+                            ) : (
+                              category.icon
+                            )}
+                          </div>
+                          <span className="category-name">{category.name}</span>
                         </div>
-                        <span className="category-name">{category.name}</span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -135,6 +173,7 @@ const Header = () => {
           <div 
             className="user-avatar-container"
             ref={avatarRef}
+
           >
             <div 
               className="user-avatar"

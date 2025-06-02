@@ -1,6 +1,6 @@
 .login-background {
   background: 
-    url("src/assets/toi_hello.gif") no-repeat right bottom,
+    url("src/assets/gif/toi_hello.gif") no-repeat right bottom,
     url("src/assets/background/loginBackground.svg") no-repeat center center;
   background-size: 38% auto, 90% auto;
   background-position: left 8% top 100%, left center;
@@ -8,7 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 2rem
+  padding: 2rem;
+  image-rendering: auto;
 }
 
 .login-form, .sign-up-form {

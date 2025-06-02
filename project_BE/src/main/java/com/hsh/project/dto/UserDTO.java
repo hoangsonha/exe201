@@ -1,15 +1,18 @@
 package com.hsh.project.dto;
 
+import com.hsh.project.dto.response.HashTagResponseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Value
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountDTO {
-    int id;
+public class UserDTO {
+    Long userId;
     String userName;
     String phone;
     String fullName;
@@ -19,4 +22,6 @@ public class AccountDTO {
     boolean enabled;
     boolean nonLocked;
     boolean deleted;
+
+    List<HashTagResponseDTO> listHashTagUser;
 }

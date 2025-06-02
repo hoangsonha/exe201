@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import { jwtDecode } from 'jwt-decode';
 
 const request = axios.create({
-    // baseURL: `${import.meta.env.VITE_BASE_URL}`,
-    baseURL: ``,
+    baseURL: `${import.meta.env.VITE_BASE_URL}`,
+    // baseURL: ``,
     headers: { 'Content-Type': 'application/json' },
     // withCredentials: true,
 });

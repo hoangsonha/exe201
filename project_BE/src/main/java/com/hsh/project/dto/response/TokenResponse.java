@@ -13,6 +13,6 @@ public class TokenResponse {
     String message;
     String token;
     String refreshToken;
-    Integer userId;
+    Long userId;
     String email;
 }

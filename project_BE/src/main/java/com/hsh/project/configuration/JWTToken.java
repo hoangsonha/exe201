@@ -54,7 +54,7 @@ public class JWTToken {
                 .issuedAt(date)
                 .expiration(exp)
                 .claim("id", customAccountDetail.getId())
-                .claim("fullName", customAccountDetail.getFullName())
+                .claim("email", customAccountDetail.getEmail())
                 .claim("role", customAccountDetail.getGrantedAuthorities())
                 .signWith(getSecretKey(EnumTokenType.TOKEN))
                 .compact();
@@ -70,7 +70,7 @@ public class JWTToken {
                 .issuedAt(date)
                 .expiration(exp)
                 .claim("id", customAccountDetail.getId())
-                .claim("fullName", customAccountDetail.getFullName())
+                .claim("email", customAccountDetail.getEmail())
                 .claim("role", customAccountDetail.getGrantedAuthorities())
                 .signWith(getSecretKey(EnumTokenType.REFRESH_TOKEN))
                 .compact();

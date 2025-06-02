@@ -23,6 +23,6 @@ public class Role extends BaseEntity{
     EnumRoleNameType roleName;
 
     @OneToMany(mappedBy = "role")
-    List<Employee> users;
+    List<User> users;
 
 }

@@ -20,7 +20,8 @@ public class CorsConfig {
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:3001",
-                "http://toireview.net"));
+                "http://toireview.net",
+                "https://toireview.net"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setExposedHeaders(List.of("Content-Disposition"));

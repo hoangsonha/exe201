@@ -6,8 +6,8 @@ import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { IoMdEyeOff } from "react-icons/io";
 import { MdOutlineBlock, MdOutlineReport, MdOutlineShare } from "react-icons/md";
-import Header from '@/component/layout/Header';
-import Sidebar from '@/component/layout/Sidebar';
+import Header from '@/component/Layout/Header.jsx';
+import Sidebar from '@/component/Layout/Sidebar.jsx';
 import Advertisement from './Advertisement';
 import './PostDetail.css';
 

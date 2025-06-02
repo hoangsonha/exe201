@@ -76,6 +76,7 @@ public class AccountServiceImpl implements AccountService {
         User user = User.builder()
                 .email(accountRegisterRequest.getEmail())
                 .password(bCryptPasswordEncoder.encode(accountRegisterRequest.getPassword()))
+                .userName(generateUniqueUsername())
                 .accessToken(null)
                 .refreshToken(null)
                 .enabled(false)
@@ -85,7 +86,20 @@ public class AccountServiceImpl implements AccountService {
                 .build();
         User u = userRepository.save(user);
 
-        return sendVerificationEmail(u.getEmail(), u.getCodeVerify());
+        return sendVerificationEmail(u.getEmail(), u.getUserName(), u.getCodeVerify());
+    }
+
+    private String generateUniqueUsername() {
+        String prefix = "toi_";
+        String username;
+        Random random = new Random();
+
+        do {
+            int number = 1 + random.nextInt(9000);
+            username = prefix + number;
+        } while (userRepository.existsByUserName(username));
+
+        return username;
     }
 
     @Override
@@ -127,23 +141,22 @@ public class AccountServiceImpl implements AccountService {
         return String.format("%06d", number);
     }
 
-    private boolean sendVerificationEmail(String email, String content) {
+    private boolean sendVerificationEmail(String email, String userName, String verificationCode) {
 //        String recipient, String subject, String content, MultipartFile[] files
         if (email == null) {
             return false;
         }
         try {
-            String verifyURL = "Verify di ne";
-
             Context context = new Context();
-            context.setVariable("link", verifyURL);
-            context.setVariable("name", "HoangSonHaHoangSOnHaHoangSonHaNe");
-            context.setVariable("button", "Bam di ne");
+            context.setVariable("verificationCode", verificationCode);
+            context.setVariable("name", userName);
+
+            String content = "Xac Nhan Mat Khau";
 
             String mailne = templateEngine.process(content, context);
 
-            String title = "Test ne";
-            String senderName = "HoangSonHa";
+            String title = "Xac Nhan Mat Khau";
+            String senderName = "TOIREVIEW";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setFrom(from, senderName);
@@ -153,13 +166,6 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 helper.setTo(email);
             }
-
-//            if(request.getFiles() != null) {
-//                for(MultipartFile file : request.getFiles()) {
-//                    helper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), file);
-//                }
-//            }
-
             helper.setSubject(title);
             helper.setText(mailne, true);
             javaMailSender.send(mimeMessage);

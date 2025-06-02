@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Header from '@/component/layout/Header';
-import Sidebar from '@/component/layout/Sidebar';
+import Header from '@/component/Layout/Header';
+import Sidebar from '@/component/Layout/Sidebar';
 import Advertisement from './Advertisement';
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { SiFireship } from "react-icons/si";

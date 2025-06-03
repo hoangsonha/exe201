@@ -34,7 +34,7 @@ public class AuthenticationController {
         try {
             boolean account = accountService.registerAccount(accountRegisterRequest);
             return account ? ResponseEntity.status(HttpStatus.OK).body(new ObjectResponse("Success", "Đăng ký tài khoản thành công", account)) :
-                    ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", "Đăng ký tài khoản thất bại", null));
+                    ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", "Đăng ký tài khoản thất bại do không gửi được email", null));
         } catch (Exception e) {
             log.error("Error register user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", "Đăng ký tài khoản thất bại", null));

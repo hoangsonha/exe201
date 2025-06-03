@@ -6,9 +6,9 @@ import InformationUser from "../pages/InformationUser";
 import Empty from "../pages/Empty";
 
 export const PATHS = {
-    VACCINES: {
-        path: '/vaccines',
-        label: 'Vaccines',
+    HOME: {
+        path: '/home',
+        label: 'Home',
         element: <Empty />,
         allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF]
     },
@@ -43,7 +43,7 @@ export const getRolePaths = (role) => {
     if (role == ROLES.ADMIN) {
         return [PATHS.MANAGER_EMPLOYEE, PATHS.MANAGER_COMPANY, PATHS.MANAGER_PROJECT];
     } else {
-        return [PATHS.VACCINES];
+        return [PATHS.HOME];
     }
 }
 

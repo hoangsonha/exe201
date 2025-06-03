@@ -30,24 +30,6 @@ const SignupStep4 = ({ onComplete }) => {
         apiAll();
     }, []);
 
-    const topics = [
-        { id: 1, name: "nghệ thuật" },
-        { id: 2, name: "sức khỏe" },
-        { id: 3, name: "giáo dục" },
-        { id: 4, name: "giáo dục" },
-        { id: 5, name: "talk" },
-        { id: 6, name: "mỹ phẩm" },
-        { id: 7, name: "lối sống" },
-        { id: 8, name: "phim ảnh" },
-        { id: 9, name: "minecraft" },
-        { id: 10, name: "rap" },
-        { id: 11, name: "công việc" },
-        { id: 12, name: "công nghệ" },
-        { id: 13, name: "khoa học" },
-        { id: 14, name: "game" },
-        { id: 15, name: "thiết kế" }
-    ];
-
     const handleTopicSelection = (topicId) => {
         setSelectedTopics(prevTopics => {
             if (prevTopics.includes(topicId)) {
@@ -64,8 +46,6 @@ const SignupStep4 = ({ onComplete }) => {
         try {
 
             const userData = await createHashtagUser({ userId: user.id, hashtagID: selectedTopics });
-
-            console.log(userData)
             
             if (userData.data.code == 'Success') {
                 navigate(DEFAULT_PATHS[user.role]);

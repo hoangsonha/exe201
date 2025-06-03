@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Form, Button, Alert, Container, Row, Col, Spinner } from "react-bootstrap";
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { UserContext } from "../../App";
 import { DEFAULT_PATHS } from "../../auth/Roles";
 import { login } from "../../serviceAPI/authenticationService";
@@ -65,7 +65,8 @@ const Login = () => {
                 refreshToken: userFetch['refreshToken'],
                 email: userFetch['email'],
                 id: userFetch['userId'],
-                role: role
+                role: role,
+                avatar: userFetch['avatar']
             }
 
             signIn(user);

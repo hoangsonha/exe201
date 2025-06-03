@@ -15,4 +15,5 @@ public class TokenResponse {
     String refreshToken;
     Long userId;
     String email;
+    String avatar;
 }

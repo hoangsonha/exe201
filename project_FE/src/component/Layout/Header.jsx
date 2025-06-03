@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import logo from '../../assets/logo3.png';
 import avatar from '../../assets/toi.png';
@@ -20,6 +20,8 @@ import scienceIcon from '../../assets/categories/science.svg';
 import travelIcon from '../../assets/categories/travel.svg';
 import sportIcon from '../../assets/categories/sport.svg';
 import './Header.css';
+import { UserContext } from '../../App';
+import { useNavigate } from 'react-router';
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +33,10 @@ const Header = () => {
   const buttonRef = useRef(null);
   const avatarRef = useRef(null);
   const userMenuRef = useRef(null);
+
+  const { user, signOut } = useContext(UserContext);
+
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchCategories = async () => {
@@ -95,6 +101,11 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    signOut()
+    navigate("/")
+  };
 
   const toggleCategoriesDropdown = () => {
     setShowCategories(!showCategories);
@@ -179,23 +190,42 @@ const Header = () => {
               className="user-avatar"
               onClick={handleAvatarClick}
             >
-              <img 
+            {user ? (<img 
+                src={user.avatar} 
+                alt="User Avatar" 
+                className="avatar-img"
+              />) : (<img 
                 src={avatar} 
                 alt="User Avatar" 
                 className="avatar-img"
-              />
+              />)}
             </div>
             
             {showUserMenu && (
               <div className="user-menu" ref={userMenuRef}>
-                <div className="user-menu-item">
-                  <FaUser className="user-menu-icon" />
-                  <span>Trang cá nhân</span>
-                </div>
-                <div className="user-menu-item">
-                  <FaSignOutAlt className="user-menu-icon" />
-                  <span>Đăng xuất</span>
-                </div>
+                {user ? (
+                  <>
+                    <div className="user-menu-item" onClick={() => navigate('/profile')}>
+                      <FaUser className="user-menu-icon" />
+                      <span>Trang cá nhân</span>
+                    </div>
+                    <div className="user-menu-item" onClick={handleLogout}>
+                      <FaSignOutAlt className="user-menu-icon" />
+                      <span>Đăng xuất</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="user-menu-item" onClick={() => navigate('/login')}>
+                      <FaUser className="user-menu-icon" />
+                      <span>Đăng nhập</span>
+                    </div>
+                    <div className="user-menu-item" onClick={() => navigate('/signup')}>
+                      <FaUser className="user-menu-icon" />
+                      <span>Đăng ký</span>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -242,8 +242,10 @@
 }
 
 .avatar-background{
-  background: url("@/assets/background/avatarBackground.svg") no-repeat center center;
-  background-size: 100% auto;
+  /* background: url("@/assets/background/avatarBackground.svg") no-repeat center center; */
+  background: url("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048") no-repeat center center;
+  /* background-size: 100% auto; */
+  background-size: 30% auto;
   background-position: center;
   flex: 1;
   display: flex;

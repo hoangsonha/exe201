@@ -39,7 +39,7 @@ public class User extends BaseEntity {
     @Column
     String rating;
 
-    @Column(columnDefinition = "nvarchar(255)")
+    @Column(columnDefinition = "nvarchar(1000)")
     String avatar;
 
     @Builder.Default

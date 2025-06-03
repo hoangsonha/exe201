@@ -133,6 +133,7 @@ public class AccountServiceImpl implements AccountService {
                     .email(user.getEmail())
                     .token(token)
                     .refreshToken(refreshToken)
+                    .avatar(user.getAvatar())
                     .build();
         }
         return TokenResponse.builder()
@@ -141,6 +142,7 @@ public class AccountServiceImpl implements AccountService {
                 .userId(null)
                 .email(null)
                 .token(null)
+                .avatar(null)
                 .refreshToken(null)
                 .build();
     }
@@ -209,6 +211,8 @@ public class AccountServiceImpl implements AccountService {
                                 .userId(user.getUserId())
                                 .token(newToken)
                                 .refreshToken(refreshToken)
+                                .avatar(user.getAvatar())
+                                .email(user.getEmail())
                                 .build();
                     }
                 }
@@ -243,6 +247,7 @@ public class AccountServiceImpl implements AccountService {
                     .email(user.getEmail())
                     .token(token)
                     .refreshToken(refreshToken)
+                    .avatar(user.getAvatar())
                     .build();
         }
         return tokenResponse;

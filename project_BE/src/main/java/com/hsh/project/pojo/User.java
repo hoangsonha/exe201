@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     @Column(unique = true, nullable = false)
     String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     String phone;
 
     @Column

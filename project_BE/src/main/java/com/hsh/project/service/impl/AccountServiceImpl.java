@@ -33,6 +33,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
@@ -65,6 +66,7 @@ public class AccountServiceImpl implements AccountService {
     private String from;
 
 
+    @Transactional
     @Override
     public boolean registerAccount(AccountRegisterRequest accountRegisterRequest) {
         User checkExistingUser = userRepository.getAccountByEmail(accountRegisterRequest.getEmail());
@@ -132,7 +134,14 @@ public class AccountServiceImpl implements AccountService {
                     .refreshToken(refreshToken)
                     .build();
         }
-        return null;
+        return TokenResponse.builder()
+                .code("Failed")
+                .message("Mã xác thực không đúng. Vui lòng thử lại")
+                .userId(null)
+                .email(null)
+                .token(null)
+                .refreshToken(null)
+                .build();
     }
 
     public String generateSixDigitCode() {
@@ -151,11 +160,11 @@ public class AccountServiceImpl implements AccountService {
             context.setVariable("verificationCode", verificationCode);
             context.setVariable("name", userName);
 
-            String content = "Xac Nhan Mat Khau";
+            String content = "confirm";
 
             String mailne = templateEngine.process(content, context);
 
-            String title = "Xac Nhan Mat Khau";
+            String title = "Mã xác nhận tài khoản";
             String senderName = "TOIREVIEW";
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");

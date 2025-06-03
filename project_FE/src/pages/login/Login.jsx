@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Form, Button, Alert, Container, Row, Col, Spinner } from "react-bootstrap";
 import { UserContext } from "../../App";
 import { DEFAULT_PATHS } from "../../auth/Roles";
-import { login } from "../../serviceAPI/loginApi";
+import { login } from "../../serviceAPI/authenticationService";
 import { jwtDecode } from "jwt-decode";
 import Typed from 'typed.js';
 import "./Login.css";
@@ -54,7 +54,8 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const userData = await login({ username: inputUsername, password: inputPassword });
+            const userData = await login({ email: inputUsername, password: inputPassword });
+
             const userFetch = userData.data;
             const decodedToken = jwtDecode(userFetch['token']);
             const role = decodedToken.role?.[0]?.authority;

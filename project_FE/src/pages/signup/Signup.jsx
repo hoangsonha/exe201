@@ -9,7 +9,7 @@ import "./Signup.css";
 const SignUp = () => {
     const [currentScreen, setCurrentScreen] = useState(1);
     const [userData, setUserData] = useState({
-        phone: "",
+        email: "",
         password: "",
         selectedTopics: []
     });
@@ -18,7 +18,7 @@ const SignUp = () => {
     const handleVerificationComplete = (data) => {
         setUserData(prev => ({
             ...prev,
-            phone: data.phone,
+            email: data.email,
             password: data.password
         }));
         setCurrentScreen(3);
@@ -42,10 +42,10 @@ const SignUp = () => {
         navigate("/");
     };
     
-    const handlePhoneChange = (phone) => {
+    const handleEmailChange = (email) => {
         setUserData(prev => ({
             ...prev,
-            phone
+            email
         }));
     };
     
@@ -60,9 +60,9 @@ const SignUp = () => {
         return (
             <SignupStep1And2 
                 onVerificationComplete={handleVerificationComplete}
-                onPhoneChange={handlePhoneChange}
+                onemailChange={handleEmailChange}
                 onPasswordChange={handlePasswordChange}
-                initialPhone={userData.phone}
+                initialemail={userData.email}
                 initialPassword={userData.password}
             />
         );

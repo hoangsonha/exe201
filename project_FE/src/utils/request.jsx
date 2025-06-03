@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import { jwtDecode } from 'jwt-decode';
 
 const request = axios.create({
-    baseURL: `${import.meta.env.VITE_BASE_URL}`,
-    // baseURL: ``,
+    // baseURL: `${import.meta.env.VITE_BASE_URL}`,
+    baseURL: ``,
     headers: { 'Content-Type': 'application/json' },
     // withCredentials: true,
 });
@@ -63,7 +63,9 @@ request.interceptors.request.use(async function (config) {
     const publicUrls = [
         '/api/v1/public/login',
         '/api/v1/public/refresh-token',
-        '/api/v1/public/logout'
+        '/api/v1/public/logout',
+        '/api/v1/public/register',
+        '/api/v1/public/register/verification'
     ];
 
     if (publicUrls.some(url => config.url.includes(url))) {

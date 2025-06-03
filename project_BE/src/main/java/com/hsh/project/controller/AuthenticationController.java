@@ -48,7 +48,7 @@ public class AuthenticationController {
             return ResponseEntity.status(tokenResponse.getCode().equals("Success") ? HttpStatus.OK : HttpStatus.UNAUTHORIZED).body(tokenResponse);
         } catch (Exception e) {
             log.error("Cannot verification : {}", e.toString());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     TokenResponse.builder()
                             .code("FAILED")
                             .message("Mã không trùng khớp")

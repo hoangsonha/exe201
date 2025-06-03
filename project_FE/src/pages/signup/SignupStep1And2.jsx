@@ -1,19 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import Typed from "typed.js";
-import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { FiSmile } from "react-icons/fi";
+import { UserContext } from "../../App";
+
+import { DEFAULT_PATHS } from "../../auth/Roles";
+import { jwtDecode } from "jwt-decode";
+import { register, verificationCodeAPi } from "../../serviceAPI/authenticationService";
 import "./Signup.css";
+import { useNavigate } from "react-router";
 
 const SignupStep1And2 = ({ 
     onVerificationComplete, 
-    onPhoneChange, 
+    onemailChange, 
     onPasswordChange,
-    initialPhone = "",
+    initialemail = "",
     initialPassword = "" 
 }) => {
-    const [inputPhonenumber, setInputPhonenumber] = useState(initialPhone);
+    const [email, setemail] = useState(initialemail);
     const [inputPassword, setInputPassword] = useState(initialPassword);
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -26,11 +31,17 @@ const SignupStep1And2 = ({
     const [timer, setTimer] = useState(180);
     const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [errorType, setErrorType] = useState("");
-    
-    const handlePhoneChange = (value) => {
-        setInputPhonenumber(value || "");
+
+    const { signIn } = useContext(UserContext);
+    const navigate = useNavigate();
+
+    const handleemailChange = (e) => {
+
+        console.log(e.target.value);
+
+        setemail(e.target.value || "");
         if (show) setShow(false);
-        if (onPhoneChange) onPhoneChange(value || "");
+        if (onemailChange) onemailChange(e.target.value || "");
     };
 
     const handlePasswordChange = (e) => {
@@ -49,15 +60,15 @@ const SignupStep1And2 = ({
             return false;
         }
 
-        if (!inputPhonenumber) {
-            setErrorType("phone_empty");
+        if (!email) {
+            setErrorType("email_empty");
             return false;
         }
 
-        if (inputPhonenumber.length < 10 || inputPhonenumber.length > 11) {
-            setErrorType("phone_invalid");
-            return false;
-        }
+        // if (email.length < 10 || email.length > 11) {
+        //     setErrorType("email_invalid");
+        //     return false;
+        // }
 
         if (!inputPassword) {
             setErrorType("password_empty");
@@ -81,10 +92,10 @@ const SignupStep1And2 = ({
         switch (errorType) {
             case "terms":
                 return "Vui lòng đồng ý với điều khoản sử dụng!";
-            case "phone_empty":
+            case "email_empty":
                 return "Vui lòng nhập số điện thoại!";
-            case "phone_invalid":
-                return "Số điện thoại không hợp lệ. Vui lòng nhập 8-9 số!";
+            // case "email_invalid":
+            //     return "Số điện thoại không hợp lệ. Vui lòng nhập 8-9 số!";
             case "password_empty":
                 return "Vui lòng nhập mật khẩu!";
             case "password_short":
@@ -96,18 +107,6 @@ const SignupStep1And2 = ({
             default:
                 return "Vui lòng thử lại!";
         }
-    };
-
-    const maskPhoneNumber = (phoneNumber) => {
-        if (!phoneNumber) return "";
-        const cleanPhone = phoneNumber.replace(/\D/g, '');
-        
-        if (cleanPhone.length < 4) return cleanPhone;
-        const firstPart = cleanPhone.slice(0, 2);
-        const lastPart = cleanPhone.slice(-2);
-        const middlePart = '*'.repeat(cleanPhone.length - 4);
-        
-        return `${firstPart}${middlePart}${lastPart}`;
     };
 
     useEffect(() => {
@@ -147,6 +146,69 @@ const SignupStep1And2 = ({
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
+    const handleRegisterAccount = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+
+        try {
+            const userData = await register({ email: email, password: inputPassword });
+
+            if (userData.data.data) {
+                setLoading(false)
+                setCurrentScreen(2);
+            } else
+                setLoading(true) 
+        } catch (error) {
+            console.log(error);
+            setShow(true);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleVerificationCode = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+
+        try {
+
+            let verification = verificationCode.join('')
+
+            console.log(verification)
+
+            const userData = await verificationCodeAPi({ email: email, verificationCode: verification });
+
+            console.log(userData)
+
+            const userFetch = userData.data;
+                if (userFetch.code == 'Success') {
+                    const decodedToken = jwtDecode(userFetch['token']);
+                    const role = decodedToken.role?.[0]?.authority;
+        
+                    const user = {
+                        accessToken: userFetch['token'],
+                        refreshToken: userFetch['refreshToken'],
+                        email: userFetch['email'],
+                        id: userFetch['userId'],
+                        role: role
+                    }
+        
+                    signIn(user);
+                    setShow(false);
+                    navigate(DEFAULT_PATHS[role]);
+                    setLoading(false);
+                } else {
+                    setErrorType('verification_invalid');
+                }    
+        } catch (error) {
+            console.log(error);
+            setErrorType('verification_invalid');
+            setShow(true);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -182,7 +244,7 @@ const SignupStep1And2 = ({
                 if (isVerificationComplete) {
                     if (onVerificationComplete) {
                         onVerificationComplete({
-                            phone: inputPhonenumber,
+                            email: email,
                             password: inputPassword
                         });
                     }
@@ -252,19 +314,19 @@ const SignupStep1And2 = ({
 
                         <Form onSubmit={handleSubmit} className="mt-4 submit-form">
                             <Form.Group className="mb-4">
-                                <Form.Label htmlFor="phonenumber">
-                                    <i className="bi bi-telephone-fill me-2"></i>
-                                    số điện thoại
+                                <Form.Label htmlFor="email">
+                                    <i className="bi bi-teleemail-fill me-2"></i>
+                                    Email
                                 </Form.Label>
-                                <div className="phone-input-wrapper">
-                                    <PhoneInput
-                                        international
-                                        countryCallingCodeEditable={false}
-                                        defaultCountry="VN"
-                                        value={inputPhonenumber}
-                                        onChange={handlePhoneChange}
-                                        className="phone-input-custom"
-                                        countries={['VN', 'US', 'GB', 'JP', 'KR', 'CN', 'TH', 'SG', 'MY', 'ID']}
+                                <div className="email-input-wrapper">
+                                    <Form.Control
+                                        type="text"
+                                        id="email"
+                                        value={email}
+                                        placeholder=" "
+                                        required
+                                        className="email-input-custom"
+                                        onChange={handleemailChange}
                                     />
                                 </div>
                             </Form.Group>
@@ -303,6 +365,7 @@ const SignupStep1And2 = ({
                                 type="submit" 
                                 disabled={loading}
                                 className="py-3 login-btn"
+                                onClick={handleRegisterAccount}
                             >
                                 {loading ? (
                                     <>
@@ -355,7 +418,7 @@ const SignupStep1And2 = ({
 
                         <h2 className="verification-title-custom">xác minh tài khoản</h2>
                         <div className="verification-description-custom">
-                            nhập mã otp được gửi tới số: +{maskPhoneNumber(inputPhonenumber)}
+                            nhập mã otp được gửi tới email: {email}
                         </div>
                         
                         <Form onSubmit={handleVerifySubmit} className="verification-form-custom">
@@ -393,6 +456,7 @@ const SignupStep1And2 = ({
                                 type="submit" 
                                 disabled={loading}
                                 className="login-btn"
+                                onClick={handleVerificationCode}
                             >
                                 {loading ? (
                                     <>

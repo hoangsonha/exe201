@@ -101,7 +101,7 @@
   background-color: #fff;
   font-size: 1.5rem;
   transition: all 0.2s;
-  padding-left: 1rem;
+  /* padding-left: 1rem; */
 }
 
 .phone-input-wrapper:focus-within {

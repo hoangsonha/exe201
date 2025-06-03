@@ -194,8 +194,15 @@ const SignupStep1And2 = ({
                     }
         
                     signIn(user);
+                    
+                    if (onVerificationComplete) {
+                        onVerificationComplete({
+                            email: email,
+                            password: inputPassword
+                        });
+                    }
                     setShow(false);
-                    navigate(DEFAULT_PATHS[role]);
+
                     setLoading(false);
                 } else {
                     setErrorType('verification_invalid');

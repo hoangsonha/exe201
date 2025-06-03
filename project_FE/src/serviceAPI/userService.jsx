@@ -1,8 +1,29 @@
 import { get, post, put, remove } from "../utils/request";
 
-const API = "/api/v1/employees";
+const API = "/api/v1/users";
 
 const API_ROLE = "/api/v1/roles";
+
+
+
+
+export const createHashtagUser = async (params) => {
+  try {
+    const res = await post(API + '/hashtags', params);
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+        console.error("Error response from server:", error.response.data);
+        return error.response.data;
+    } else {
+        console.error("Unexpected error:", error);
+        return { status: "Fail", message: "Unexpected error occurred.", data: null };
+    }
+  }
+};
+
+
+
 
 export const getEmployeePaging = async (params) => {
   try {

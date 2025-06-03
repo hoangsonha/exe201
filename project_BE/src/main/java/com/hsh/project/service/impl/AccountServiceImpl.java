@@ -85,6 +85,7 @@ public class AccountServiceImpl implements AccountService {
                 .nonLocked(false)
                 .role(role)
                 .codeVerify(generateSixDigitCode())
+                .avatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048")
                 .build();
         User u = userRepository.save(user);
 

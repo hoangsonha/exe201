@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Container, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from '../App';
-import { getEmployeeById } from "../serviceAPI/employeeService";
+import { getEmployeeById } from "../serviceAPI/userService";
 import { FaArrowLeft } from "react-icons/fa";
 import Informations from "../component/Informations";
 

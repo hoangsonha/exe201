@@ -267,7 +267,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setUserHashtags(userHashtagList);
 
-        return userMapper.accountToAccountDTO(user);
+        return userMapper.accountToAccountDTO(userRepository.save(user));
     }
 
 

@@ -19,6 +19,7 @@ public class UserDTO {
     String code;
     String email;
     String roleName;
+    String avatar;
     boolean enabled;
     boolean nonLocked;
     boolean deleted;

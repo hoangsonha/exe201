@@ -32,7 +32,7 @@ import {
   restoreEmployee,
   getEmployeePaging,
   search
-} from "../serviceAPI/employeeService";
+} from "../serviceAPI/userService";
 import { useToast } from '../component/Toast';
 import { UserContext } from '../App';
 import Informations from "../component/Informations";

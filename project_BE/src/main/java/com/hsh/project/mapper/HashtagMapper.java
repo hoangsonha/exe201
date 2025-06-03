@@ -6,10 +6,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface HashTagMapper {
+public interface HashtagMapper {
 
-    @Mapping(source = "hashtagID", target = "hashTagID")
-    @Mapping(source = "tag", target = "tag")
-    HashTagResponseDTO hashTagToUserHashTagResponse(Hashtag hashtag);
+    @Mapping(source = "hashtagID", target = "id")
+    @Mapping(source = "tag", target = "name")
+    HashTagResponseDTO hashtagToUserHashtagResponse(Hashtag hashtag);
 
 }

@@ -93,7 +93,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<UserHashtag> userHashtags;
 
     @OneToMany(mappedBy = "user")

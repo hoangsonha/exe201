@@ -10,7 +10,8 @@ export const PATHS = {
         path: '/home',
         label: 'Home',
         element: <Empty />,
-        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF]
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF],
+        layout: true
     },
     // COMBO_VACCINE: {
     //     path: '/combo-vaccine',
@@ -22,19 +23,22 @@ export const PATHS = {
         path: '/manager-employees',
         label: 'Employee',
         element: <EmployeeManagement />,
-        allowedRoles: [ROLES.ADMIN]
+        allowedRoles: [ROLES.ADMIN],
+        layout: true
     },
     MANAGER_COMPANY: {
         path: '/manager-companies',
         label: 'Company',
         element: <CompanyManagement />,
-        allowedRoles: [ROLES.ADMIN]
+        allowedRoles: [ROLES.ADMIN],
+        layout: true
     },
     MANAGER_PROJECT: {
         path: '/manager-projects',
         label: 'Project',
         element: <ProjectManagement />,
-        allowedRoles: [ROLES.ADMIN]
+        allowedRoles: [ROLES.ADMIN],
+        layout: true
     },
 }
 

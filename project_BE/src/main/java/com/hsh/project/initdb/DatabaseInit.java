@@ -97,6 +97,7 @@ public class DatabaseInit implements CommandLineRunner {
             admin.setPoint(1000);
             admin.setEnabled(true);
             admin.setNonLocked(true);
+            admin.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User premiumUser = new User();
             premiumUser.setUserName("premium_user");
@@ -109,6 +110,7 @@ public class DatabaseInit implements CommandLineRunner {
             premiumUser.setPoint(500);
             premiumUser.setEnabled(true);
             premiumUser.setNonLocked(true);
+            premiumUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User regularUser = new User();
             regularUser.setUserName("regular_user");
@@ -121,6 +123,7 @@ public class DatabaseInit implements CommandLineRunner {
             regularUser.setPoint(100);
             regularUser.setEnabled(true);
             regularUser.setNonLocked(true);
+            regularUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User moderator = new User();
             moderator.setUserName("moderator");
@@ -133,6 +136,7 @@ public class DatabaseInit implements CommandLineRunner {
             moderator.setPoint(300);
             moderator.setEnabled(true);
             moderator.setNonLocked(true);
+            moderator.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             userRepository.saveAll(List.of(admin, premiumUser, regularUser, moderator));
         }

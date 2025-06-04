@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import { useContext } from 'react';
 
 import { UserContext } from "../App";
-import { isAuthorized } from "./Paths";
+import { FULL_PATHS_LIST, isAuthorized } from "./Paths";
 import { DEFAULT_PATHS, ROLES } from "./Roles";
 import styles from "./ProtectedRoutes.module.scss";
 
@@ -16,6 +16,7 @@ const cx = classNames.bind(styles);
 export const ProtectedRoutes = () => {
     const { user } = useContext(UserContext);
     const location = useLocation().pathname;
+    const pathName = location.pathname;
 
     if (!user) {
         console.log('Not logged in');
@@ -29,6 +30,13 @@ export const ProtectedRoutes = () => {
 
     if (location == '/' && user.role !== ROLES.USER) {
         return <Navigate to={DEFAULT_PATHS[user.role]} />
+    }
+
+    const currentRoute = FULL_PATHS_LIST.find(p => p.path === pathName) || 
+                        FULL_PATHS_LIST.find(p => pathName.startsWith(p.path) && p.path.includes(":"));
+
+    if (!currentRoute?.layout) {
+        return <Outlet />;
     }
 
     return (

@@ -41,7 +41,6 @@ public class ReviewController {
     }
 
     // get all review when user not login in homepage by the most interact of hashtag and have the most using hashtag
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/top-trending")
     public ResponseEntity<ObjectResponse> getAllReviewGlobal() {
         List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews(5);
@@ -56,7 +55,8 @@ public class ReviewController {
     public ResponseEntity<?> createReview(@RequestPart("review") CreateReviewRequest request,
                                           @RequestPart("mediaFiles") List<MultipartFile> mediaFiles) {
             reviewService.createReview(request, mediaFiles);
-        return ResponseEntity.ok("Review created successfully");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Get user by ID successfully", null));
     }
 
     // return reviewID when block successfully

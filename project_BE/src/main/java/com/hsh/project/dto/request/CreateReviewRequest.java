@@ -12,6 +12,6 @@ import java.util.List;
 public class CreateReviewRequest {
     private String title;
     private String content;
-    private List<String> hashtags;
+    private List<Integer> hashtags;
     private Integer userId;
 }

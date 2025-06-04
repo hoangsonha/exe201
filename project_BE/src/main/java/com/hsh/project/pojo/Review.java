@@ -59,7 +59,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     List<ReviewHashtag> reviewHashtags;
 
     @OneToMany(mappedBy = "review")

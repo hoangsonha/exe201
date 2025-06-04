@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -65,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
     private String folderContainImage;
 
 
-
+    @Transactional
     @Override
     public void createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles) {
 
@@ -82,23 +83,25 @@ public class ReviewServiceImpl implements ReviewService {
         List<ReviewHashtag> list = new ArrayList<>();
 
         // Xử lý hashtag
-        for (String tagName : request.getHashtags()) {
-            Hashtag hashtag = hashtagRepository.findByTag(tagName);
-            if (hashtag == null) {
-                Hashtag newTag = new Hashtag();
-                newTag.setTag(tagName);
-                newTag.setStatus(EnumHashtagStatus.PENDING);
-                hashtagRepository.save(newTag);
-            }
+        for (Integer tagName : request.getHashtags()) {
+            Hashtag hashtag = hashtagRepository.findById(tagName).orElse(null);
+//            if (hashtag == null) {
+//                Hashtag newTag = new Hashtag();
+//                newTag.setTag(tagName);
+//                newTag.setStatus(EnumHashtagStatus.PENDING);
+//                hashtagRepository.save(newTag);
+//            }
             ReviewHashtag reviewHashtag = ReviewHashtag.builder()
                     .hashtag(hashtag)
                     .review(review)
                     .build();
             list.add(reviewHashtag);
-
         }
-
-        review.getReviewHashtags().addAll(list);
+        if (review.getReviewHashtags() != null) {
+            review.getReviewHashtags().addAll(list);
+        } else {
+            review.setReviewHashtags(list);
+        }
 
         reviewRepository.save(review);
 
@@ -117,18 +120,19 @@ public class ReviewServiceImpl implements ReviewService {
 
         int order = 1;
         for (MultipartFile file : mediaFiles) {
-            String fileName = storeFile(file); // bạn tự xử lý phần lưu file
+//            String fileName = storeFile(file); // bạn tự xử lý phần lưu file
             EnumReviewUploadType type = detectType(file); // ví dụ: IMAGE/VIDEO
 
+            String uploadedUrl = null;
             if (type == EnumReviewUploadType.IMAGE) {
-                uploadImages(file);
+                uploadedUrl = uploadImages(file);  // <-- TRẢ VỀ URL
             } else if (type == EnumReviewUploadType.VIDEO) {
-                uploadSingleVideo(file);
+                uploadedUrl = uploadSingleVideo(file);  // <-- TRẢ VỀ URL
             }
 
             ReviewMedia media = new ReviewMedia();
             media.setReview(review);
-            media.setUrlImageGIFVideo(fileName);
+            media.setUrlImageGIFVideo(uploadedUrl);
             media.setTypeUploadReview(type);
             media.setOrderDisplay(order++);
             reviewMediaRepository.save(media);
@@ -341,6 +345,7 @@ public class ReviewServiceImpl implements ReviewService {
                     UserSimpleDTO userDTO = UserSimpleDTO.builder()
                             .userId(user.getUserId())
                             .userName(user.getUserName())
+                            .avatar(user.getAvatar())
                             .build();
 
                     return CommentResponseDTO.builder()
@@ -377,7 +382,7 @@ public class ReviewServiceImpl implements ReviewService {
         return UserSimpleDTO.builder()
                 .userId(user.getUserId())
                 .userName(user.getUserName())
-                .email(user.getEmail())
+                .avatar(user.getAvatar())
                 .build();
     }
 

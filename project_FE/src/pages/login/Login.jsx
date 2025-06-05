@@ -17,6 +17,7 @@ const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const el = useRef(null);
+    const [errorType, setErrorType] = useState("");
 
     const handleUsernameChange = (e) => {
         setInputUsername(e.target.value);
@@ -30,6 +31,30 @@ const Login = () => {
 
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
+    };
+
+    const validateForm = () => {
+        if (!inputUsername) {
+            setErrorType("username_empty");
+            return false;
+        }
+
+        if (!inputPassword) {
+            setErrorType("password_empty");
+            return false;
+        }
+        return true;
+    };
+
+    const getErrorMessage = () => {
+        switch (errorType) {
+            case "username_empty":
+                return "Vui lòng nhập tên tài khoản!";
+            case "password_empty":
+                return "Vui lòng nhập mật khẩu!";
+            case "general":
+                return "Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!";
+        }
     };
 
     useEffect(() => {
@@ -54,26 +79,37 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const userData = await login({ email: inputUsername, password: inputPassword });
-
-            const userFetch = userData.data;
-            const decodedToken = jwtDecode(userFetch['token']);
-            const role = decodedToken.role?.[0]?.authority;
-
-            const user = {
-                accessToken: userFetch['token'],
-                refreshToken: userFetch['refreshToken'],
-                email: userFetch['email'],
-                id: userFetch['userId'],
-                role: role,
-                avatar: userFetch['avatar']
+            if (!validateForm()) {
+                setShow(true);
+                setLoading(false);
+                return;
             }
+            const userData = await login({ email: inputUsername, password: inputPassword });
+            const userFetch = userData.data;
+            if (userFetch) {
+                const decodedToken = jwtDecode(userFetch['token']);
+                const role = decodedToken.role?.[0]?.authority;
 
-            signIn(user);
-            setShow(false);
-            navigate(DEFAULT_PATHS[role]);
+                const user = {
+                    accessToken: userFetch['token'],
+                    refreshToken: userFetch['refreshToken'],
+                    email: userFetch['email'],
+                    id: userFetch['userId'],
+                    role: role,
+                    avatar: userFetch['avatar']
+                }
+
+                signIn(user);
+                setShow(false);
+                navigate(DEFAULT_PATHS[role]);
+            }
+            else {
+                setErrorType("general");
+                setShow(true);
+            }
         } catch (error) {
             console.log(error);
+            setErrorType("general");
             setShow(true);
         } finally {
             setLoading(false);
@@ -99,7 +135,7 @@ const Login = () => {
                                 className="animate__animated animate__shakeX custom-alert"
                             >
                                 <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                                Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!
+                                {getErrorMessage()}
                             </Alert>
                         )}
                     </div>
@@ -115,8 +151,7 @@ const Login = () => {
                                     type="text"
                                     id="username"
                                     value={inputUsername}
-                                    placeholder=" "
-                                    required
+                                    placeholder=""
                                     className="form-control-lg login-input"
                                     onChange={handleUsernameChange}
                                 />
@@ -133,8 +168,7 @@ const Login = () => {
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     value={inputPassword}
-                                    placeholder=" "
-                                    required
+                                    placeholder=""
                                     className="form-control-lg login-input"
                                     onChange={handlePasswordChange}
                                 />

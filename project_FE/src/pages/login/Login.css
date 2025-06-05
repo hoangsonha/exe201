@@ -26,7 +26,7 @@
   overflow: hidden;
   margin-bottom: 1rem;
   margin-left: 2.5rem;
-  width: calc(100% - 0.2rem);
+  width: calc(102%);
 }
 
 .custom-alert {
@@ -38,6 +38,11 @@
   border-radius: 0 !important;
   border: 2px solid #dc3545 !important;
   background-color: #f8d7da !important;
+  padding-left: 2rem !important;
+}
+
+.custom-alert i {
+  padding-right: 16px;
 }
 
 .alert-wrapper-absolute {

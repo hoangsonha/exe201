@@ -4,12 +4,9 @@ import Typed from "typed.js";
 import "react-phone-number-input/style.css";
 import { FiSmile } from "react-icons/fi";
 import { UserContext } from "../../App";
-
-import { DEFAULT_PATHS } from "../../auth/Roles";
 import { jwtDecode } from "jwt-decode";
 import { register, verificationCodeAPi } from "../../serviceAPI/authenticationService";
 import "./Signup.css";
-import { useNavigate } from "react-router";
 
 const SignupStep1And2 = ({ 
     onVerificationComplete, 
@@ -33,7 +30,6 @@ const SignupStep1And2 = ({
     const [errorType, setErrorType] = useState("");
 
     const { signIn } = useContext(UserContext);
-    const navigate = useNavigate();
 
     const handleEmailChange = (e) => {
 
@@ -104,7 +100,7 @@ const SignupStep1And2 = ({
             case "verification_invalid":
                 return "Mã xác thực không hợp lệ. Vui lòng thử lại!";
             case "general":
-                return "Vui lòng thử lại!";
+                return "Đăng ký không thành công. Vui lòng thử lại!";
         }
     };
 
@@ -144,29 +140,6 @@ const SignupStep1And2 = ({
         const seconds = time % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
-
-    // const handleRegisterAccount = async (event) => {
-    //     event.preventDefault();
-    //     setLoading(true);
-
-    //     try {
-    //         const userData = await register({ email: email, password: inputPassword });
-
-    //         if (userData.data.data) {
-    //             setLoading(false)
-    //             setCurrentScreen(2);
-    //         } else {
-    //             setErrorType("general");
-    //             setShow(true);
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //         setErrorType("general");
-    //         setShow(true);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
 
     const handleVerificationCode = async (event) => {
         event.preventDefault();
@@ -222,7 +195,6 @@ const SignupStep1And2 = ({
         setLoading(true);
         
         try {
-            // setCurrentScreen(2);
             if (!validateForm()) {
                 setShow(true);
                 setLoading(false);

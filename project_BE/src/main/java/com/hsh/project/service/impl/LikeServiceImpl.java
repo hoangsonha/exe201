@@ -40,7 +40,7 @@ public class LikeServiceImpl implements LikeService {
 
 
     @Override
-    public String toggleLike(Long userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
+    public String toggleLike(Integer userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
         Optional<Like> existing = likeRepository.findByUserUserIdAndTargetTypeAndTargetId(userId, targetType, targetId);
 
         if (existing.isPresent()) {
@@ -69,7 +69,7 @@ public class LikeServiceImpl implements LikeService {
 
      @Override
     @Transactional
-    public LikeResponseDTO createLike(Long userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
+    public LikeResponseDTO createLike(Integer userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
         // Validate inputs
         if (userId == null || userId <= 0) {
             logger.error("Invalid userId: {}", userId);

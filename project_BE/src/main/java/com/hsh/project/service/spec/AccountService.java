@@ -20,6 +20,6 @@ public interface AccountService {
 
     boolean logout(HttpServletRequest request);
 
-    User getUserById(Long id);
+    User getUserById(Integer id);
 
 }

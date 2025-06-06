@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LikeResponseDTO {
     private String status;
-    private Long userId;
+    private Integer userId;
     private EnumTargetType targetType;
     private Long targetId;
     private EnumLikeType likeType;

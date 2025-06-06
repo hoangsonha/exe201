@@ -263,7 +263,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(Integer id) {
         return userRepository.findByUserIdAndDeletedIsFalse(id).orElseThrow(
                 () -> new EntityNotFoundException("Không tìm thấy người dùng"));
     }

@@ -13,10 +13,12 @@ import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.pojo.*;
 import com.hsh.project.pojo.enums.EnumHashtagStatus;
+import com.hsh.project.pojo.enums.EnumLikeType;
 import com.hsh.project.pojo.enums.EnumReviewStatus;
 import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.repository.*;
+import com.hsh.project.service.spec.LikeService;
 import com.hsh.project.service.spec.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final SavedReviewRepository savedReviewRepository;
     private final ReviewMediaRepository reviewMediaRepository;
     private final HashtagRepository hashtagRepository;
+    private final LikeService likeService;
 
     // Firebase
 
@@ -102,6 +105,14 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(review);
 
+        // Auto-like the review
+        likeService.createLike(
+            request.getUserId(),     // userId
+            EnumTargetType.REVIEW,   // targetType
+            review.getReviewID(),    // targetId (reviewID)
+            EnumLikeType.LIKE        // likeType (assuming EnumLikeType.LIKE exists)
+        );
+
         // Lưu media
 
         long videoCount = mediaFiles.stream()
@@ -151,6 +162,8 @@ public class ReviewServiceImpl implements ReviewService {
             return null;
         }
     }
+
+
 
     public String uploadSingleVideo(MultipartFile videoFile) {
         try {

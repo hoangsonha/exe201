@@ -1,9 +1,11 @@
 package com.hsh.project.controller;
 
+import com.hsh.project.dto.response.LikeResponseDTO;
 import com.hsh.project.pojo.enums.EnumLikeType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.service.spec.LikeService;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,7 @@ public class LikeController {
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/toggle")
     public ResponseEntity<String> toggleLike(
-            @RequestParam Long userId,
+            @RequestParam Integer userId,
             @RequestParam EnumTargetType targetType,
             @RequestParam Long targetId,
             @RequestParam EnumLikeType type) {
@@ -39,12 +41,24 @@ public class LikeController {
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/count")
     public ResponseEntity<Long> countLikes(
-            @RequestParam String targetType,
-            @RequestParam Long targetId) {
+            @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") String targetType,
+            @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
 
         EnumTargetType targetTypeEnum = EnumTargetType.valueOf(targetType.toUpperCase());
-
         long count = likeService.countLikes(targetTypeEnum, targetId);
         return ResponseEntity.ok(count);
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
+    @PostMapping("/create-like")
+    public ResponseEntity<LikeResponseDTO> createLike(
+            @RequestParam @Parameter(description = "ID of the user liking the target") Integer userId,
+            @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
+            @RequestParam @Parameter(description = "ID of the target entity") Long targetId,
+            @RequestParam @Parameter(description = "Type of like (LIKE)") EnumLikeType type) {
+
+        LikeResponseDTO response = likeService.createLike(userId, targetType, targetId, type);
+        return ResponseEntity.ok(response);
+    }
 }
+

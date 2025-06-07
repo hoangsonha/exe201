@@ -230,22 +230,66 @@ public class DatabaseInit implements CommandLineRunner {
     private void initHashtags() {
         if (hashtagRepository.count() == 0) {
             Hashtag technology = new Hashtag();
-            technology.setTag("technology");
+            technology.setTag("công nghệ");
             technology.setTotalPost(0);
 
             Hashtag food = new Hashtag();
-            food.setTag("food");
+            food.setTag("đồ ăn");
             food.setTotalPost(0);
 
             Hashtag travel = new Hashtag();
-            travel.setTag("travel");
+            travel.setTag("du lịch");
             travel.setTotalPost(0);
 
             Hashtag fashion = new Hashtag();
-            fashion.setTag("fashion");
+            fashion.setTag("thời trang");
             fashion.setTotalPost(0);
 
-            hashtagRepository.saveAll(List.of(technology, food, travel, fashion));
+            Hashtag movies = new Hashtag();
+            movies.setTag("phim ảnh");
+            movies.setTotalPost(0);
+
+            Hashtag education = new Hashtag();
+            education.setTag("giáo dục");
+            education.setTotalPost(0);
+
+            Hashtag art = new Hashtag();
+            art.setTag("hội họa");
+            art.setTotalPost(0);
+
+            Hashtag household = new Hashtag();
+            household.setTag("gia dụng");
+            household.setTotalPost(0);
+
+            Hashtag nature = new Hashtag();
+            nature.setTag("tự nhiên");
+            nature.setTotalPost(0);
+
+            Hashtag job = new Hashtag();
+            job.setTag("nghề nghiệp");
+            job.setTotalPost(0);
+
+            Hashtag music = new Hashtag();
+            music.setTag("âm nhạc");
+            music.setTotalPost(0);
+
+            Hashtag vehicle = new Hashtag();
+            vehicle.setTag("xe cộ");
+            vehicle.setTotalPost(0);
+
+            Hashtag law = new Hashtag();
+            law.setTag("pháp luật");
+            law.setTotalPost(0);
+
+            Hashtag science = new Hashtag();
+            science.setTag("khoa học");
+            science.setTotalPost(0);
+
+            Hashtag sports = new Hashtag();
+            sports.setTag("thể thao");
+            sports.setTotalPost(0);
+
+            hashtagRepository.saveAll(List.of(technology, food, travel, fashion, movies, education, art, job, music, vehicle, law, science, sports));
         }
     }
 

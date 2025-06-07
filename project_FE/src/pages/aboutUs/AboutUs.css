@@ -1,0 +1,251 @@
+.about-page {
+  background: url("@/assets/background/topicBackground.svg") no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  position: relative;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5rem;
+  width: 100%;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gif-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10rem;
+}
+
+.ezgo-gif {
+  width: 80%;
+  height: 90vh;
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+.blue-section {
+  width: 70%;
+  background-color: #3e60ad;
+  padding: 4rem 6rem;
+  text-align: center;
+  margin-bottom: 10rem;
+}
+
+.overview-section {
+  width: 100%;
+  margin-bottom: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.toireview-logo {
+  width: 50%;
+  margin-bottom: 1rem;
+  image-rendering: auto;
+}
+
+.orange-tagline {
+  background-color: #ff631c;
+  color: white;
+  font-size: 2rem;
+  padding: 0.5rem 2rem;
+  display: inline-block;
+  position: absolute;
+  top: 16%;
+  right: 22%;
+  transform: rotate(-5deg);
+  z-index: 2;
+}
+
+.mission-container {
+  width: 70%;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.mission-container.second-row {
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.mission-box {
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.mission-box.blue {
+  background-color: #3e60ad;
+  flex: 3;
+}
+
+.mission-box.white {
+  background-color: #f5f5f5;
+  flex: 2;
+  border: 1px solid #404040;
+}
+
+.mission-box.orange {
+  background-color: #ff631c;
+  flex: 2;
+  position: relative;
+}
+
+.mission-box.green {
+  background-color: #d1f055;
+  flex: 3;
+  border: 1px solid #404040;
+}
+
+.mission-label {
+  font-size: 2rem;
+  padding: 0.5rem 2rem;
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.mission-label.blue {
+  background-color: #3e60ad;
+  color: white;
+}
+
+.mission-label.orange {
+  background-color: #ff631c;
+  color: white;
+}
+
+.mission-text {
+  font-size: 1.7rem;
+  line-height: 1.8;
+}
+
+.mission-text-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-top: -4rem;
+}
+
+.second-row .mission-text {
+  font-size: 1.9rem;
+  line-height: 1.7;
+}
+
+.mission-text.white {
+  color: white;
+}
+
+.mission-text.blue {
+  color: #3e60ad;
+}
+
+.mission-text.orange {
+  color: #ff631c;
+}
+
+.star-icon {
+  position: absolute;
+  bottom: 3rem;
+  left: 3rem;
+  font-size: 2.5rem;
+  color: white;
+}
+
+.curved-text {
+  position: absolute;
+  bottom: -2.5rem;
+  right: 0;
+  width: 80%;
+  transform: rotate(-5deg);
+  color: #ff631c;
+  font-size: 1.8rem;
+  font-style: italic;
+  text-align: right;
+  padding: 0.5rem 2rem;
+}
+
+.green-section {
+  width: 70%;
+  background-color: #d1f055;
+  padding: 4rem 6rem;
+  text-align: center;
+  margin-bottom: 10rem;
+  border: 1px solid #404040;
+}
+
+.orange-label {
+  background-color: #ff631c;
+  color: white;
+  font-size: 2rem;
+  padding: 0.5rem 1.5rem;
+  display: inline-block;
+  margin-bottom: 3rem;
+}
+
+.blue-text {
+  color: white;
+  font-size: 1.8rem;
+  line-height: 1.8;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.green-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-text {
+  text-align: left;
+  font-size: 1.8rem;
+  color: #3b5998;
+  flex: 1;
+  padding-right: 10rem;
+}
+
+.input-container {
+  min-width: 350px;
+}
+
+.right-input {
+  background-color: white;
+  padding: 1.5rem 3.5rem;
+  color: #3b5998;
+  font-style: italic;
+  font-size: 1.8rem;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.right-input::placeholder {
+  color: #3b5998;
+  opacity: 1;
+}
+
+.blue-word {
+  color: #3b5998;
+  font-weight: bold;
+}

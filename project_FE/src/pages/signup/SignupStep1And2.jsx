@@ -4,12 +4,9 @@ import Typed from "typed.js";
 import "react-phone-number-input/style.css";
 import { FiSmile } from "react-icons/fi";
 import { UserContext } from "../../App";
-
-import { DEFAULT_PATHS } from "../../auth/Roles";
 import { jwtDecode } from "jwt-decode";
 import { register, verificationCodeAPi } from "../../serviceAPI/authenticationService";
 import "./Signup.css";
-import { useNavigate } from "react-router";
 
 const SignupStep1And2 = ({ 
     onVerificationComplete, 
@@ -33,9 +30,8 @@ const SignupStep1And2 = ({
     const [errorType, setErrorType] = useState("");
 
     const { signIn } = useContext(UserContext);
-    const navigate = useNavigate();
 
-    const handleemailChange = (e) => {
+    const handleEmailChange = (e) => {
 
         console.log(e.target.value);
 
@@ -55,11 +51,6 @@ const SignupStep1And2 = ({
     };
 
     const validateForm = () => {
-        if (!isTermsAccepted) {
-            setErrorType("terms");
-            return false;
-        }
-
         if (!email) {
             setErrorType("email_empty");
             return false;
@@ -85,6 +76,10 @@ const SignupStep1And2 = ({
             return false;
         }
 
+        if (!isTermsAccepted) {
+            setErrorType("terms");
+            return false;
+        }
         return true;
     };
 
@@ -93,7 +88,7 @@ const SignupStep1And2 = ({
             case "terms":
                 return "Vui lòng đồng ý với điều khoản sử dụng!";
             case "email_empty":
-                return "Vui lòng nhập số điện thoại!";
+                return "Vui lòng nhập địa chỉ email!";
             // case "email_invalid":
             //     return "Số điện thoại không hợp lệ. Vui lòng nhập 8-9 số!";
             case "password_empty":
@@ -104,8 +99,8 @@ const SignupStep1And2 = ({
                 return "Mật khẩu không được quá 50 ký tự!";
             case "verification_invalid":
                 return "Mã xác thực không hợp lệ. Vui lòng thử lại!";
-            default:
-                return "Vui lòng thử lại!";
+            case "general":
+                return "Đăng ký không thành công. Vui lòng thử lại!";
         }
     };
 
@@ -146,32 +141,11 @@ const SignupStep1And2 = ({
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    const handleRegisterAccount = async (event) => {
-        event.preventDefault();
-        setLoading(true);
-
-        try {
-            const userData = await register({ email: email, password: inputPassword });
-
-            if (userData.data.data) {
-                setLoading(false)
-                setCurrentScreen(2);
-            } else
-                setLoading(true) 
-        } catch (error) {
-            console.log(error);
-            setShow(true);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const handleVerificationCode = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         try {
-
             let verification = verificationCode.join('')
 
             console.log(verification)
@@ -221,17 +195,21 @@ const SignupStep1And2 = ({
         setLoading(true);
         
         try {
-            setTimeout(() => {
-                if (validateForm()) {
-                    setCurrentScreen(2);
-                    setTimer(180);
-                    setShow(false);
-                    setErrorType("");
-                } else {
-                    setShow(true);
-                }
+            if (!validateForm()) {
+                setShow(true);
                 setLoading(false);
-            }, 1500);
+                return;
+            }
+            const userData = await register({ email: email, password: inputPassword });
+
+            if (userData.data.data) {
+                setLoading(false);
+                setShow(false);
+                setCurrentScreen(2);
+            } else {
+                setErrorType("general");
+                setShow(true);
+            }
         } catch (error) {
             console.log(error);
             setErrorType("general");
@@ -322,18 +300,17 @@ const SignupStep1And2 = ({
                         <Form onSubmit={handleSubmit} className="mt-4 submit-form">
                             <Form.Group className="mb-4">
                                 <Form.Label htmlFor="email">
-                                    <i className="bi bi-teleemail-fill me-2"></i>
-                                    Email
+                                    <i className="bi bi-envelope-fill me-2"></i>
+                                    email
                                 </Form.Label>
                                 <div className="email-input-wrapper">
                                     <Form.Control
                                         type="text"
                                         id="email"
                                         value={email}
-                                        placeholder=" "
-                                        required
+                                        placeholder=""
                                         className="email-input-custom"
-                                        onChange={handleemailChange}
+                                        onChange={handleEmailChange}
                                     />
                                 </div>
                             </Form.Group>
@@ -372,7 +349,6 @@ const SignupStep1And2 = ({
                                 type="submit" 
                                 disabled={loading}
                                 className="py-3 login-btn"
-                                onClick={handleRegisterAccount}
                             >
                                 {loading ? (
                                     <>

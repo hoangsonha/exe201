@@ -19,6 +19,7 @@ import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.repository.*;
 import com.hsh.project.service.spec.LikeService;
+import com.hsh.project.service.spec.RatingService;
 import com.hsh.project.service.spec.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMediaRepository reviewMediaRepository;
     private final HashtagRepository hashtagRepository;
     private final LikeService likeService;
+    private final RatingService ratingService; 
 
     // Firebase
 
@@ -112,6 +114,12 @@ public class ReviewServiceImpl implements ReviewService {
             review.getReviewID(),    // targetId (reviewID)
             EnumLikeType.LIKE        // likeType (assuming EnumLikeType.LIKE exists)
         );
+
+        ratingService.createRating(
+            request.getUserId(),     // userId
+            review.getReviewID(),    // reviewId
+            0.0                     // stars (default value)
+    );
 
         // Lưu media
 

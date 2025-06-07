@@ -124,8 +124,8 @@ const Header = () => {
   return (
     <header className="home-header">
       <div className="header-content">
-        <img src={logo} alt="" className="logo-img" />
-        
+        <img src={logo} alt="" className="logo-img" onClick={() => navigate('/')} style={{ cursor: 'pointer' }} />
+
         <div className="search-container">
           <InputGroup className="search-bar">
             <FormControl

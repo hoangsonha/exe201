@@ -12,6 +12,8 @@ import InformationUser from './pages/InformationUser.jsx';
 import SignUp from './pages/signup/Signup.jsx';
 import Home from './pages/home/Home.jsx';
 import PostDetail from './pages/home/PostDetail.jsx';
+import AboutUs from './pages/aboutUs/AboutUs.jsx';
+import Explore from './pages/explore/Explore.jsx';
 
 export const UserContext = createContext(null);
 
@@ -55,6 +57,8 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/" element={<Home />} />
+                    <Route path="/explore" element={<Explore />} />
+                    <Route path="/about-us" element={<AboutUs />} />
                     <Route path="/post/:id" element={<PostDetail />} />
                     <Route path="/403" element={<Forbidden />} />
                     <Route path="*" element={<NotFound />} />

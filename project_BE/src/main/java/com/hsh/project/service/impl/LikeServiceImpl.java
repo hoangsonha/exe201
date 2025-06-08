@@ -39,8 +39,31 @@ public class LikeServiceImpl implements LikeService {
     }
 
 
+    // @Override
+    // public String toggleLike(Integer userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
+    //     Optional<Like> existing = likeRepository.findByUserUserIdAndTargetTypeAndTargetId(userId, targetType, targetId);
+
+    //     if (existing.isPresent()) {
+    //         likeRepository.delete(existing.get());
+    //         return "unliked";
+    //     } else {
+    //         User user = userRepository.findByUserIdAndDeletedIsFalse(userId)
+    //                 .orElseThrow(() -> new RuntimeException("User not found or deleted"));
+
+    //         Like like = Like.builder()
+    //                 .user(user)
+    //                 .targetType(targetType)
+    //                 .targetId(targetId)
+    //                 .type(type)
+    //                 .build();
+
+    //         likeRepository.save(like);
+    //         return "liked";
+    //     }
+    // }
+
     @Override
-    public String toggleLike(Integer userId, EnumTargetType targetType, Long targetId, EnumLikeType type) {
+    public String toggleLike(Integer userId, EnumTargetType targetType, Long targetId) {
         Optional<Like> existing = likeRepository.findByUserUserIdAndTargetTypeAndTargetId(userId, targetType, targetId);
 
         if (existing.isPresent()) {
@@ -54,7 +77,7 @@ public class LikeServiceImpl implements LikeService {
                     .user(user)
                     .targetType(targetType)
                     .targetId(targetId)
-                    .type(type)
+                    .type(EnumLikeType.LIKE)
                     .build();
 
             likeRepository.save(like);
@@ -136,6 +159,105 @@ public class LikeServiceImpl implements LikeService {
 
         return new LikeResponseDTO("liked", userId, targetType, targetId, type,
                                likeRepository.countByTargetTypeAndTargetId(targetType, targetId));
+    }
+
+    @Transactional
+    public String switchLikeHeart(Integer userId, EnumTargetType targetType, Long targetId) {
+        if (userId == null || userId <= 0) {
+            logger.error("Invalid userId: {}", userId);
+            throw new IllegalArgumentException("User ID must be a positive number");
+        }
+        if (targetType == null) {
+            logger.error("Target type is null for userId: {}", userId);
+            throw new IllegalArgumentException("Target type cannot be null");
+        }
+        if (targetId == null || targetId <= 0) {
+            logger.error("Invalid targetId: {} for userId: {}", targetId, userId);
+            throw new IllegalArgumentException("Target ID must be a positive number");
+        }
+
+        // Validate target existence
+        if (targetType == EnumTargetType.REVIEW) {
+            reviewRepository.findByReviewID(targetId)
+                    .orElseThrow(() -> {
+                        logger.error("Review not found for targetId: {}", targetId);
+                        return new RuntimeException("Review not found");
+                    });
+        } else if (targetType == EnumTargetType.COMMENT) {
+            commentRepository.findByCommentID(targetId)
+                    .orElseThrow(() -> {
+                        logger.error("Comment not found for targetId: {}", targetId);
+                        return new RuntimeException("Comment not found");
+                    });
+        } else {
+            logger.error("Unsupported target type: {} for userId: {}", targetType, userId);
+            throw new IllegalArgumentException("Unsupported target type: " + targetType);
+        }
+
+        // Find existing like or heart
+        Optional<Like> existing = likeRepository.findByUserUserIdAndTargetTypeAndTargetId(userId, targetType, targetId);
+        EnumLikeType newType = EnumLikeType.LIKE; // Default to LIKE if no existing type
+
+        if (existing.isPresent()) {
+            Like currentLike = existing.get();
+            if (currentLike.getType() == EnumLikeType.LIKE) {
+                newType = EnumLikeType.HEART;
+            } else if (currentLike.getType() == EnumLikeType.HEART) {
+                newType = EnumLikeType.LIKE;
+            }
+            likeRepository.delete(currentLike); // Unlike/unheart before switching
+            logger.info("User {} removed existing {} on {} with ID {}", userId, currentLike.getType(), targetType, targetId);
+        }
+
+        // Validate user
+        User user = userRepository.findByUserIdAndDeletedIsFalse(userId)
+                .orElseThrow(() -> {
+                    logger.error("User not found or deleted for userId: {}", userId);
+                    return new RuntimeException("User not found or deleted");
+                });
+
+        // Create new like/heart with switched type
+        Like like = Like.builder()
+                .user(user)
+                .targetType(targetType)
+                .targetId(targetId)
+                .type(newType)
+                .build();
+
+        likeRepository.save(like);
+        logger.info("User {} switched to {} on {} with ID {}", userId, newType, targetType, targetId);
+
+        return newType == EnumLikeType.LIKE ? "switched to like" : "switched to heart";
+    }
+
+    @Transactional
+    public String toggleHeart(Integer userId, EnumTargetType targetType, Long targetId) {
+        Optional<Like> existing = likeRepository.findByUserUserIdAndTargetTypeAndTargetId(userId, targetType, targetId);
+
+        if (existing.isPresent()) {
+            Like currentLike = existing.get();
+            if (currentLike.getType() == EnumLikeType.HEART) {
+                likeRepository.delete(currentLike);
+                logger.info("User {} unhearted {} with ID {}", userId, targetType, targetId);
+                return "unhearted";
+            }
+            // If it's a LIKE, do nothing or convert to HEART (optional behavior)
+            return "no change";
+        } else {
+            User user = userRepository.findByUserIdAndDeletedIsFalse(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found or deleted"));
+
+            Like like = Like.builder()
+                    .user(user)
+                    .targetType(targetType)
+                    .targetId(targetId)
+                    .type(EnumLikeType.HEART)
+                    .build();
+
+            likeRepository.save(like);
+            logger.info("User {} hearted {} with ID {}", userId, targetType, targetId);
+            return "hearted";
+        }
     }
 
 }

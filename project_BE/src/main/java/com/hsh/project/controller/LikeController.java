@@ -27,14 +27,13 @@ public class LikeController {
     private LikeService likeService;
 
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
-    @PostMapping("/toggle")
+    @PostMapping("/togglelike")
     public ResponseEntity<String> toggleLike(
-            @RequestParam Integer userId,
-            @RequestParam EnumTargetType targetType,
-            @RequestParam Long targetId,
-            @RequestParam EnumLikeType type) {
+            @RequestParam @Parameter(description = "ID of the user") Integer userId,
+            @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
+            @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
 
-        String result = likeService.toggleLike(userId, targetType, targetId, type);
+        String result = likeService.toggleLike(userId, targetType, targetId);
         return ResponseEntity.ok(result);
     }
 
@@ -59,6 +58,28 @@ public class LikeController {
 
         LikeResponseDTO response = likeService.createLike(userId, targetType, targetId, type);
         return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
+    @PostMapping("/switch")
+    public ResponseEntity<String> switchLikeHeart(
+          @RequestParam @Parameter(description = "ID of the user") Integer userId,
+          @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
+          @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
+
+        String result = likeService.switchLikeHeart(userId, targetType, targetId);
+        return ResponseEntity.ok(result);
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
+    @PostMapping("/toggle-heart")
+    public ResponseEntity<String> toggleHeart(
+            @RequestParam @Parameter(description = "ID of the user") Integer userId,
+            @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
+            @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
+
+        String result = likeService.toggleHeart(userId, targetType, targetId);
+        return ResponseEntity.ok(result);
     }
 }
 

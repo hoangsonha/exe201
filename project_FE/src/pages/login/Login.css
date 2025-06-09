@@ -78,7 +78,7 @@ label {
 }
 
 input, select, .form-control {
-  width: 115%;
+  width: 114%;
   border-radius: 0 !important;
   outline: none;
   background-color: white;

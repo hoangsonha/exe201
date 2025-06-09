@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import { useState, useContext, useEffect, useRef } from "react";
-import logo from '../../assets/logo3.png';
-import imageURL from '../../constants/imageURL';
+import logo from '@/assets/logo3.png';
+import imageURL from '@/constants/imageURL';
 import { UserContext } from "../../App";
 import "./Signup.css";
 

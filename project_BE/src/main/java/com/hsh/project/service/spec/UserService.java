@@ -4,6 +4,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
 import com.hsh.project.dto.request.CreateEmployeeRequest;
 import com.hsh.project.dto.request.UpdateEmployeeRequest;
+import com.hsh.project.dto.request.UserCreateImageRequest;
 import com.hsh.project.dto.request.UserRegisterHashTagRequest;
 import com.hsh.project.pojo.User;
 import org.apache.coyote.BadRequestException;
@@ -30,4 +31,5 @@ public interface UserService {
 
     UserDTO createHashTagUser(UserRegisterHashTagRequest request);
 
+    UserDTO createImageUser(UserCreateImageRequest request);
 }

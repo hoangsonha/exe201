@@ -5,6 +5,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
 import com.hsh.project.dto.request.CreateEmployeeRequest;
 import com.hsh.project.dto.request.UpdateEmployeeRequest;
+import com.hsh.project.dto.request.UserCreateImageRequest;
 import com.hsh.project.dto.request.UserRegisterHashTagRequest;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementExistException;
@@ -267,6 +268,17 @@ public class UserServiceImpl implements UserService {
         }
         user.setUserHashtags(userHashtagList);
 
+        return userMapper.accountToAccountDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO createImageUser(UserCreateImageRequest request) {
+        User user = getEmployeeById(request.getUserId());
+
+        if (user == null) {
+            throw new ElementNotFoundException("Employee not found");
+        }
+        user.setAvatar(request.getImageUrl());
         return userMapper.accountToAccountDTO(userRepository.save(user));
     }
 

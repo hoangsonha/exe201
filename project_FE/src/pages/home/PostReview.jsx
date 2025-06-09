@@ -381,17 +381,21 @@ const PostReview = ({ show, onClose, onSubmit }) => {
         const hasVideo = files.some(file => file.type.startsWith("video/"))
         const allImages = files.every(file => file.type.startsWith("image/"))
 
+        const currentHasVideo = mediaFiles.some(f => f.type.startsWith("video/"))
+
+        if (currentHasVideo) {
+            setError("Bạn chỉ có thể chọn 1 video hoặc nhiều ảnh, không thể kết hợp")
+            return
+        }
+
         if (hasVideo) {
-            // Nếu có video thì chỉ lấy 1 video đầu tiên
             const videoFile = files.find(file => file.type.startsWith("video/"))
             setMediaFiles([videoFile])
             setPreviewUrls([URL.createObjectURL(videoFile)])
         } else if (allImages) {
-            // Có thể chọn nhiều ảnh (tối đa 10 ảnh)
-            const maxImages = 10
-            const selectedImages = files.slice(0, maxImages)
-            setMediaFiles(selectedImages)
-            setPreviewUrls(selectedImages.map(file => URL.createObjectURL(file)))
+            const combinedFiles = [...mediaFiles, ...files].slice(0, 10)
+            setMediaFiles(combinedFiles)
+            setPreviewUrls(combinedFiles.map(file => URL.createObjectURL(file)))
         } else {
             setError("Vui lòng chỉ chọn ảnh hoặc một video")
         }
@@ -555,33 +559,31 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                                     </div>
 
                                     {/* Title Input */}
-                                    <FloatingLabel controlId="titleInput" label="Tiêu đề" className="mb-4">
+                                    <div className="mb-4">
                                         <Form.Control
                                             type="text"
-                                            placeholder="Nhập tiêu đề..."
+                                            placeholder="tiêu đề..."
                                             value={title}
                                             onChange={(e) => setTitle(e.target.value)}
-                                            className="border-0 border-bottom rounded-0 px-0"
-                                            style={{ boxShadow: 'none' }}
+                                            className="title-input"
                                         />
-                                    </FloatingLabel>
+                                    </div>
 
                                     {/* Content Textarea */}
-                                    <FloatingLabel controlId="contentTextarea" label="Nội dung review (ít nhất 20 từ)">
+                                    <div className="mb-4">
                                         <Form.Control
                                             as="textarea"
                                             rows={6}
-                                            placeholder="Viết nội dung review của bạn..."
+                                            placeholder="nội dung review..."
                                             value={content}
                                             onChange={(e) => setContent(e.target.value)}
-                                            className="border-0 border-bottom rounded-0 px-0"
-                                            style={{ boxShadow: 'none', resize: 'none' }}
+                                            className="content-textarea"
                                         />
-                                    </FloatingLabel>
+                                    </div>
 
                                     {/* Media Upload */}
                                     <div className="mt-4">
-                                        <input
+                                            <input
                                             type="file"
                                             ref={fileInputRef}
                                             accept="image/*,video/*"
@@ -589,7 +591,7 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                                             onChange={handleMediaChange}
                                             className="d-none"
                                         />
-
+                                            
                                         {previewUrls.length > 0 ? (
                                             <div className="media-preview-container">
                                                 <div className="d-flex flex-wrap gap-3 mb-3">

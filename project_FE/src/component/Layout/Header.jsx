@@ -173,14 +173,10 @@ const Header = () => {
                 </div>
               )}
             </div>
-
-            { user ? (
-              <Button className="upgrade-btn" onClick={() => navigate('/upgrade')}>
-                Nâng cấp gói
-              </Button>
-            ) : (
-              <></>
-            )}
+            
+            <Button className="upgrade-btn">
+              Nâng cấp gói
+            </Button>
           </div>
         </div>
         

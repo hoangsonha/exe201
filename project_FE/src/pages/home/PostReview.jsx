@@ -3,8 +3,8 @@ import { Modal, Button, Form, Alert, Row, Col, Badge, FloatingLabel } from "reac
 import { getHashtags } from "@/serviceAPI/hashtagService"
 import "./PostReview.css"
 import { UserContext } from "../../App"
-import { FaTimes, FaTag, FaImage, FaVideo, FaStar } from "react-icons/fa"
-import { FaCircleArrowRight } from "react-icons/fa6"
+import { FaTimes, FaTag, FaImage, FaVideo } from "react-icons/fa"
+import { FaCircleArrowRight, FaRegStar } from "react-icons/fa6"
 
 const PostReview = ({ show, onClose, onSubmit }) => {
     const [title, setTitle] = useState("")
@@ -158,12 +158,12 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                                 </div>
                                 <div>
                                     <div className="guideline-text-primary">không sử dụng</div>
-                                    <div className="guideline-text-secondary">những từ ngữ không đẹp x(</div>
+                                    <div className="guideline-text-secondary">những từ ngữ không đẹp</div>
                                 </div>
                             </div>
 
                             <div className="guideline-warning">
-                                *nếu bị phát hiện sử dụng hình ảnh ai, bạn sẽ bị đánh dấu và sẽ bị giảm đi lượt tương tác!
+                                *nếu bị phát hiện sử dụng hình ảnh AI, bạn sẽ bị đánh dấu và sẽ bị giảm đi lượt tương tác!
                             </div>
                         </div>
                     </Col>
@@ -335,7 +335,7 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                             </div>
                             
                             <div className="credibility-score">
-                                <FaStar className="credibility-header-star" />
+                                <FaRegStar className="credibility-header-star" />
                                 <span className="score-text">--%</span>
                             </div>
 

@@ -25,7 +25,7 @@
 
 .post-review-column {
   background-color: white;
-  border: 1px solid #666;
+  border: 3px solid #000000;
   border-radius: 0;
   box-shadow: 4px 4px 0px #000000;
   margin: 0 5px;
@@ -37,7 +37,7 @@
 
 .guideline-column {
   background-color: white;
-  border: 1px solid #666;
+  border: 3px solid #000000;
   border-radius: 0;
   box-shadow: 4px 4px 0px #000000;
   margin: 0 5px;
@@ -188,6 +188,7 @@
   outline: none;
   flex: 1;
   min-height: 120px;
+  field-sizing: content;
 }
 
 .content-textarea:focus {
@@ -271,8 +272,8 @@
 }
 
 .beta-badge {
-  font-size: 0.7rem;
-  background-color: #6c757d;
+  font-size: 0.9rem;
+  background-color: #92999f;
   color: white;
   border-radius: 10px;
   padding: 2px 8px;
@@ -293,7 +294,7 @@
 .credibility-header-star {
   width: 2.2rem;
   height: 2.2rem;
-  color: #ffeb55 !important;
+  color: #ffeb52 !important;
   margin-left: 8px;
   flex-shrink: 0;
 }
@@ -333,7 +334,7 @@
   color: white;
   padding: 0.25rem 0.5rem !important;
   border-radius: 0 !important;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.2rem;
   letter-spacing: 1px;
   display: flex;
@@ -460,7 +461,7 @@
   justify-content: center;
   padding: 2rem;
   cursor: pointer;
-  min-height: 200px;
+  min-height: 10px;
   background-color: white;
   border: none;
   transition: background-color 0.2s;

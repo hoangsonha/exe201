@@ -14,6 +14,7 @@ import Home from './pages/home/Home.jsx';
 import PostDetail from './pages/home/PostDetail.jsx';
 import AboutUs from './pages/aboutUs/AboutUs.jsx';
 import Explore from './pages/explore/Explore.jsx';
+import Upgrade from './pages/upgrade/Upgrade.jsx';
 
 export const UserContext = createContext(null);
 
@@ -57,6 +58,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/" element={<Home />} />
+                    <Route path="/upgrade" element={<Upgrade />} />
                     <Route path="/explore" element={<Explore />} />
                     <Route path="/about-us" element={<AboutUs />} />
                     <Route path="/post/:id" element={<PostDetail />} />

@@ -171,14 +171,14 @@ const Home = () => {
         // setLoading(true)
         const resultPurposes = await createReview(formData)
 
-        if (resultPurposes.data.status == "Success") {
+        if (resultPurposes.status == "Success") {
           alert("Bai cua ban da dduoc tao, Vui long cho duyet")
         } else {
           alert("Dã có lỗi, Vui long cho duyet123")
         }
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi api review:", error)
-        alert("Dã có lỗi, Vui long cho duyet")
+        alert(error.error)
       } finally {
         // setLoading(false)
         setShowPostReview(false);

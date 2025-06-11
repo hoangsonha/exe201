@@ -82,6 +82,10 @@ public class ReviewServiceImpl implements ReviewService {
 
         List<ReviewHashtag> list = new ArrayList<>();
 
+        if (request.getHashtags().isEmpty()) {
+            throw new BadRequestException("Hashtags can not be empty");
+        }
+
         // Xử lý hashtag
         for (Integer tagName : request.getHashtags()) {
             Hashtag hashtag = hashtagRepository.findById(tagName).orElse(null);

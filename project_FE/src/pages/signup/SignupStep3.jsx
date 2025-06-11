@@ -1,7 +1,8 @@
 import { Button } from "react-bootstrap";
 import { useState, useContext, useEffect, useRef } from "react";
-import logo from '@/assets/logo3.png';
-import imageURL from '@/constants/imageURL';
+import logo from '../../assets/logo3.png';
+import imageURL from '../../constants/imageURL';
+import { createImageUser } from "../../serviceAPI/userService"
 import { UserContext } from "../../App";
 import "./Signup.css";
 
@@ -17,20 +18,35 @@ const SignupStep3 = ({ onComplete }) => {
         setSelectedAvatar(avatarKey);
     };
 
-    const handleSave = async () => {
+    const handleSave = async (e) => {
+        e.preventDefault();
         if (!selectedAvatar) return;
         
         setLoading(true);
         try {
             const avatarUrl = imageURL[selectedAvatar];
-            
+
             if (user && user.id) {
                 
-            }
-            
-            if (onComplete) {
-                onComplete(selectedAvatar);
-            }
+                const result = await createImageUser({ userId: user.id, imageUrl: avatarUrl });
+
+                console.log(result);
+
+                if (result.status == 'Success') {
+
+                    const updatedUser = {
+                        ...user,
+                        avatar: result.data.avatar
+                    };
+
+                    updateUser(updatedUser);
+
+                    onComplete(selectedAvatar);
+                    
+                }
+            } else {
+            onComplete(selectedAvatar);
+        }
         } catch (error) {
             console.error("Error updating avatar:", error);
         } finally {

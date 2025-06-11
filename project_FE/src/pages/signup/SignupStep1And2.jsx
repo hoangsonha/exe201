@@ -32,9 +32,6 @@ const SignupStep1And2 = ({
     const { signIn } = useContext(UserContext);
 
     const handleEmailChange = (e) => {
-
-        console.log(e.target.value);
-
         setemail(e.target.value || "");
         if (show) setShow(false);
         if (onemailChange) onemailChange(e.target.value || "");
@@ -148,11 +145,7 @@ const SignupStep1And2 = ({
         try {
             let verification = verificationCode.join('')
 
-            console.log(verification)
-
             const userData = await verificationCodeAPi({ email: email, verificationCode: verification });
-
-            console.log(userData)
 
             const userFetch = userData.data;
                 if (userFetch.code == 'Success') {
@@ -164,7 +157,8 @@ const SignupStep1And2 = ({
                         refreshToken: userFetch['refreshToken'],
                         email: userFetch['email'],
                         id: userFetch['userId'],
-                        role: role
+                        role: role,
+                        avatar: userFetch['avatar']
                     }
         
                     signIn(user);

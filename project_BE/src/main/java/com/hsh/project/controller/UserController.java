@@ -5,6 +5,7 @@ import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.internal.PagingResponse;
 import com.hsh.project.dto.request.CreateEmployeeRequest;
 import com.hsh.project.dto.request.UpdateEmployeeRequest;
+import com.hsh.project.dto.request.UserCreateImageRequest;
 import com.hsh.project.dto.request.UserRegisterHashTagRequest;
 import com.hsh.project.dto.response.ReviewResponseDTO;
 import com.hsh.project.exception.BadRequestException;
@@ -85,6 +86,17 @@ public class UserController {
         PagingResponse results = userService.getAllAccountPaging(resolvedCurrentPage, resolvedPageSize);
         List<?> data = (List<?>) results.getData();
         return ResponseEntity.status(!data.isEmpty() ? HttpStatus.OK : HttpStatus.BAD_REQUEST).body(results);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PostMapping("/image")
+    public ResponseEntity<ObjectResponse> createImageUser(@RequestBody UserCreateImageRequest request) {
+        UserDTO result = userService.createImageUser(request);
+        return result != null
+                ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "create image for user successfully", result))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ObjectResponse("Failed", "create image for user failed", null));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")

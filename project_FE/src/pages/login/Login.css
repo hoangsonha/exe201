@@ -155,7 +155,6 @@ input:focus, select:focus, .form-control:focus {
   box-shadow: 4px 4px 0px #000000 !important;
   color: white !important;
   outline: none !important;
-  padding: 0.25rem 0.5rem !important;
 }
 
 .signup-btn {

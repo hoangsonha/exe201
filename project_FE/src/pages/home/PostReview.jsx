@@ -340,25 +340,18 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                             </div>
 
                             <div className="credibility-metrics">
-                                <div className="metric-item">
-                                    <div className="metric-label">góc nhìn của bài viết: --</div>
-                                </div>
-                                
-                                <div className="metric-item">
-                                    <div className="metric-label">người hay máy: --</div>
-                                </div>
-                                
-                                <div className="metric-item">
-                                    <div className="metric-label">độ liên quan: --</div>
-                                </div>
-                                
-                                <div className="metric-item">
-                                    <div className="metric-label">tính khách quan: --</div>
-                                </div>
-                                
-                                <div className="metric-item">
-                                    <div className="metric-label">có dùng AI: --</div>
-                                </div>
+                                {[
+                                    "Góc nhìn của bài viết",
+                                    "Người hay máy viết",
+                                    "Có dùng AI",
+                                    "Không vi phạm chính sách",
+                                    "Dễ đọc, không lỗi chính tả"
+                                ].map((label, idx) => (
+                                    <div key={idx} className="metric-item d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                        <div className="metric-label small text-muted">{label}</div>
+                                        <div className="metric-value fw-medium small">--</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </Col>

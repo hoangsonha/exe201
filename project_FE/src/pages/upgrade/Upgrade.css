@@ -273,24 +273,27 @@
 }
 
 .back-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
   position: absolute;
-  top: 100px;
+  top: 1.5rem;
   right: 10rem;
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #000000 !important;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: white;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
   transition: all 0.2s;
-  z-index: 1002;
-  margin-top: -7rem;
+  box-shadow: 3px 3px 0px #000000 !important;
+  border-radius: 0px !important;
+  width: 60px;
+  height: 40px;
 }
 
 .back-button:hover {
-  transform: translateX(-5px);
+  transform: translateY(-5px);
 }
 
 .qr-container {

@@ -150,3 +150,44 @@ export const restoreEmployee = async (id) => {
         }
     }
 };
+
+// New API functions for user profile page
+export const getUserProfile = async (userId) => {
+  try {
+    const res = await get(`${API}/profile/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return { status: "Fail", message: "Failed to get user profile", data: null };
+  }
+};
+
+export const getUserPosts = async (userId) => {
+  try {
+    const res = await get(`${API}/${userId}/posts`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user posts:", error);
+    return { status: "Fail", message: "Failed to get user posts", data: null };
+  }
+};
+
+export const getUserComments = async (userId) => {
+  try {
+    const res = await get(`${API}/${userId}/comments`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user comments:", error);
+    return { status: "Fail", message: "Failed to get user comments", data: null };
+  }
+};
+
+export const getUserLikedPosts = async (userId) => {
+  try {
+    const res = await get(`${API}/${userId}/likes`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user liked posts:", error);
+    return { status: "Fail", message: "Failed to get user liked posts", data: null };
+  }
+};

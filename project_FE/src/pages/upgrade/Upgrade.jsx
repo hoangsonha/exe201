@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import { RiArrowGoBackFill } from "react-icons/ri";
-import logo from '@/assets/logo3.png';
-import toi from '@/assets/toi.png';
-import { UserContext } from '../../App';
-import { useNavigate } from 'react-router';
-import './Upgrade.css';
+import { useState, useEffect, useContext } from 'react'
+import { Button, Form } from 'react-bootstrap'
+import { RiArrowGoBackFill } from "react-icons/ri"
+import logo from '@/assets/logo3.png'
+import toi from '@/assets/toi.png'
+import { UserContext } from '../../App'
+import { useNavigate } from 'react-router'
+import './Upgrade.css'
 
 const getPackages = () => {
   return [
@@ -53,30 +53,30 @@ const getPackages = () => {
       isCurrentPlan: false,
       isBuyable: false
     }
-  ];
-};
+  ]
+}
 
 const Upgrade = () => {
-  const [showPayment, setShowPayment] = useState(false);
-  const [packages, setPackages] = useState([]);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("banking");
-  const { user } = useContext(UserContext);
-  const navigate = useNavigate();
+  const [showPayment, setShowPayment] = useState(false)
+  const [packages, setPackages] = useState([])
+  const [selectedPackage, setSelectedPackage] = useState(null)
+  const [paymentMethod, setPaymentMethod] = useState("banking")
+  const { user } = useContext(UserContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    const packageData = getPackages();
-    setPackages(packageData);
-  }, []);
+    const packageData = getPackages()
+    setPackages(packageData)
+  }, [])
 
   const handleUpgradePackage = (packageData) => {
-    setSelectedPackage(packageData);
-    setShowPayment(true);
-  };
+    setSelectedPackage(packageData)
+    setShowPayment(true)
+  }
 
   const handleBack = () => {
-    setShowPayment(false);
-  };
+    setShowPayment(false)
+  }
 
   if (showPayment) {
     return (
@@ -131,7 +131,7 @@ const Upgrade = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -195,7 +195,7 @@ const Upgrade = () => {
 
       <img src={toi} alt="Logo" className="toi-img" />
     </div>
-  );
-};
+  )
+}
 
-export default Upgrade;
+export default Upgrade

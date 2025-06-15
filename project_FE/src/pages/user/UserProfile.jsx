@@ -1,52 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RiArrowGoBackFill } from "react-icons/ri"
+import { IoHome } from 'react-icons/io5'
 import { Button } from 'react-bootstrap'
 import logo from '@/assets/logo3.png'
 import banner from '@/assets/ads/banner.svg'
 import UserInfo from './UserInfo'
 import UserContent from './UserContent'
+import { UserContext } from '../../App'
 import './UserProfile.css'
-
-const fakeUserData = {
-  username: "lùn_củ_tỏi",
-  point: 45,
-  avatar: "https://placehold.co/200x200",
-  gender: "Male",
-  rating: 93,
-  userHashtags: [
-    "nghệ thuật",
-    "âm nhạc",
-    "sức khoẻ",
-    "công việc",
-    "công nghệ",
-    "giải trí",
-    "phim ảnh"
-  ]
-}
-
-const fakePosts = [
-  {
-    id: 1,
-    title: "TẠI SAO KHÔNG PHẢI BẮC NINH MÀ LÀ BẮC BLING ?",
-    content: "Dạ thưa, đã là tên riêng của 1 bài hát, nó phải có chất riêng. Khi tìm kiếm Bắc Bling ra ngay bài hát của Hoà, còn tìm Bắc Ninh nó hiện tùm lum. Chưa kể nay nhạc cho nhiều lứa tuổi nhưng giới trẻ chiếm phần lớn, cần có sự đổi mới tuổi trẻ.",
-    likes: 153,
-    comments: 48,
-    rating: 97,
-    date: "11/2/25",
-    category: "âm nhạc"
-  },
-  {
-    id: 2,
-    title: "KHÔNG NÓI ĐƯỢC THÌ VIẾT...",
-    content: "Là một nhà tri liệu tâm lý, tôi mong bạn biết rằng: viết về cảm xúc của bạn trong 15-20 phút mỗi ngày, liên tục trong 4 ngày, có thể giảm 37% mức độ căng thẳng và lo âu.",
-    likes: 89,
-    comments: 23,
-    rating: 92,
-    date: "10/28/25",
-    category: "sức khoẻ"
-  }
-]
 
 const fakeComments = [
   {
@@ -90,9 +51,28 @@ const fakeLikedPosts = [
 
 const UserProfile = () => {
   const navigate = useNavigate()
+  const { user } = useContext(UserContext)
+  const [userLogin, setUserLogin] = useState(null)
+  const [userPosts, setUserPosts] = useState(null)
   const [activeTab, setActiveTab] = useState('posts')
-  const [displayData, setDisplayData] = useState(fakePosts)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchUserInfo()
+  }, [])
+
+  const fetchUserInfo = async () => {
+    try {
+      const result = await getUserById(user.id)
+      const posts = await getUserPosts(user.id)
+      setUserLogin(result.data)
+      setUserPosts(posts.data)
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleTabChange = (tab) => {
     setLoading(true)
@@ -122,14 +102,14 @@ const UserProfile = () => {
         <img src={logo} alt="Logo" className="logo-img" onClick={() => navigate('/')} style={{ cursor: 'pointer' }} />
       </div>
       <Button className="back-button" onClick={() => navigate('/')}>
-        <RiArrowGoBackFill />
+        <IoHome />
       </Button>
 
       <div className="profile-content">
-        <UserInfo userData={fakeUserData} />
+        <UserInfo userData={userLogin} />
         <UserContent 
           activeTab={activeTab} 
-          displayData={displayData} 
+          displayData={userPosts} 
           setActiveTab={handleTabChange}
           loading={loading}
         />

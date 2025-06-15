@@ -7,16 +7,27 @@ import './UserProfile.css'
 const UserInfo = ({ userData }) => {
   const navigate = useNavigate();
 
-  const getGenderIcon = () => {
+  const getGenderDisplay = () => {
     switch (userData.gender) {
       case 'Male':
-        return <FaMale />
+        return {
+          icon: <FaMale />,
+          text: 'Không phải nữ'
+        }
       case 'Female':
-        return <FaFemale />
+        return {
+          icon: <FaFemale />,
+          text: 'Không phải nam'
+        }
       default:
-        return <BsGenderAmbiguous />
+        return {
+          icon: <BsGenderAmbiguous />,
+          text: 'Không xác định'
+        }
     }
   }
+
+  const genderDisplay = getGenderDisplay()
 
   return (
     <div className="profile-info-section">
@@ -34,8 +45,8 @@ const UserInfo = ({ userData }) => {
         <h2 className="profile-username">@{userData.username}</h2>
         
         <div className="gender-display">
-          {getGenderIcon()}
-          <span>không phải nam</span>
+          {genderDisplay.icon}
+          <span>{genderDisplay.text}</span>
         </div>
 
         <div className="rating-display">

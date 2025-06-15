@@ -1,4 +1,5 @@
-import { Spinner } from 'react-bootstrap'
+import { Spinner, Card } from 'react-bootstrap'
+import { FaRegHeart, FaRegCommentDots, FaRegStar, FaRegClock } from "react-icons/fa";
 import './UserProfile.css'
 
 const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
@@ -21,57 +22,69 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
   const counts = getTabCounts()
 
   const renderPostItem = (post) => (
-    <div key={post.id} className="profile-content-item">
-      <div className="profile-content-header">
-        <div className="profile-content-category">{post.category}</div>
-        <h3 className="profile-content-title">{post.title}</h3>
-      </div>
-      <p className="profile-content-text">{post.content}</p>
-      <div className="profile-content-stats">
-        <div className="profile-content-stat">❤️ {post.likes}</div>
-        <div className="profile-content-stat">💬 {post.comments}</div>
-        <div className="profile-content-stat">⭐ {post.rating}%</div>
-        <div className="profile-content-stat">📅 {post.date}</div>
-      </div>
-    </div>
+    <Card className="review-card post-detail-card" key={post.id}>
+      <Card.Body>
+        <div className="review-header">
+          <div className="review-tag">{post.category}</div>
+        </div>
+        <h4 className="review-title">{post.title}</h4>
+        <p className="review-content">{post.content}</p>
+        <div className="review-actions">
+          <div className="action-item">
+            <span className="heart-icon"><FaRegHeart /></span> {post.likes}
+          </div>
+          <div className="action-item">
+            <span className="comment-icon"><FaRegCommentDots /></span> {post.comments}
+          </div>
+          <div className="action-item">
+            <span className="star-icon"><FaRegStar /></span> {post.rating}%
+          </div>
+          <div className="action-item">
+            <span className="time-icon"><FaRegClock /></span> {post.date}
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   )
 
   const renderCommentItem = (comment) => (
-    <div key={comment.id} className="profile-content-item">
-      <div className="profile-content-header">
-        <h4 className="profile-content-title">Re: {comment.postTitle}</h4>
-      </div>
-      <p className="profile-content-text">{comment.comment}</p>
-      <div className="profile-content-stats">
-        <div className="profile-content-stat">❤️ {comment.likes}</div>
-        <div className="profile-content-stat-empty"></div>
-        <div className="profile-content-stat-empty"></div>
-        <div className="profile-content-stat">📅 {comment.date}</div>
-      </div>
-    </div>
+    <Card className="review-card post-detail-card" key={comment.id}>
+      <Card.Body>
+        <div className="review-header">
+          <div className="review-tag">Trả lời</div>
+        </div>
+        <h4 className="review-title">Re: {comment.postTitle}</h4>
+        <p className="review-content">{comment.comment}</p>
+        <div className="review-actions">
+          <div className="action-item">
+            <span className="heart-icon"><FaRegHeart /></span> {comment.likes}
+          </div>
+          <div className="action-item">
+            <span className="time-icon"><FaRegClock /></span> {comment.date}
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   )
 
   return (
     <div className="profile-content-section">
       <div className="profile-tabs">
-        <button 
-          className={`profile-tab-button ${activeTab === 'posts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('posts')}
-        >
-          {counts.posts > 0 ? `${counts.posts} bài viết` : 'Bài viết'}
-        </button>
-        <button 
-          className={`profile-tab-button ${activeTab === 'comments' ? 'active' : ''}`}
-          onClick={() => setActiveTab('comments')}
-        >
-          {counts.comments > 0 ? `${counts.comments} trả lời` : 'Trả lời'}
-        </button>
-        <button 
-          className={`profile-tab-button ${activeTab === 'likes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('likes')}
-        >
-          đã thích
-        </button>
+        <Card className="tab-card" onClick={() => setActiveTab('posts')}>
+          <Card.Body className={`tab-body ${activeTab === 'posts' ? 'active' : ''}`}>
+            {counts.posts > 0 ? `${counts.posts} bài viết` : 'Bài viết'}
+          </Card.Body>
+        </Card>
+        <Card className="tab-card" onClick={() => setActiveTab('comments')}>
+          <Card.Body className={`tab-body ${activeTab === 'comments' ? 'active' : ''}`}>
+            {counts.comments > 0 ? `${counts.comments} trả lời` : 'Trả lời'}
+          </Card.Body>
+        </Card>
+        <Card className="tab-card" onClick={() => setActiveTab('likes')}>
+          <Card.Body className={`tab-body ${activeTab === 'likes' ? 'active' : ''}`}>
+            đã thích
+          </Card.Body>
+        </Card>
       </div>
 
       <div className="profile-content-display">
@@ -81,11 +94,11 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
             <p>Đang tải...</p>
           </div>
         ) : displayData && displayData.length > 0 ? (
-          <>
+          <div className="content-container">
             {activeTab === 'posts' && displayData.map(post => renderPostItem(post))}
             {activeTab === 'comments' && displayData.map(comment => renderCommentItem(comment))}
             {activeTab === 'likes' && displayData.map(post => renderPostItem(post))}
-          </>
+          </div>
         ) : (
           <div className="profile-no-content">
             <p>Không có nội dung nào để hiển thị</p>

@@ -64,8 +64,8 @@
   
   .review-tag {
     display: inline-block;
-    background-color: #fef846;
-    color: #333;
+    background-color: #e1f62b;
+    color: #5f4232;
     font-weight: bold;
     padding: 8px 15px;
     border-radius: 0;
@@ -120,7 +120,7 @@
   
   .action-item.liked .heart-icon {
     animation: heartPop 0.4s ease;
-    color: #f2ec28;
+    color: #e1f62b;
   }
 
   @keyframes heartPop {
@@ -137,7 +137,7 @@
   
   .action-item.bookmarked .bookmark-icon {
     animation: bookmarkPop 0.4s ease;
-    color: #f2ec28;
+    color: #e1f62b;
   }
   
   @keyframes bookmarkPop {

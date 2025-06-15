@@ -4,9 +4,6 @@ const API = "/api/v1/users";
 
 const API_ROLE = "/api/v1/roles";
 
-
-
-
 export const createHashtagUser = async (params) => {
   try {
     const res = await post(API + '/hashtags', params);
@@ -151,10 +148,9 @@ export const restoreEmployee = async (id) => {
     }
 };
 
-// New API functions for user profile page
-export const getUserProfile = async (userId) => {
+export const getUserById = async (id) => {
   try {
-    const res = await get(`${API}/profile/${userId}`);
+    const res = await get(`${API}/${id}`);
     return res.data;
   } catch (error) {
     console.error("Error getting user profile:", error);
@@ -162,9 +158,9 @@ export const getUserProfile = async (userId) => {
   }
 };
 
-export const getUserPosts = async (userId) => {
+export const getUserPosts = async (id) => {
   try {
-    const res = await get(`${API}/${userId}/posts`);
+    const res = await get(`${API}/${id}/my-reviews`);
     return res.data;
   } catch (error) {
     console.error("Error getting user posts:", error);
@@ -172,9 +168,9 @@ export const getUserPosts = async (userId) => {
   }
 };
 
-export const getUserComments = async (userId) => {
+export const getUserComments = async (id) => {
   try {
-    const res = await get(`${API}/${userId}/comments`);
+    const res = await get(`${API}/${id}/comments`);
     return res.data;
   } catch (error) {
     console.error("Error getting user comments:", error);
@@ -182,9 +178,9 @@ export const getUserComments = async (userId) => {
   }
 };
 
-export const getUserLikedPosts = async (userId) => {
+export const getUserLikedPosts = async (id) => {
   try {
-    const res = await get(`${API}/${userId}/likes`);
+    const res = await get(`${API}/${id}/likes`);
     return res.data;
   } catch (error) {
     console.error("Error getting user liked posts:", error);

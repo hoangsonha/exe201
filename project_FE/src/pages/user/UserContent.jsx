@@ -7,13 +7,13 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
     const counts = {
       posts: 0,
       comments: 0,
-      likes: 0
+      saves: 0
     }
     
     if (!loading && displayData) {
       if (activeTab === 'posts') counts.posts = displayData.length;
       if (activeTab === 'comments') counts.comments = displayData.length;
-      if (activeTab === 'likes') counts.likes = displayData.length;
+      if (activeTab === 'saves') counts.saves = displayData.length;
     }
     
     return counts;
@@ -72,17 +72,17 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
       <div className="profile-tabs">
         <Card className="tab-card" onClick={() => setActiveTab('posts')}>
           <Card.Body className={`tab-body ${activeTab === 'posts' ? 'active' : ''}`}>
-            {counts.posts > 0 ? `${counts.posts} bài viết` : 'Bài viết'}
+            {counts.posts > 0 ? `${counts.posts} bài viết` : 'bài viết'}
           </Card.Body>
         </Card>
         <Card className="tab-card" onClick={() => setActiveTab('comments')}>
           <Card.Body className={`tab-body ${activeTab === 'comments' ? 'active' : ''}`}>
-            {counts.comments > 0 ? `${counts.comments} trả lời` : 'Trả lời'}
+            {counts.comments > 0 ? `${counts.comments} trả lời` : 'trả lời'}
           </Card.Body>
         </Card>
-        <Card className="tab-card" onClick={() => setActiveTab('likes')}>
-          <Card.Body className={`tab-body ${activeTab === 'likes' ? 'active' : ''}`}>
-            đã thích
+        <Card className="tab-card" onClick={() => setActiveTab('saves')}>
+          <Card.Body className={`tab-body ${activeTab === 'saves' ? 'active' : ''}`}>
+            đã lưu
           </Card.Body>
         </Card>
       </div>

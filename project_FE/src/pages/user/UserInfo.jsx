@@ -8,6 +8,12 @@ const UserInfo = ({ userData }) => {
   const navigate = useNavigate();
 
   const getGenderDisplay = () => {
+    if (!userData || !userData.gender) {
+      return {
+        icon: <BsGenderAmbiguous />,
+        text: 'Không xác định'
+      }
+    }
     switch (userData.gender) {
       case 'Male':
         return {
@@ -33,17 +39,18 @@ const UserInfo = ({ userData }) => {
     <div className="profile-info-section">
       <div className="point-display">
         <img src={pointLogo} alt="Point Logo" className="point-logo-img" />
-        <span>{userData.point}</span>
+        <span className="point-display-value">{userData?.point ?? 0}</span>
         <span>tỏi</span>
       </div>
 
       <div className="profile-avatar">
-        <img src={userData.avatar} alt="User Avatar" />
+        <img src={userData?.avatar} alt="User Avatar" />
       </div>
 
       <div className="profile-details">
-        <h2 className="profile-username">@{userData.username}</h2>
-        
+        <h2 className="profile-username">
+          <span className="at-symbol">@</span>{userData?.userName}
+        </h2>
         <div className="gender-display">
           {genderDisplay.icon}
           <span>{genderDisplay.text}</span>
@@ -51,15 +58,19 @@ const UserInfo = ({ userData }) => {
 
         <div className="rating-display">
           <FaStar className='rating-display-icon'/>
-          <span className='rating-display-point'>{userData.rating}%</span>
+          <span className='rating-display-point'>{userData?.rating ?? '--'}%</span>
         </div>
 
         <div className="interests-section">
           <p>hứng thú với</p>
           <div className="hashtags-container">
-            {userData.userHashtags?.map((tag, index) => (
-              <span key={index} className="hashtag">{tag}</span>
-            ))}
+            {userData?.listHashTagUser && userData?.listHashTagUser.length > 0 ? (
+              userData.listHashTagUser.map((hashtag, index) => (
+                <span key={index} className="hashtag">{hashtag.name} </span>
+              ))
+            ) : (
+              <span>Chưa chọn topic</span>
+            )}
           </div>
         </div>
 

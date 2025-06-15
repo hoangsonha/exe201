@@ -178,12 +178,12 @@ export const getUserComments = async (id) => {
   }
 };
 
-export const getUserLikedPosts = async (id) => {
+export const getUserSavedPosts = async (id) => {
   try {
-    const res = await get(`${API}/${id}/likes`);
+    const res = await get(`${API}/${id}/saved-reviews`);
     return res.data;
   } catch (error) {
-    console.error("Error getting user liked posts:", error);
-    return { status: "Fail", message: "Failed to get user liked posts", data: null };
+    console.error("Error getting user saved posts:", error);
+    return { status: "Fail", message: "Failed to get user saved posts", data: null };
   }
 };

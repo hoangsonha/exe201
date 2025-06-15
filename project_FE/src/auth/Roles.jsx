@@ -16,6 +16,6 @@ export const DEFAULT_PATHS = {
     [ROLES.ADMIN]: '/manager-employees',
     [ROLES.MANAGER]: '/vaccines',
     [ROLES.STAFF]: '/vaccines',
-    [ROLES.USER]: '/home',
+    [ROLES.USER]: '/',
 }
 

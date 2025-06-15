@@ -7,6 +7,7 @@ import banner from '@/assets/ads/banner.svg'
 import UserInfo from './UserInfo'
 import UserContent from './UserContent'
 import { UserContext } from '../../App'
+import { getUserById, getUserPosts, getUserSavedPosts } from '@/serviceAPI/userService'
 import './UserProfile.css'
 
 const fakeComments = [
@@ -26,7 +27,7 @@ const fakeComments = [
   }
 ]
 
-const fakeLikedPosts = [
+const fakeSavedPosts = [
   {
     id: 3,
     title: "Top 10 địa điểm du lịch phải đến trong năm 2025",
@@ -53,7 +54,10 @@ const UserProfile = () => {
   const navigate = useNavigate()
   const { user } = useContext(UserContext)
   const [userLogin, setUserLogin] = useState(null)
-  const [userPosts, setUserPosts] = useState(null)
+  const [userPosts, setUserPosts] = useState([])
+  const [userComments, setUserComments] = useState([])
+  const [userSaves, setUserSaves] = useState([])
+  const [displayData, setDisplayData] = useState(null)
   const [activeTab, setActiveTab] = useState('posts')
   const [loading, setLoading] = useState(false)
 
@@ -65,8 +69,13 @@ const UserProfile = () => {
     try {
       const result = await getUserById(user.id)
       const posts = await getUserPosts(user.id)
+      const savedPosts = await getUserSavedPosts(user.id)
+
       setUserLogin(result.data)
       setUserPosts(posts.data)
+      setUserSaves(savedPosts.data)
+
+      console.log("Thông tin người dùng:", result.data)
     } catch (error) {
       console.error("Lỗi khi lấy thông tin người dùng:", error)
     } finally {
@@ -80,13 +89,13 @@ const UserProfile = () => {
     setTimeout(() => {
       switch(tab) {
         case 'posts':
-          setDisplayData(fakePosts)
+          setDisplayData(userPosts)
           break;
         case 'comments':
           setDisplayData(fakeComments)
           break;
-        case 'likes':
-          setDisplayData(fakeLikedPosts)
+        case 'saves':
+          setDisplayData(userSaves)
           break;
         default:
           setDisplayData(fakePosts)
@@ -109,7 +118,7 @@ const UserProfile = () => {
         <UserInfo userData={userLogin} />
         <UserContent 
           activeTab={activeTab} 
-          displayData={userPosts} 
+          displayData={displayData} 
           setActiveTab={handleTabChange}
           loading={loading}
         />

@@ -163,7 +163,7 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                             </div>
 
                             <div className="guideline-warning">
-                                *nếu bị phát hiện sử dụng hình ảnh AI, bạn sẽ bị đánh dấu và sẽ bị giảm đi lượt tương tác!
+                                ** nếu bị phát hiện sử dụng hình ảnh AI, bạn sẽ bị đánh dấu và sẽ bị giảm đi lượt tương tác!
                             </div>
                         </div>
                     </Col>
@@ -179,21 +179,21 @@ const PostReview = ({ show, onClose, onSubmit }) => {
 
                             <div className="content-form">
                                 {/* Tag Dropdown */}
-                                <div className="mb-3 position-relative" ref={dropdownRef}>
+                                <div className="tag-dropdown-wrapper" ref={dropdownRef}>
                                     <div className="tag-review-container" onClick={toggleTagDropdown}>
                                         <span className="tag-review-text">tag review</span>
                                         <FaTag className="tag-review-icon" />
                                     </div>
 
                                     {showTagDropdown && (
-                                        <div className="tag-dropdown-menu shadow-sm position-absolute bg-white rounded-2 mt-1" style={{ width: '200px', zIndex: 1050 }}>
-                                            <div className="p-2">
-                                                <div className="small px-2 py-1">Gợi ý tag</div>
-                                                <div className="dropdown-divider my-1"></div>
+                                        <div className="tag-dropdown-menu">
+                                            <div className="tag-dropdown-content">
+                                                <div className="tag-dropdown-header">Gợi ý tag</div>
+                                                <div className="tag-dropdown-divider"></div>
                                                 {hashtags.map(tag => (
                                                     <button
                                                         key={tag.id}
-                                                        className="tag-dropdown-item d-block w-100 text-start px-3 py-2 small border-0 bg-transparent"
+                                                        className="tag-dropdown-item"
                                                         onClick={() => handleTagSelect(tag)}
                                                     >
                                                         #{tag.name}
@@ -205,23 +205,20 @@ const PostReview = ({ show, onClose, onSubmit }) => {
                                 </div>
 
                                 {/* Selected Tags */}
-                                <div className="mb-3 d-flex flex-wrap gap-2">
+                                <div className="selected-tags-container">
                                     {selectedTags.map(tag => (
-                                        <Badge
+                                        <div
                                             key={tag.id}
-                                            bg="primary"
-                                            className="d-flex align-items-center px-3 py-2 rounded-pill"
-                                            style={{ fontSize: '0.875rem' }}
+                                            className="tag-badge"
                                         >
                                             #{tag.name}
                                             <button
                                                 onClick={() => removeTag(tag.id)}
-                                                className="ms-2 bg-transparent border-0 text-white p-0"
-                                                style={{ fontSize: '0.75rem' }}
+                                                className="tag-remove-button"
                                             >
                                                 <FaTimes />
                                             </button>
-                                        </Badge>
+                                        </div>
                                     ))}
                                 </div>
 
@@ -328,7 +325,7 @@ const PostReview = ({ show, onClose, onSubmit }) => {
 
                     {/* Right Sidebar - Credibility Score */}
                     <Col md={3}>
-                        <div className="post-review-column p-4">
+                        <div className="credibility-column p-4">
                             <div className="credibility-header">
                                 <h5 className="credibility-title">điểm tin cậy</h5>
                                 <span className="beta-badge">(beta)</span>

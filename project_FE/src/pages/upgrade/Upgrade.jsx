@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { RiArrowGoBackFill } from "react-icons/ri"
+import { RiArrowGoBackFill } from 'react-icons/ri'
 import logo from '@/assets/logo3.png'
 import toi from '@/assets/toi.png'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
+import { getUserById } from '@/serviceAPI/userService'
 import './Upgrade.css'
 
 const getPackages = () => {
@@ -60,14 +61,25 @@ const Upgrade = () => {
   const [showPayment, setShowPayment] = useState(false)
   const [packages, setPackages] = useState([])
   const [selectedPackage, setSelectedPackage] = useState(null)
+  const [userData, setUserData] = useState(null)
   const [paymentMethod, setPaymentMethod] = useState("banking")
   const { user } = useContext(UserContext)
   const navigate = useNavigate()
 
   useEffect(() => {
+    fetchUserInfo()
     const packageData = getPackages()
     setPackages(packageData)
   }, [])
+
+  const fetchUserInfo = async () => {
+    try {
+      const result = await getUserById(user.id)
+      setUserData(result.data)
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error)
+    }
+  }
 
   const handleUpgradePackage = (packageData) => {
     setSelectedPackage(packageData)
@@ -92,7 +104,7 @@ const Upgrade = () => {
           <div className="payment-form">
             <div className="form-group">
               <label className="form-label">tên tài khoản</label>
-              <div className="form-control-readonly"></div>
+              <div className="form-control-readonly">@{userData?.userName}</div>
             </div>
             
             <div className="form-group">

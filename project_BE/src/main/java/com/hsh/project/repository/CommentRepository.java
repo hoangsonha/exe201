@@ -12,4 +12,8 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findByReview_ReviewID(Long reviewId);
     Optional<Comment> findByCommentID(Long commentId);
+    List<Comment> findByParentCommentCommentID(Long parentCommentId);
+    List<Comment> findByParentCommentIsNull();
+    List<Comment> findByReviewReviewID(Long reviewID);
+    List<Comment> findByParentComment_CommentID(Long parentCommentId);
 }

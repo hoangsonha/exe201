@@ -1,5 +1,6 @@
 package com.hsh.project.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hsh.project.pojo.enums.EnumReviewStatus;
 import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

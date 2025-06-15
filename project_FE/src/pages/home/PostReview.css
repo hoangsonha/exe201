@@ -1,3 +1,7 @@
+.post-review-modal {
+  margin-top: -2rem;
+}
+
 .post-review-modal .modal-content {
   border-radius: 12px;
   overflow: visible;
@@ -25,9 +29,9 @@
 
 .post-review-column {
   background-color: white;
-  border: 3px solid #000000;
+  border: 1px solid #000000;
   border-radius: 0;
-  box-shadow: 4px 4px 0px #000000;
+  box-shadow: 2px 2px 0px #000000;
   margin: 0 5px;
   height: auto;
   min-height: 400px;
@@ -35,14 +39,26 @@
   flex-direction: column;
 }
 
-.guideline-column {
+.credibility-column {
   background-color: white;
-  border: 3px solid #000000;
+  border: 1px solid #000000;
   border-radius: 0;
-  box-shadow: 4px 4px 0px #000000;
+  box-shadow: 2px 2px 0px #000000;
   margin: 0 5px;
   height: auto;
-  min-height: 400px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.guideline-column {
+  background-color: white;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: 2px 2px 0px #000000;
+  margin: 0 5px;
+  height: auto;
+  min-height: 480px;
   display: flex;
   flex-direction: column;
 }
@@ -117,18 +133,19 @@
 }
 
 .tag-review-container {
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #434343;
+  border-radius: none !important;
   padding: 8px 12px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   cursor: pointer;
 }
 
 .tag-review-container:hover {
-  border-color: #999;
+  border-color: #000000;
+  box-shadow: 2px 2px 0px #000000;
 }
 
 .tag-review-text {
@@ -139,6 +156,100 @@
 .tag-review-icon {
   color: #777;
   font-size: 16px;
+}
+
+.tag-dropdown-wrapper {
+  position: relative;
+}
+
+.tag-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1050;
+  width: 200px;
+  background-color: white;
+  border-radius: none;
+  border: 1px solid #434343;
+  margin-top: -1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tag-dropdown-content {
+  padding: 0.5rem;
+}
+
+.tag-dropdown-header {
+  font-size: 1.4rem;
+  padding: 0.5rem 0.5rem;
+  color: #777;
+}
+
+.tag-dropdown-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0.25rem 0;
+}
+
+.tag-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.3rem;
+  line-height: 1.3rem;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.tag-dropdown-item:hover {
+  background-color: #e1f62b;
+  transform: translateX(15px);
+}
+
+.selected-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tag-badge {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #e1f62b;
+  border-radius: none;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px #000000 !important;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  position: relative;
+}
+
+.tag-remove-button {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background-color: #000000;
+  border: 1px solid #000000;
+  color: white;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.tag-remove-button:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
 .title-input {
@@ -153,7 +264,6 @@
   color: #333;
   background: transparent;
   outline: none;
-  margin-top: -2rem;
 }
 
 .title-input:focus {
@@ -330,7 +440,8 @@
 
 .post-review-btn {
   background-color: #ff6418 !important;
-  border: 3px solid #414040;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px transparent !important;
   color: white;
   padding: 0.25rem 0.5rem !important;
   border-radius: 0 !important;
@@ -348,11 +459,9 @@
 }
 
 .post-review-btn:hover, .post-review-btn:focus, .post-review-btn:active {
-  border: 3px solid #000000 !important;
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 0px #000000;
+  transform: translateY(-4px);
+  box-shadow: 2px 2px 0px #000000 !important;
   color: white !important;
-  outline: none !important;
 }
 
 @media (max-width: 767px) {
@@ -384,37 +493,6 @@
 
 .post-review-modal .modal-header {
   padding: 1.5rem 1.5rem 0.5rem;
-}
-
-.tag-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1050;
-  width: 200px;
-  padding: 0.5rem 0;
-  background-color: #fff;
-  border: none;
-  border-radius: 0.25rem;
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-}
-
-.tag-dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  clear: both;
-  font-weight: 400;
-  text-align: left;
-  white-space: nowrap;
-  background-color: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-.tag-dropdown-item:hover {
-  background-color: #f8f9fa;
-  text-decoration: none;
 }
 
 .media-preview-container {
@@ -504,25 +582,24 @@
 .media-remove-btn {
   position: absolute;
   top: -8px;
-  right: -8px;
-  width: 20px;
-  height: 20px;
-  background-color: #f6485a;
-  border: 2px solid white;
-  border-radius: 50%;
+  right: -6px;
+  background-color: #000000;
+  border: 1px solid #000000;
   color: white;
+  width: 15px;
+  height: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 10px;
-  z-index: 10;
-  transition: all 0.2s ease;
+  font-size: 1rem;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .media-remove-btn:hover {
-  background-color: #fb283d;
-  transform: scale(1.5);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
 .media-remove-btn svg {

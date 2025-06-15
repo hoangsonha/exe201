@@ -4,9 +4,6 @@ const API = "/api/v1/users";
 
 const API_ROLE = "/api/v1/roles";
 
-
-
-
 export const createHashtagUser = async (params) => {
   try {
     const res = await post(API + '/hashtags', params);
@@ -149,4 +146,44 @@ export const restoreEmployee = async (id) => {
             return { status: "Fail", message: "Unexpected error occurred.", data: null };
         }
     }
+};
+
+export const getUserById = async (id) => {
+  try {
+    const res = await get(`${API}/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return { status: "Fail", message: "Failed to get user profile", data: null };
+  }
+};
+
+export const getUserPosts = async (id) => {
+  try {
+    const res = await get(`${API}/${id}/my-reviews`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user posts:", error);
+    return { status: "Fail", message: "Failed to get user posts", data: null };
+  }
+};
+
+export const getUserComments = async (id) => {
+  try {
+    const res = await get(`${API}/${id}/comments`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user comments:", error);
+    return { status: "Fail", message: "Failed to get user comments", data: null };
+  }
+};
+
+export const getUserSavedPosts = async (id) => {
+  try {
+    const res = await get(`${API}/${id}/saved-reviews`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting user saved posts:", error);
+    return { status: "Fail", message: "Failed to get user saved posts", data: null };
+  }
 };

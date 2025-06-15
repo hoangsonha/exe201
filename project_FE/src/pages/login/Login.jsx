@@ -144,7 +144,7 @@ const Login = () => {
                         <Form.Group className="mb-4 position-relative">
                             <Form.Label htmlFor="username">
                                 <i className="bi bi-person-fill me-2"></i>
-                                tên tài khoản
+                                email
                             </Form.Label>
                             <div className="position-relative">
                                 <Form.Control

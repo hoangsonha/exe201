@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SavedReviewRepository extends JpaRepository<SavedReview, Integer> {
@@ -16,4 +17,9 @@ public interface SavedReviewRepository extends JpaRepository<SavedReview, Intege
     boolean existsByUser_UserIdAndReview_ReviewID(Long userUserId, Long reviewReviewID);
 
     SavedReview findByUser_UserIdAndReview_ReviewID(Long userUserId, Long reviewReviewID);
+    
+    Optional<SavedReview> findByUserUserIdAndReviewReviewID(Integer userId, Long reviewId);
+
+    List<SavedReview> findByUserUserIdAndStatus(Integer userId, Boolean status);
+
 }

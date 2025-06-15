@@ -345,10 +345,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
-    private List<CommentResponseDTO> buildCommentTree(List<Comment> allComments, Comment parent) {
+    public List<CommentResponseDTO> buildCommentTree(List<Comment> allComments, Comment parent) {
         return allComments.stream()
                 .filter(c -> Objects.equals(c.getParentComment(), parent))
-                .map(comment -> {
+                .<CommentResponseDTO>map(comment -> {
                     // Lấy likes cho comment
                     List<Like> commentLikes = likeRepository.findByTargetTypeAndTargetId(
                             EnumTargetType.COMMENT, comment.getCommentID());

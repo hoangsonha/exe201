@@ -289,7 +289,7 @@ public class DatabaseInit implements CommandLineRunner {
             sports.setTag("thể thao");
             sports.setTotalPost(0);
 
-            hashtagRepository.saveAll(List.of(technology, food, travel, fashion, movies, education, art, job, music, vehicle, law, science, sports));
+            hashtagRepository.saveAll(List.of(technology, food, travel, fashion, movies, education, art, household, nature, job, music, vehicle, law, science, sports));
         }
     }
 
@@ -359,9 +359,9 @@ public class DatabaseInit implements CommandLineRunner {
             Review foodReview = reviewRepository.findAll().get(1);
             Review travelReview = reviewRepository.findAll().get(2);
 
-            Hashtag technology = hashtagRepository.findByTag("technology");
-            Hashtag food = hashtagRepository.findByTag("food");
-            Hashtag travel = hashtagRepository.findByTag("travel");
+            Hashtag technology = hashtagRepository.findByTag("công nghệ");
+            Hashtag food = hashtagRepository.findByTag("đồ ăn");
+            Hashtag travel = hashtagRepository.findByTag("du lịch");
 
             ReviewHashtag techTag = new ReviewHashtag();
             techTag.setReview(techReview);
@@ -384,9 +384,9 @@ public class DatabaseInit implements CommandLineRunner {
             User premiumUser = userRepository.findByUserName("premium_user");
             User regularUser = userRepository.findByUserName("regular_user");
 
-            Hashtag technology = hashtagRepository.findByTag("technology");
-            Hashtag food = hashtagRepository.findByTag("food");
-            Hashtag travel = hashtagRepository.findByTag("travel");
+            Hashtag technology = hashtagRepository.findByTag("công nghệ");
+            Hashtag food = hashtagRepository.findByTag("đồ ăn");
+            Hashtag travel = hashtagRepository.findByTag("du lịch");
 
             UserHashtag userTech = new UserHashtag();
             userTech.setUser(premiumUser);

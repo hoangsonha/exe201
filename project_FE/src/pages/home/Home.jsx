@@ -105,7 +105,6 @@ import { SiFireship } from "react-icons/si"
 import { FaRegPenToSquare } from "react-icons/fa6"
 import Typed from "typed.js"
 import adsGif from "@/assets/gif/ads.gif"
-
 import Header from "@/component/Layout/Header"
 import Sidebar from "@/component/Layout/Sidebar"
 import Advertisement from "./Advertisement"
@@ -116,18 +115,18 @@ import { createReview } from "../../serviceAPI/reviewService"
 import ReviewPost from "./Review"
 import "./Home.css"
 import { UserContext } from "../../App"
+import { useNavigate } from 'react-router'
 
 const Home = () => {
-  const { user } = useContext(UserContext);
-
+  const { user } = useContext(UserContext)
   const el = useRef(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
-
-  const [showPostReview, setShowPostReview] = useState(false);
-
+  const [showPostReview, setShowPostReview] = useState(false)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [hashtags, setHashtags] = useState([])
-
+  const navigate = useNavigate()
+  
   useEffect(() => {
     const apiAll = async () => {
       try {
@@ -152,19 +151,33 @@ const Home = () => {
   }, [])
 
   const handleCreatePostClick = () => {
-    setShowPostReview(true);
-  };
 
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
+    setShowPostReview(true)
+  }
+
+  const handleLogin = () => {
+    setShowLoginPrompt(false)
+    navigate ("/login")
+  }
+
+  const handleCloseLoginPrompt = () => {
+    setShowLoginPrompt(false)
+  }
+  
   const handleCloseModal = () => {
-    setShowPostReview(false);
-  };
+    setShowPostReview(false)
+  }
 
   const handleSubmitPost = (formData) => {
-    console.log("Post data:", formData);
+    console.log("Post data:", formData)
 
-    createReviewAPI(formData);
+    createReviewAPI(formData)
 
-  };
+  }
 
   const createReviewAPI = async (formData) => {
       try {
@@ -207,6 +220,7 @@ const Home = () => {
   return (
     <div className="home-page">
       <Header />
+      <Advertisement />
       <div className="home-content">
         <Sidebar />
         <div className="main-content">
@@ -235,14 +249,38 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Thêm modal đăng bài */}
-            <PostReview
-              show={showPostReview}
-              onClose={handleCloseModal}
-              onSubmit={handleSubmitPost}
-              // user={user}
-              // tags={hashtags}
-            />
+            {user && (
+              <PostReview
+                show={showPostReview}
+                onClose={handleCloseModal}
+                onSubmit={handleSubmitPost}
+              />
+            )}
+
+            {showLoginPrompt && (
+              <div className="home-login-popup-overlay" onClick={handleCloseLoginPrompt}>
+                <div className="home-login-popup-modal" onClick={(e) => e.stopPropagation()}>
+                  <h3 className="home-login-popup-title">
+                    Đăng nhập để tiếp tục
+                  </h3>
+                  
+                  <div className="home-login-popup-buttons">
+                    <button 
+                      onClick={handleCloseLoginPrompt}
+                      className="home-login-popup-btn home-login-popup-btn-close"
+                    >
+                      Đóng
+                    </button>
+                    <button 
+                      onClick={handleLogin}
+                      className="home-login-popup-btn home-login-popup-btn-login"
+                    >
+                      Đăng nhập
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="ads-container">
               <img src={adsGif || "/placeholder.svg"} alt="Advertisement" className="ads-banner" />
@@ -268,8 +306,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-
-        <Advertisement />
       </div>
     </div>
   )

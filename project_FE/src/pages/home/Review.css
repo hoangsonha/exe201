@@ -1,153 +1,153 @@
 .review-card {
-    margin-bottom: 30px;
-    border-radius: 0;
-    border: 1px solid #000000;
-    box-shadow: 3px 3px 0px #000000 !important;
-    position: relative;
-    overflow: hidden;
-    background-color: white;
-    padding: 20px;
-    cursor: pointer;
-  }
-  
-  .review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    margin-left: -2px;
-  }
-  
-  .review-options-container {
-    position: relative;
-    z-index: 9999;
-  }
-  
-  .review-options {
-    font-weight: bold;
-    color: #383838;
-    cursor: pointer;
-    font-size: 25px;
-    margin-top: -40px;
-  }
-  
-  .options-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 250px;
-    background-color: white;
-    border: 1px solid #000000;
-    box-shadow: 3px 3px 0px #000000;
-    border-radius: 0;
-  }
-  
-  .option-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    cursor: pointer;
-    color: #333;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-  }
-  
-  .option-item:hover {
-    background-color: #f5f5f5;
-  }
-  
-  .option-item svg {
-    margin-right: 10px;
-    font-size: 20px;
-    color: #555;
-  }
-  
-  .review-tag {
-    display: inline-block;
-    background-color: #e1f62b;
-    color: #5f4232;
-    font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 0;
-    border: 1px solid #000000;
-    box-shadow: 1px 1px 0px #000000 !important;
-  }
-  
-  .review-title {
-    font-weight: bolder;
-    font-size: 21px;
-    margin-bottom: 12px;
-    color: black;
-  }
-  
-  .review-content {
-    color: #555;
-    margin-bottom: 15px;
-    border-top: 1px solid #000000;
-    padding-top: 15px;
-  }
-  
-  .review-actions {
-    display: flex;
-    align-items: center;
-    border-top: 1px solid #000000;
-    padding-top: 10px;
-  }
-  
-  .action-item {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-    color: #777;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .action-item:hover {
-    color: #333;
-  }
-  
-  .heart-icon, .comment-icon, .star-icon, .time-icon, .bookmark-icon {
-    margin-right: 10px;
-    margin-top: -4px;
-    transition: transform 0.3s ease, color 0.3s ease;
-  }
-  
-  .bookmark {
-    margin-left: auto;
-    margin-right: 0;
-  }
-  
-  .action-item.liked .heart-icon {
-    animation: heartPop 0.4s ease;
-    color: #e1f62b;
-  }
+  margin-bottom: 30px;
+  border-radius: 0;
+  border: 1px solid #000000;
+  box-shadow: 3px 3px 0px #000000 !important;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
+  padding: 20px;
+  cursor: pointer;
+}
 
-  @keyframes heartPop {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.4);
-    }
-    100% {
-      transform: scale(1);
-    }
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-left: -2px;
+}
+
+.review-options-container {
+  position: relative;
+  z-index: 9999;
+}
+
+.review-options {
+  font-weight: bold;
+  color: #383838;
+  cursor: pointer;
+  font-size: 25px;
+  margin-top: -40px;
+}
+
+.options-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  border-radius: 0;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.option-item:hover {
+  background-color: #f5f5f5;
+}
+
+.option-item svg {
+  margin-right: 10px;
+  font-size: 20px;
+  color: #555;
+}
+
+.review-tag {
+  display: inline-block;
+  background-color: #e1f62b;
+  color: #5f4232;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 0;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px #000000 !important;
+}
+
+.review-title {
+  font-weight: bolder;
+  font-size: 21px;
+  margin-bottom: 12px;
+  color: black;
+}
+
+.review-content {
+  color: #555;
+  margin-bottom: 15px;
+  border-top: 1px solid #000000;
+  padding-top: 15px;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #000000;
+  padding-top: 10px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  color: #777;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-item:hover {
+  color: #333;
+}
+
+.heart-icon, .comment-icon, .star-icon, .time-icon, .bookmark-icon {
+  margin-right: 10px;
+  margin-top: -4px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.bookmark {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.action-item.liked .heart-icon {
+  animation: heartPop 0.4s ease;
+  color: #e1f62b;
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
   }
-  
-  .action-item.bookmarked .bookmark-icon {
-    animation: bookmarkPop 0.4s ease;
-    color: #e1f62b;
+  50% {
+    transform: scale(1.4);
   }
-  
-  @keyframes bookmarkPop {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.4);
-    }
-    100% {
-      transform: scale(1);
-    }
-  } 
+  100% {
+    transform: scale(1);
+  }
+}
+
+.action-item.bookmarked .bookmark-icon {
+  animation: bookmarkPop 0.4s ease;
+  color: #e1f62b;
+}
+
+@keyframes bookmarkPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+} 

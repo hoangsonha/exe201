@@ -10,6 +10,7 @@ import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.exception.CommentNotFoundException;
 import com.hsh.project.exception.ReviewNotFoundException;
+import com.hsh.project.exception.UnauthorizedException;
 import com.hsh.project.exception.UserNotFoundException;
 import com.hsh.project.mapper.LikeMapper;
 import com.hsh.project.repository.CommentRepository;
@@ -162,8 +163,13 @@ public class CommentServiceImpl implements CommentService {
                 log.warn("No comments found for reviewId: {}", reviewId);
                 return new ArrayList<>();
             }
-            log.debug("Found {} comments", comments.size());
-            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+            log.debug("Found {} comments before filtering", comments.size());
+            // Filter out deleted comments
+            List<Comment> activeComments = comments.stream()
+                    .filter(comment -> !comment.isDeleted())
+                    .collect(Collectors.toList());
+            log.debug("Found {} active comments after filtering", activeComments.size());
+            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching comments by reviewId: {}", e.getMessage(), e);
             throw e;
@@ -182,11 +188,105 @@ public class CommentServiceImpl implements CommentService {
                 log.warn("No comments found for parentCommentId: {}", parentCommentId);
                 return new ArrayList<>();
             }
-            log.debug("Found {} comments", comments.size());
-            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+            log.debug("Found {} comments before filtering", comments.size());
+            // Filter out deleted comments
+            List<Comment> activeComments = comments.stream()
+                    .filter(comment -> !comment.isDeleted())
+                    .collect(Collectors.toList());
+            log.debug("Found {} active comments after filtering", activeComments.size());
+            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching comments by parentCommentId: {}", e.getMessage(), e);
             throw e;
         }
     }
+
+    @Override
+    public List<CommentResponseDTO> getCommentsByUserEmail(String userEmail) {
+        log.info("Fetching comments for userEmail: {}", userEmail);
+        try {
+            if (userEmail == null || userEmail.trim().isEmpty()) {
+                throw new IllegalArgumentException("User email cannot be null or empty");
+            }
+            User user = findUserByEmail(userEmail);
+            List<Comment> comments = commentRepository.findByUser(user);
+            if (comments == null || comments.isEmpty()) {
+                log.warn("No comments found for userEmail: {}", userEmail);
+                return new ArrayList<>();
+            }
+            log.debug("Found {} comments before filtering", comments.size());
+            // Filter out deleted comments
+            List<Comment> activeComments = comments.stream()
+                    .filter(comment -> !comment.isDeleted())
+                    .collect(Collectors.toList());
+            log.debug("Found {} active comments after filtering", activeComments.size());
+            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error fetching comments by userEmail: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public CommentResponseDTO updateComment(Long commentId, String content, String userEmail) {
+        log.info("Updating comment with commentId: {}, content: {}, userEmail: {}", commentId, content, userEmail);
+        try {
+            if (commentId == null) {
+                throw new IllegalArgumentException("Comment ID cannot be null");
+            }
+            if (content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("Comment content cannot be empty");
+            }
+            if (content.trim().length() > 1000) {
+                throw new IllegalArgumentException("Comment content exceeds maximum length of 1000 characters");
+            }
+
+            Comment comment = commentRepository.findByCommentID(commentId)
+                    .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + commentId));
+            User user = findUserByEmail(userEmail);
+
+            if (!comment.getUser().getUserId().equals(user.getUserId())) {
+                throw new UnauthorizedException("You are not authorized to update this comment");
+            }
+
+            comment.setContent(content.trim());
+            Comment updatedComment = commentRepository.save(comment);
+            log.debug("Comment updated with ID: {}", updatedComment.getCommentID());
+
+            return mapToResponseDTO(updatedComment);
+        } catch (Exception e) {
+            log.error("Error updating comment: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public CommentResponseDTO deleteComment(Long commentId, String userEmail) {
+        log.info("Deleting comment with commentId: {}, userEmail: {}", commentId, userEmail);
+        try {
+            if (commentId == null) {
+                throw new IllegalArgumentException("Comment ID cannot be null");
+            }
+
+            Comment comment = commentRepository.findByCommentID(commentId)
+                    .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + commentId));
+            User user = findUserByEmail(userEmail);
+
+            if (!comment.getUser().getUserId().equals(user.getUserId())) {
+                throw new UnauthorizedException("You are not authorized to delete this comment");
+            }
+
+            comment.setDeleted(true); // Assuming BaseEntity has isDeleted
+            Comment deletedComment = commentRepository.save(comment);
+            log.debug("Comment soft-deleted with ID: {}", deletedComment.getCommentID());
+
+            return mapToResponseDTO(deletedComment);
+        } catch (Exception e) {
+            log.error("Error deleting comment: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    
+
 }

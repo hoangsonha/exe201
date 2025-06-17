@@ -15,7 +15,7 @@ const cx = classNames.bind(styles);
 
 export const ProtectedRoutes = () => {
     const { user } = useContext(UserContext);
-    const location = useLocation().pathname;
+    const location = useLocation();
     const pathName = location.pathname;
 
     if (!user) {
@@ -23,12 +23,12 @@ export const ProtectedRoutes = () => {
         return <Navigate to="/" />;
     }
 
-    if (!isAuthorized(user.role, location)) {
+    if (!isAuthorized(user.role, pathName)) {
         console.log('Unauthorized');
         return <Navigate to="/403" />;
     }
 
-    if (location == '/' && user.role !== ROLES.USER) {
+    if (pathName === '/' && user.role !== ROLES.USER) {
         return <Navigate to={DEFAULT_PATHS[user.role]} />
     }
 

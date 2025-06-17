@@ -178,16 +178,6 @@ export const getUserPosts = async (id) => {
   }
 };
 
-export const getUserComments = async (id) => {
-  try {
-    const res = await get(`${API}/${id}/comments`);
-    return res.data;
-  } catch (error) {
-    console.error("Error getting user comments:", error);
-    return { status: "Fail", message: "Failed to get user comments", data: null };
-  }
-};
-
 export const getUserSavedPosts = async (id) => {
   try {
     const res = await get(`${API}/${id}/saved-reviews`);

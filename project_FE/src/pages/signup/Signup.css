@@ -307,10 +307,19 @@
 .topic-list {
   margin-bottom: 1rem;
   margin-left: 14rem;
+  max-width: 1000px;
+}
+
+.fixed-four-per-row {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .topic-item-wrapper {
-  padding: 0.5rem;
+  flex: 0 0 25%;
+  max-width: 25%;
+  box-sizing: border-box;
+  padding: 8px;
 }
 
 .topic-title-custom {

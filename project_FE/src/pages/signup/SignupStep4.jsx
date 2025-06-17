@@ -1,21 +1,17 @@
-import { useContext, useEffect, useState } from "react";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
-
-import { getHashtags } from "../../serviceAPI/hashtagService";
-import { createHashtagUser } from "../../serviceAPI/userService";
-import "./Signup.css";
-import { UserContext } from "../../App";
-import { useNavigate } from "react-router";
-import { DEFAULT_PATHS } from "../../auth/Roles";
+import { useContext, useEffect, useState } from "react"
+import { Form, Button, Container, Row, Col } from "react-bootstrap"
+import { getHashtags } from "../../serviceAPI/hashtagService"
+import { createHashtagUser } from "../../serviceAPI/userService"
+import "./Signup.css"
+import { UserContext } from "../../App"
+import { useNavigate } from "react-router"
+import { DEFAULT_PATHS } from "../../auth/Roles"
 
 const SignupStep4 = ({ onComplete }) => {
-    const navigate = useNavigate();
-
-    const [selectedTopics, setSelectedTopics] = useState([]);
-
-    const { user } = useContext(UserContext);
-    
-    const [hashtags, setHashtag] = useState([]);
+    const navigate = useNavigate()
+    const [selectedTopics, setSelectedTopics] = useState([])
+    const { user } = useContext(UserContext)
+    const [hashtags, setHashtag] = useState([])
 
     useEffect(() => {
         const apiAll = async () => {
@@ -24,40 +20,40 @@ const SignupStep4 = ({ onComplete }) => {
                 const resultPurposes = await getHashtags();
                 setHashtag(resultPurposes.data.data);
             } catch (error) {
-                console.error("Có lỗi xảy ra khi gọi api công dụng:", error);
+                console.error("Có lỗi xảy ra khi gọi api công dụng:", error)
             }
-        };
-        apiAll();
-    }, []);
+        }
+        apiAll()
+    }, [])
 
     const handleTopicSelection = (topicId) => {
         setSelectedTopics(prevTopics => {
             if (prevTopics.includes(topicId)) {
-                return prevTopics.filter(id => id !== topicId);
+                return prevTopics.filter(id => id !== topicId)
             } else {
-                return [...prevTopics, topicId];
+                return [...prevTopics, topicId]
             }
-        });
-    };
+        })
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
 
-            const userData = await createHashtagUser({ userId: user.id, hashtagID: selectedTopics });
+            const userData = await createHashtagUser({ userId: user.id, hashtagID: selectedTopics })
             
             if (userData.data.code == 'Success') {
-                navigate(DEFAULT_PATHS[user.role]);
+                navigate(DEFAULT_PATHS[user.role])
             }
         } catch (error) {
             console.log(error);
         } finally {
             if (onComplete) {
-                onComplete(selectedTopics);
+                onComplete(selectedTopics)
             }
         }
-    };
+    }
 
     return (
         <div className="topic-background" style={{ opacity: 1 }}>
@@ -65,19 +61,28 @@ const SignupStep4 = ({ onComplete }) => {
                 <h2 className="topic-title-custom">bạn hay đọc review topic nào?</h2>
                 
                 <Form onSubmit={handleSubmit}>
-                    
-                    <Row className="topic-list">
-                        {hashtags.map(topic => (
-                            <Col xs={6} sm={4} lg={2} key={topic.id} className="topic-item-wrapper">
-                                <div 
-                                    className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}
-                                    onClick={() => handleTopicSelection(topic.id)}
-                                >
-                                    {topic.name}
+                    <Row className="topic-list fixed-four-per-row">
+                        {hashtags.map((topic, index) => {
+                            const isLastRow = Math.floor(index / 4) === Math.floor((hashtags.length - 1) / 4);
+                            const itemsInLastRow = hashtags.length % 4 || 4;
+                            const isFirstInLastRow = isLastRow && index % 4 === 0;
+                            const shouldCenter = isFirstInLastRow && itemsInLastRow < 4;
+
+                            return (
+                            <div
+                                key={topic.id}
+                                className="topic-item-wrapper"
+                                style={shouldCenter ? { marginLeft: `calc((100% - ${itemsInLastRow * 25}%) / 2)` } : {}}
+                                onClick={() => handleTopicSelection(topic.id)}
+                            >
+                                <div className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}>
+                                {topic.name}
                                 </div>
-                            </Col>
-                        ))}
-                    </Row>   
+                            </div>
+                            );
+                        })}
+                    </Row>
+
                     <Button 
                         variant="primary" 
                         type="submit" 
@@ -88,7 +93,7 @@ const SignupStep4 = ({ onComplete }) => {
                 </Form>
             </Container>
         </div>
-    );
-};
+    )
+}
 
-export default SignupStep4; 
+export default SignupStep4

@@ -1,103 +1,74 @@
-import { BiLike } from "react-icons/bi"
-import { FaHeart, FaComment, FaShare, FaBookmark, FaRegBookmark } from "react-icons/fa"
+import { useState } from 'react'
+import { FaHeart, FaRegHeart, FaRegCommentDots, FaRegClock, FaBookmark, FaRegBookmark } from 'react-icons/fa'
+import { BiSolidLike, BiLike } from 'react-icons/bi'
+import { LuStar } from "react-icons/lu"
 
 const ReviewActions = ({ post, onToggleComments }) => {
+  const [liked, setLiked] = useState(false)
+  const [hearted, setHearted] = useState(false)
+  const [bookmarked, setBookmarked] = useState(false)
   const likeCount = post.likes.filter((like) => like.type === "LIKE").length
   const heartCount = post.likes.filter((like) => like.type === "HEART").length
 
+  const handleLikeClick = () => {
+    setLiked(!liked)
+  }
+
+  const handleHeartClick = () => {
+    setHearted(!hearted)
+  }
+
+  const handleBookmarkClick = () => {
+    setBookmarked(!bookmarked)
+  }
+
   return (
-    <div style={{ padding: "12px 16px", borderTop: "1px solid #eee" }}>
-      <div style={{ display: "flex", gap: "16px" }}>
-        <button
-          onClick={() => console.log(`Like review ${post.reviewID}`)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "none",
-            border: "none",
-            color: likeCount > 0 ? "#007bff" : "#666",
-            cursor: "pointer",
-            padding: "8px 12px",
-            borderRadius: "20px",
-            fontSize: "14px",
-          }}
-        >
-          <BiLike />
-          {likeCount > 0 && <span>{likeCount}</span>}
-        </button>
+    <div className="review-actions">
+      <div className={`action-item ${likeCount > 0 ? 'liked' : ''}`} 
+          onClick={(e) => {
+            e.stopPropagation()
+            handleLikeClick()
+          }}>
+        <span className="like-icon">
+          {liked ? <BiSolidLike /> : <BiLike />}
+        </span>
+        <span>{likeCount > 0 ? likeCount : '0'}</span>
+      </div>
 
-        <button
-          onClick={() => console.log(`Heart review ${post.reviewID}`)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "none",
-            border: "none",
-            color: heartCount > 0 ? "#ff4757" : "#666",
-            cursor: "pointer",
-            padding: "8px 12px",
-            borderRadius: "20px",
-            fontSize: "14px",
-          }}
-        >
-          <FaHeart />
-          {heartCount > 0 && <span>{heartCount}</span>}
-        </button>
+      <div className={`action-item ${heartCount > 0 ? 'hearted' : ''}`} 
+          onClick={(e) => {
+            e.stopPropagation()
+            handleHeartClick()
+          }}>
+        <span className="heart-icon">
+          {hearted > 0 ? <FaHeart /> : <FaRegHeart />}
+        </span>
+        <span>{heartCount > 0 ? heartCount : '0'}</span>
+      </div>
 
-        <button
-          onClick={onToggleComments}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "none",
-            border: "none",
-            color: "#666",
-            cursor: "pointer",
-            padding: "8px 12px",
-            borderRadius: "20px",
-            fontSize: "14px",
-          }}
-        >
-          <FaComment />
-          <span>{post.comments ? post.comments.length : 0}</span>
-        </button>
+      <div className="action-item" onClick={onToggleComments}>
+        <span className="comment-icon">
+          <FaRegCommentDots />
+        </span>
+        <span>{post.comments ? post.comments.length : 0}</span>
+      </div>
 
-        <button
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "none",
-            border: "none",
-            color: "#666",
-            cursor: "pointer",
-            padding: "8px 12px",
-            borderRadius: "20px",
-            fontSize: "14px",
-          }}
-        >
-          <FaShare />
-        </button>
+      <div className="action-item">
+        <span className="action-star-icon"><LuStar /></span> 20%
+      </div>
 
-        <button
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            background: "none",
-            border: "none",
-            color: post.isSaved ? "#007bff" : "#666",
-            cursor: "pointer",
-            padding: "8px 12px",
-            borderRadius: "20px",
-            fontSize: "14px",
-          }}
-        >
+      {/* <div className="action-item">
+        <span className="time-icon"><FaRegClock /></span> 1 day ago
+      </div> */}
+
+      <div className={`action-item bookmark ${post.isSaved ? 'bookmarked' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleBookmarkClick()
+          }}>
+        <span className="bookmark-icon">
           {post.isSaved ? <FaBookmark /> : <FaRegBookmark />}
-        </button>
+        </span>
       </div>
     </div>
   )

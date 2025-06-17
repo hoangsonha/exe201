@@ -8,47 +8,8 @@ import UserInfo from './UserInfo'
 import UserContent from './UserContent'
 import { UserContext } from '../../App'
 import { getUserById, getUserPosts, getUserSavedPosts } from '@/serviceAPI/userService'
+import { getCommentByUserId } from '@/serviceAPI/commentService'
 import './UserProfile.css'
-
-const fakeComments = [
-  {
-    id: 1,
-    postTitle: "Review món ăn mới tại nhà hàng XYZ",
-    comment: "Tôi rất thích cách bạn mô tả món ăn, sẽ thử vào cuối tuần này!",
-    date: "11/1/25",
-    likes: 12
-  },
-  {
-    id: 2,
-    postTitle: "Đánh giá sách mới xuất bản",
-    comment: "Quan điểm rất hay và sâu sắc, cảm ơn bạn đã chia sẻ!",
-    date: "10/30/25",
-    likes: 8
-  }
-]
-
-const fakeSavedPosts = [
-  {
-    id: 3,
-    title: "Top 10 địa điểm du lịch phải đến trong năm 2025",
-    content: "Danh sách những địa điểm du lịch tuyệt vời mà bạn không nên bỏ lỡ trong năm tới...",
-    likes: 245,
-    comments: 67,
-    rating: 98,
-    date: "11/5/25",
-    category: "du lịch"
-  },
-  {
-    id: 4,
-    title: "Review phim mới: Thế giới song song",
-    content: "Bộ phim với cốt truyện độc đáo và kỹ xảo đỉnh cao...",
-    likes: 178,
-    comments: 42,
-    rating: 95,
-    date: "11/3/25",
-    category: "giải trí"
-  }
-]
 
 const UserProfile = () => {
   const navigate = useNavigate()
@@ -69,13 +30,18 @@ const UserProfile = () => {
     try {
       const result = await getUserById(user.id)
       const posts = await getUserPosts(user.id)
+      const comments = await getCommentByUserId(user.id)
       const savedPosts = await getUserSavedPosts(user.id)
 
       setUserLogin(result.data)
       setUserPosts(posts.data)
+      setUserComments(comments.data)
       setUserSaves(savedPosts.data)
 
-      console.log("Thông tin người dùng:", result.data)
+      setDisplayData(posts.data)
+
+      console.log('Comments:', comments.data)
+
     } catch (error) {
       console.error("Lỗi khi lấy thông tin người dùng:", error)
     } finally {
@@ -92,13 +58,13 @@ const UserProfile = () => {
           setDisplayData(userPosts)
           break;
         case 'comments':
-          setDisplayData(fakeComments)
+          setDisplayData(userComments)
           break;
         case 'saves':
           setDisplayData(userSaves)
           break;
         default:
-          setDisplayData(fakePosts)
+          setDisplayData(userPosts)
       }
       setActiveTab(tab)
       setLoading(false)

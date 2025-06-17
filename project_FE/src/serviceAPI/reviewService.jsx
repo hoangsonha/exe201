@@ -31,3 +31,13 @@ export const createReview = async (formData) => {
     }
   }
 };
+
+export const getReviewById = async (id) => {
+  try {
+    const res = await get(`${API}/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error getting review:", error);
+    return { status: "Fail", message: "Failed to get review", data: null };
+  }
+};

@@ -39,6 +39,8 @@ public class Review extends BaseEntity {
 
     Float objectiveStar;
 
+    String summary;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     User user;
@@ -52,7 +54,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<HistoryPoint> historyPoints;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     List<ReviewMedia> reviewMedias;
 
     @OneToMany(mappedBy = "review")

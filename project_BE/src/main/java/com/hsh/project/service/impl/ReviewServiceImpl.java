@@ -18,6 +18,7 @@ import com.hsh.project.pojo.enums.EnumReviewStatus;
 import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.repository.*;
+import com.hsh.project.service.spec.CheckReviewAIService;
 import com.hsh.project.service.spec.LikeService;
 import com.hsh.project.service.spec.RatingService;
 import com.hsh.project.service.spec.ReviewService;
@@ -54,7 +55,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMediaRepository reviewMediaRepository;
     private final HashtagRepository hashtagRepository;
     private final LikeService likeService;
-    private final RatingService ratingService; 
+    private final RatingService ratingService;
+    private final CheckReviewAIService checkReviewAIService;
 
     // Firebase
 
@@ -125,7 +127,7 @@ public class ReviewServiceImpl implements ReviewService {
         ratingService.createRating(
             request.getUserId(),     // userId
             review.getReviewID(),    // reviewId
-            0.0                     // stars (default value)
+            1.0                     // stars (default value)
     );
 
         // Lưu media
@@ -140,6 +142,8 @@ public class ReviewServiceImpl implements ReviewService {
         if (videoCount > 1) {
             throw new BadRequestException("Chỉ được phép upload tối đa 1 video.");
         }
+
+        List<ReviewMedia> reviewMediaList = new ArrayList<>();
 
         int order = 1;
         for (MultipartFile file : mediaFiles) {
@@ -158,8 +162,21 @@ public class ReviewServiceImpl implements ReviewService {
             media.setUrlImageGIFVideo(uploadedUrl);
             media.setTypeUploadReview(type);
             media.setOrderDisplay(order++);
-            reviewMediaRepository.save(media);
+//            reviewMediaRepository.save(media);
+            reviewMediaList.add(media);
         }
+
+        review.setReviewMedias(reviewMediaList);
+
+        review = checkReviewAIService.checkReview(review);
+        if (review.getPerspective() == "NEGATIVE" || review.getObjectiveStar() <= 1 ||  review.getObjectiveStar() > 5 || review.getRelevantStar() <= 1 || review.getRelevantStar() > 5) {
+            review.setStatus(EnumReviewStatus.REMOVED);
+            review.setDeleted(true);
+        } else {
+            review.setStatus(EnumReviewStatus.PUBLISHED);
+        }
+
+        reviewRepository.save(review);
     }
 
     public String uploadImages(MultipartFile imageFile) {
@@ -178,8 +195,6 @@ public class ReviewServiceImpl implements ReviewService {
             return null;
         }
     }
-
-
 
     public String uploadSingleVideo(MultipartFile videoFile) {
         try {
@@ -256,60 +271,6 @@ public class ReviewServiceImpl implements ReviewService {
         return extension.matches("(?i)\\.(mp4|mov|avi|mkv)$");
     }
 
-//    public List<String> uploadImages(MultipartFile imageFiles) {
-//        List<String> urls = new ArrayList<>();
-//        try {
-//
-//                String extension = getExtension(imageFiles.getOriginalFilename());
-//                if (!isImage(extension)) throw new BadRequestException("Must be an image");
-//
-//                String fileName = UUID.randomUUID() + extension;
-//                File convertedFile = convertToFile(imageFiles, fileName);
-//                String url = uploadFile(convertedFile, fileName);
-//                urls.add(url);
-//                convertedFile.delete();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return urls;
-//    }
-//
-//    public String uploadSingleVideo(MultipartFile videoFile) {
-//        try {
-//            String extension = getExtension(videoFile.getOriginalFilename());
-//            if (!isVideo(extension)) {
-//                throw new IllegalArgumentException("Chỉ cho phép upload video (.mp4, .mov, ...)");
-//            }
-//
-//            String fileName = UUID.randomUUID() + extension;
-//            File convertedFile = convertToFile(videoFile, fileName);
-//            String url = uploadFile(convertedFile, fileName);
-//            convertedFile.delete();
-//            return url;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return "Video upload thất bại";
-//        }
-//    }
-
-
-
-//    private String uploadFile(File file, String fileName, String contentType) throws IOException {  // file vs fileName is equal
-//        String folder = folderContainImage + "/" + fileName;  // 1 is folder and fileName is "randomString + "extension""
-//        BlobId blobId = BlobId.of(bucketName, folder); // blodId is a path to file in firebase
-//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();  // blodInfo contains blodID and more
-//        InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase); // change the file name with your one
-//        Credentials credentials = GoogleCredentials.fromStream(inputStream);
-//        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-//        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-//        // saved image on firebase
-//        String DOWNLOAD_URL = urlFirebase;
-//        return String.format(DOWNLOAD_URL, URLEncoder.encode(folder, StandardCharsets.UTF_8));
-//    }
-
-
-
     @Override
     public ReviewResponseDTO getReviewById(Long reviewId) {
         Review review = reviewRepository.findById(Math.toIntExact(reviewId))
@@ -336,6 +297,15 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(m -> new ReviewMediaDTO(m.getId(), m.getUrlImageGIFVideo(), m.getTypeUploadReview().name(), m.getOrderDisplay()))
                 .collect(Collectors.toList());
 
+        List<HashTagResponseDTO> hashTagResponseDTOS = new ArrayList<>();
+
+        List<ReviewHashtag> reviewHashtags = review.getReviewHashtags();
+
+        for (ReviewHashtag reviewHashtag : reviewHashtags) {
+            Hashtag hashtag = reviewHashtag.getHashtag();
+            hashTagResponseDTOS.add(mapHashtagToDTO(hashtag));
+        }
+
         // Build response
         return ReviewResponseDTO.builder()
                 .reviewID(review.getReviewID())
@@ -346,8 +316,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .status(review.getStatus().name())
                 .relevantStar(review.getRelevantStar())
                 .objectiveStar(review.getObjectiveStar())
+                .summary(review.getSummary())
                 .comments(rootComments)
                 .ratings(ratingDTOs)
+                .reviewHashtags(hashTagResponseDTOS)
                 .reviewMedias(mediaDTOs)
                 .likes(likeDTOs)
                 .build();
@@ -393,6 +365,13 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
+    private HashTagResponseDTO mapHashtagToDTO(Hashtag hashtag) {
+        return HashTagResponseDTO.builder()
+                .id(hashtag.getHashtagID())
+                .name(hashtag.getTag())
+                .build();
+    }
+
     private LikeDTO mapLikeToDTO(Like like) {
         return LikeDTO.builder()
                 .likeID(like.getLikeID())
@@ -423,6 +402,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 3. Tính tương tác (like + comment)
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .map(this::mapReviewToDTOWithoutUser)
+                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
                 .sorted(Comparator.comparingInt(r -> -((r.getLikes() != null ? r.getLikes().size() : 0) + (r.getComments() != null ? r.getComments().size() : 0))))
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -441,6 +421,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 3. Lọc những review không bị block
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .filter(review -> !blockReviewRepository.existsByUser_UserIdAndReview_ReviewID(userId, review.getReviewID()))
+                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
                 .map(review -> {
                     boolean isSaved = savedReviewRepository.existsByUser_UserIdAndReview_ReviewIDAndStatusTrue(userId, review.getReviewID());
                     return mapReviewToDTOWithUser(review, userId, isSaved);
@@ -546,6 +527,15 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(m -> new ReviewMediaDTO(m.getId(), m.getUrlImageGIFVideo(), m.getTypeUploadReview().name(), m.getOrderDisplay()))
                 .collect(Collectors.toList());
 
+        List<HashTagResponseDTO> hashTagResponseDTOS = new ArrayList<>();
+
+        List<ReviewHashtag> reviewHashtags = review.getReviewHashtags();
+
+        for (ReviewHashtag reviewHashtag : reviewHashtags) {
+            Hashtag hashtag = reviewHashtag.getHashtag();
+            hashTagResponseDTOS.add(mapHashtagToDTO(hashtag));
+        }
+
         return ReviewResponseDTO.builder()
                 .reviewID(review.getReviewID())
                 .title(review.getTitle())
@@ -556,7 +546,9 @@ public class ReviewServiceImpl implements ReviewService {
                 .status(review.getStatus().name())
                 .relevantStar(review.getRelevantStar())
                 .objectiveStar(review.getObjectiveStar())
+                .summary(review.getSummary())
                 .comments(rootComments)
+                .reviewHashtags(hashTagResponseDTOS)
                 .ratings(ratingDTOs)
                 .likes(likeDTOs)
                 .isSaved(isSaved)

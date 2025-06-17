@@ -19,6 +19,16 @@ export const createHashtagUser = async (params) => {
   }
 };
 
+export const getReviewByUserHashTag = async (id) => {
+  try {
+    const res = await get(API + `/${id}` + "/reviews");
+    return res;
+  } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
 export const createImageUser = async (params) => {
   try {
     const res = await post(API + '/image', params);

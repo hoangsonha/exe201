@@ -46,9 +46,9 @@ public class ReviewController {
         List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews(5);
         return !user.isEmpty()
                 ? ResponseEntity.status(HttpStatus.OK)
-                .body(new ObjectResponse("Success", "Get user by ID successfully", user))
+                .body(new ObjectResponse("Success", "Get top trending successfully", user))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ObjectResponse("Fail", "Get user by ID failed", null));
+                .body(new ObjectResponse("Fail", "Get top trending failed", null));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

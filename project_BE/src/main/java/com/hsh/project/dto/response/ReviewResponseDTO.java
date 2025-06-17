@@ -19,11 +19,14 @@ public class ReviewResponseDTO {
      String status;
      Float relevantStar;
      Float objectiveStar;
+     String summary;
 
      List<CommentResponseDTO> comments;   // lồng nhau
      List<RatingDTO> ratings;            // danh sách đánh giá
      List<LikeDTO> likes;
      List<ReviewMediaDTO> reviewMedias;
+
+     List<HashTagResponseDTO> reviewHashtags;
 
      Boolean isSaved;
 //     Boolean isBlocked;

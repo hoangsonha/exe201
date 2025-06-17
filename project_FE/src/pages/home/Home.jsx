@@ -112,6 +112,7 @@ import Advertisement from "./Advertisement"
 import PostReview from "./PostReview";
 import { getHashtags } from "../../serviceAPI/hashtagService"
 import { getTopTradingGlobal } from "../../serviceAPI/reviewService"
+import { getReviewByUserHashTag } from "../../serviceAPI/userService"
 import { createReview } from "../../serviceAPI/reviewService"
 import ReviewPost from "./Review"
 import "./Home.css"
@@ -132,14 +133,30 @@ const Home = () => {
     const apiAll = async () => {
       try {
         setLoading(true)
-        const resultPurposes = await getTopTradingGlobal()
+
+        if (user && user.id != null) {
+
+          console.log('user id ne', user.id)
+
+          const resultPurposes = await getReviewByUserHashTag(user.id)
+          if (resultPurposes.data.status == "Success") {
+            setPosts(resultPurposes.data.data)
+          } else {
+            setPosts([])
+          }
+        } else {
+          const resultPurposes = await getTopTradingGlobal()
+          
+          if (resultPurposes.data.status == "Success") {
+            setPosts(resultPurposes.data.data)
+          } else {
+            setPosts([])
+          }
+        }
+
         const result = await getHashtags()
         setHashtags(result.data.data || [])
-        if (resultPurposes.data.status == "Success") {
-          setPosts(resultPurposes.data.data)
-        } else {
-          setPosts([])
-        }
+        
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi api review:", error)
         setPosts([])
@@ -184,8 +201,6 @@ const Home = () => {
         setShowPostReview(false);
       }
     }
-
-  console.log(showPostReview)
 
   useEffect(() => {
     if (el.current) {

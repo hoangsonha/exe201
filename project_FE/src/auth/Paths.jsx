@@ -4,6 +4,9 @@ import CompanyManagement from "../pages/CompanyManagement";
 import ProjectManagement from "../pages/ProjectManagement";
 import InformationUser from "../pages/InformationUser";
 import Empty from "../pages/Empty";
+import UserProfile from "../pages/user/UserProfile";
+import EditUser from "../pages/user/EditUser";
+import Upgrade from "../pages/upgrade/Upgrade";
 
 export const PATHS = {
     HOME: {
@@ -13,12 +16,27 @@ export const PATHS = {
         allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF],
         layout: true
     },
-    // COMBO_VACCINE: {
-    //     path: '/combo-vaccine',
-    //     label: 'Combo',
-    //     element: <VaccineCombo />,
-    //     allowedRoles: [ROLES.USER]
-    // },
+    PROFILE: {
+        path: '/profile',
+        label: 'Profile',
+        element: <UserProfile />,
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF, ROLES.ADMIN],
+        layout: false
+    },
+    EDIT_PROFILE: {
+        path: '/edit-profile',
+        label: 'Edit Profile',
+        element: <EditUser />,
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF, ROLES.ADMIN],
+        layout: false
+    },
+    UPGRADE: {
+        path: '/upgrade',
+        label: 'Upgrade',
+        element: <Upgrade />,
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF],
+        layout: false
+    },
     MANAGER_EMPLOYEE: {
         path: '/manager-employees',
         label: 'Employee',
@@ -43,6 +61,7 @@ export const PATHS = {
 }
 
 export const FULL_PATHS_LIST = Object.values(PATHS);
+
 export const getRolePaths = (role) => {
     if (role == ROLES.ADMIN) {
         return [PATHS.MANAGER_EMPLOYEE, PATHS.MANAGER_COMPANY, PATHS.MANAGER_PROJECT];
@@ -54,7 +73,7 @@ export const getRolePaths = (role) => {
 export const isAuthorized = (role, pathName) => {
     if (!role || !pathName) return false;
 
-    if (pathName === "/profile") return true;
+    if (['/profile', '/edit-profile', '/upgrade'].includes(pathName)) return true;
 
     let exactMatch = FULL_PATHS_LIST.find(p => p.path === pathName);
     if (exactMatch) return exactMatch.allowedRoles.includes(role);

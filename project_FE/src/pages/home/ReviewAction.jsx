@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegCommentDots, FaRegClock, FaBookmark, FaRegBookmark } from 'react-icons/fa'
 import { BiSolidLike, BiLike } from 'react-icons/bi'
 import { LuStar } from "react-icons/lu"

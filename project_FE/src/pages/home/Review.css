@@ -20,6 +20,7 @@
 
 .review-options-container {
   position: relative;
+  margin-top: 3rem;
   z-index: 9999;
 }
 

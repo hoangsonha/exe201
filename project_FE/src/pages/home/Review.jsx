@@ -120,20 +120,18 @@
 
 // export default ReviewPost; 
 
-
-
 import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router"
 import { Card } from "react-bootstrap"
-import { FaRegHeart, FaRegCommentDots, FaRegStar, FaRegClock, FaEllipsisH, FaHeart } from "react-icons/fa"
-import { FaRegBookmark, FaBookmark } from "react-icons/fa6"
 import { IoMdEyeOff } from "react-icons/io"
-import { MdOutlineBlock, MdOutlineReport, MdOutlineShare } from "react-icons/md"
+import { FaEllipsisH } from "react-icons/fa"
+import { MdOutlineBlock, MdOutlineReport, MdOutlineShare, MdDelete } from "react-icons/md"
+import CommentSection from "./CommentSection"
 import ReviewActions from "./ReviewAction"
 import StarRating from "./StarRating"
 import './Review.css';
 
-const Review = ({ post }) => {
+const Review = ({ post, showCommentSection = false, isOwner = false }) => {
   const [likeCount, setLikeCount] = useState(post.likes.filter((like) => like.type === "LIKE").length)
   const [showOptions, setShowOptions] = useState(false)
   const navigate = useNavigate()
@@ -143,16 +141,6 @@ const Review = ({ post }) => {
   const handlePostClick = () => {
     navigate(`/post/${post.reviewID}`)
     window.scrollTo(0, 0)
-  }
-
-  const handleCommentClick = (e) => {
-    e.stopPropagation()
-    navigate(`/post/${post.reviewID}?section=comments`)
-  }
-
-  const handleStarClick = (e) => {
-    e.stopPropagation()
-    navigate(`/post/${post.reviewID}?section=rating`)
   }
 
   const handleOptionsClick = (e) => {
@@ -182,25 +170,44 @@ const Review = ({ post }) => {
     <Card className="review-card" onClick={handlePostClick}>
       <Card.Body>
         <div className="review-header">
-          <div className="review-tag">{post.reviewHashtags}</div>
+          {post.reviewHashtags.length > 0 ? (
+            post.reviewHashtags.map(tag => (
+              <div key={tag.id} className="review-tag">{tag.name}</div>
+            ))
+          ) : (
+            <div className="review-tag">toireview</div>
+          )}
           <div className="review-options-container" ref={optionsRef}>
             <div className="review-options" onClick={handleOptionsClick}>
               <FaEllipsisH />
             </div>
             {showOptions && (
               <div className="options-dropdown">
-                <div className="option-item" onClick={(e) => handleOptionAction(e, 'hide')}>
-                  <IoMdEyeOff /> ẩn bài viết
-                </div>
-                <div className="option-item" onClick={(e) => handleOptionAction(e, 'block')}>
-                  <MdOutlineBlock /> chặn
-                </div>
-                <div className="option-item" onClick={(e) => handleOptionAction(e, 'report')}>
-                  <MdOutlineReport /> báo cáo
-                </div>
-                <div className="option-item" onClick={(e) => handleOptionAction(e, 'share')}>
-                  <MdOutlineShare /> chia sẻ liên kết
-                </div>
+                {isOwner ? (
+                  <>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'edit')}>
+                      <IoMdEyeOff /> ẩn bài viết
+                    </div>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'delete')}>
+                      <MdDelete /> xóa bài viết
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'hide')}>
+                      <IoMdEyeOff /> ẩn bài viết
+                    </div>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'block')}>
+                      <MdOutlineBlock /> chặn
+                    </div>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'report')}>
+                      <MdOutlineReport /> báo cáo
+                    </div>
+                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'share')}>
+                      <MdOutlineShare /> chia sẻ liên kết
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -226,13 +233,13 @@ const Review = ({ post }) => {
                     <img
                       src={media.urlImageGIFVideo || "/placeholder.svg?height=200&width=300"}
                       alt={`Review media ${media.orderDisplay}`}
-                      style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                      style={{ width: "100%", height: "100%", maxHeight: "600px", objectFit: "cover" }}
                     />
                   ) : (
                     <video
                       src={media.urlImageGIFVideo}
                       controls
-                      style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                      style={{ width: "100%", height: "100%", maxHeight: "600px", objectFit: "cover" }}
                     />
                   )}
                 </div>
@@ -244,6 +251,8 @@ const Review = ({ post }) => {
           post={post}
           onToggleComments={() => setShowComments(!showComments)}
         />
+
+        {showCommentSection && <CommentSection post={post} />}
       </Card.Body>
     </Card>
     // <div

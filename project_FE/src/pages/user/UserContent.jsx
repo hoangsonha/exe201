@@ -1,8 +1,49 @@
+import { useEffect, useState } from 'react'
 import { Spinner, Card } from 'react-bootstrap'
-import { FaRegHeart, FaRegCommentDots, FaRegStar, FaRegClock } from "react-icons/fa";
+import { FaRegHeart, FaRegCommentDots } from 'react-icons/fa'
+import { BiLike } from 'react-icons/bi'
+import { getParentCommentByCommentId } from '@/serviceAPI/commentService'
+import Review from '@/pages/home/Review'
+import { useNavigate } from 'react-router-dom'
 import './UserProfile.css'
 
 const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
+  const navigate = useNavigate()
+  const [parentComments, setParentComments] = useState({})
+
+  const fetchParentComments = async () => {
+    if (!displayData || displayData.length === 0) {
+      console.log('No displayData available')
+      return
+    }
+
+    const parentData = {}
+    
+    for (const comment of displayData) {
+      if (!comment.commentID) {
+        console.warn('Comment missing ID:', comment)
+        continue
+      }
+
+      try {
+        const response = await getParentCommentByCommentId(comment.commentID)
+        if (response && response.data) {
+          parentData[comment.commentID] = response.data
+        }
+      } catch (error) {
+        console.error(`Error fetching parent comment for ID ${comment.commentID}:`, error)
+      }
+    }
+    
+    setParentComments(parentData)
+  }
+
+  useEffect(() => {
+    if (activeTab === 'comments' && displayData && displayData.length > 0) {
+      fetchParentComments()
+    }
+  }, [activeTab, displayData])
+
   const getTabCounts = () => {
     const counts = {
       posts: 0,
@@ -11,61 +52,97 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
     }
     
     if (!loading && displayData) {
-      if (activeTab === 'posts') counts.posts = displayData.length;
-      if (activeTab === 'comments') counts.comments = displayData.length;
-      if (activeTab === 'saves') counts.saves = displayData.length;
+      if (activeTab === 'posts') counts.posts = displayData.length
+      if (activeTab === 'comments') counts.comments = displayData.length
+      if (activeTab === 'saves') counts.saves = displayData.length
     }
-    
-    return counts;
+
+    return counts
   }
-  
+
+  const handleCommentClick = (comment) => {
+    // navigate(`/post/${comment.reviewID}`)
+    // window.scrollTo(0, 0)
+  }
+
   const counts = getTabCounts()
 
   const renderPostItem = (post) => (
-    <Card className="review-card post-detail-card" key={post.id}>
-      <Card.Body>
-        <div className="review-header">
-          <div className="review-tag">{post.category}</div>
-        </div>
-        <h4 className="review-title">{post.title}</h4>
-        <p className="review-content">{post.content}</p>
-        <div className="review-actions">
-          <div className="action-item">
-            <span className="heart-icon"><FaRegHeart /></span> {post.likes}
-          </div>
-          <div className="action-item">
-            <span className="comment-icon"><FaRegCommentDots /></span> {post.comments}
-          </div>
-          <div className="action-item">
-            <span className="star-icon"><FaRegStar /></span> {post.rating}%
-          </div>
-          <div className="action-item">
-            <span className="time-icon"><FaRegClock /></span> {post.date}
-          </div>
-        </div>
-      </Card.Body>
-    </Card>
+    <Review post={post} showCommentSection={false} isOwner={true} />
   )
 
-  const renderCommentItem = (comment) => (
-    <Card className="review-card post-detail-card" key={comment.id}>
-      <Card.Body>
-        <div className="review-header">
-          <div className="review-tag">Trả lời</div>
-        </div>
-        <h4 className="review-title">Re: {comment.postTitle}</h4>
-        <p className="review-content">{comment.comment}</p>
-        <div className="review-actions">
-          <div className="action-item">
-            <span className="heart-icon"><FaRegHeart /></span> {comment.likes}
+  const renderCommentItem = (comment) => {
+    const parentComment = parentComments[comment.commentID]
+    const commentLikes = comment.likes?.filter((like) => like.type === "LIKE")?.length || 0
+    const commentHearts = comment.likes?.filter((like) => like.type === "HEART")?.length || 0
+    const parentLikes = parentComment?.likes?.filter((like) => like.type === "LIKE")?.length || 0
+    const parentHearts = parentComment?.likes?.filter((like) => like.type === "HEART")?.length || 0
+
+    return (
+      <Card className="review-card post-detail-card" key={comment.id} onClick={() => handleCommentClick(comment)}>
+        <Card.Body>
+          {parentComment && (
+            <div className="comment-parent-container">
+              <div className="comment-content-wrapper">
+                <span className="comment-username">
+                  @{parentComment?.user?.userName}
+                </span>
+                <p className="comment-text">
+                  {parentComment?.content}
+                </p>
+              </div>
+              <div className="comment-actions">
+                <button
+                  className={`comment-action-btn like ${parentLikes > 0 ? 'active' : ''}`}
+                >
+                  <BiLike /> {parentLikes > 0 && parentLikes}
+                </button>
+                <button
+                  className={`comment-action-btn heart ${parentHearts > 0 ? 'active' : ''}`}
+                >
+                  <FaRegHeart /> {parentHearts > 0 && parentHearts}
+                </button>
+                <button
+                  className={`comment-action-btn comment ${parentHearts > 0 ? 'active' : ''}`}
+                >
+                  <FaRegCommentDots /> {parentHearts > 0 && parentHearts}
+                </button>
+              </div>
+            </div>
+          )}
+          
+          <div className={parentComment ? "comment-child-container" : "comment-standalone-container"}>
+            <div className="comment-content-wrapper">
+              <span className={parentComment ? "comment-main-username" : "comment-standalone-username"}>
+                @{comment?.user?.userName}
+              </span>
+              <p className={parentComment ? "comment-main-text" : "comment-standalone-text"}>
+                {comment?.content}
+              </p>
+            </div>
+
+            <div className="comment-actions">
+              <button
+                className={`comment-action-btn like ${commentLikes > 0 ? 'active' : ''}`}
+              >
+                <BiLike /> {commentLikes > 0 && commentLikes}
+              </button>
+              <button
+                className={`comment-action-btn heart ${commentHearts > 0 ? 'active' : ''}`}
+              >
+                <FaRegHeart /> {commentHearts > 0 && commentHearts}
+              </button>
+              <button
+                className={`comment-action-btn comment ${commentHearts > 0 ? 'active' : ''}`}
+              >
+                <FaRegCommentDots /> {commentHearts > 0 && commentHearts}
+              </button>
+            </div>
           </div>
-          <div className="action-item">
-            <span className="time-icon"><FaRegClock /></span> {comment.date}
-          </div>
-        </div>
-      </Card.Body>
-    </Card>
-  )
+        </Card.Body>
+      </Card>
+    )
+  }
 
   return (
     <div className="profile-content-section">
@@ -97,7 +174,7 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
           <div className="content-container">
             {activeTab === 'posts' && displayData.map(post => renderPostItem(post))}
             {activeTab === 'comments' && displayData.map(comment => renderCommentItem(comment))}
-            {activeTab === 'likes' && displayData.map(post => renderPostItem(post))}
+            {activeTab === 'saves' && displayData.map(post => renderPostItem(post))}
           </div>
         ) : (
           <div className="profile-no-content">

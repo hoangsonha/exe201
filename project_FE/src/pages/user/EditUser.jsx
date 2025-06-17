@@ -165,13 +165,13 @@ const EditUser = () => {
               <h2>tên tài khoản</h2>
             </div>
 
-            <Form.Group className="mb-4 username-group">
+            <Form.Group className="mb-4 edit-username-group">
               <Form.Control
                 type="text"
                 value={`@${formData.username}`}
                 onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 disabled={!isVIP}
-                className="username-input"
+                className="edit-profile-username-input"
               />
               {!isVIP && (
                 <div className="input-vip-notice">

@@ -90,7 +90,7 @@
 .review-actions {
   display: flex;
   align-items: center;
-  border-top: 1px solid #000000;
+  padding-bottom: 15px;
   padding-top: 10px;
 }
 
@@ -101,16 +101,22 @@
   color: #777;
   cursor: pointer;
   transition: all 0.2s ease;
+  gap: 5px;
 }
 
 .action-item:hover {
   color: #333;
 }
 
-.heart-icon, .comment-icon, .star-icon, .time-icon, .bookmark-icon {
-  margin-right: 10px;
+.like-icon, .heart-icon, .comment-icon, .actionstar-icon, .time-icon, .bookmark-icon {
+  margin-right: 2px;
   margin-top: -4px;
   transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.like-icon {
+  font-size: 2rem;
+  margin-top: -5.5px;
 }
 
 .bookmark {
@@ -118,8 +124,27 @@
   margin-right: 0;
 }
 
-.action-item.liked .heart-icon {
+.action-star-icon {
+  font-size: 1.8rem;
+  margin-top: -5.5px;
+}
+
+.time-icon {
+  font-size: 1.6rem;
+}
+
+.action-item.hearted {
   animation: heartPop 0.4s ease;
+  color: #ff442b;
+}
+
+.action-item.liked {
+  animation: heartPop 0.4s ease;
+  color: #1284fd;
+}
+
+.action-item.bookmarked .bookmark-icon {
+  animation: bookmarkPop 0.4s ease;
   color: #e1f62b;
 }
 
@@ -133,11 +158,6 @@
   100% {
     transform: scale(1);
   }
-}
-
-.action-item.bookmarked .bookmark-icon {
-  animation: bookmarkPop 0.4s ease;
-  color: #e1f62b;
 }
 
 @keyframes bookmarkPop {

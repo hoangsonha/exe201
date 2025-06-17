@@ -127,6 +127,7 @@ const EditUser = () => {
               onChange={() => handleSwitchChange('showPersonalAccount')}
               label="tài khoản cá nhân"
               className="switch-right"
+              disabled={true}
             />
             <Form.Check
               type="switch"
@@ -167,14 +168,14 @@ const EditUser = () => {
             <Form.Group className="mb-4 username-group">
               <Form.Control
                 type="text"
-                value={formData.username}
+                value={`@${formData.username}`}
                 onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 disabled={!isVIP}
                 className="username-input"
               />
               {!isVIP && (
                 <div className="input-vip-notice">
-                  <i>** bạn cần là tôi vip để sử dụng chức năng này</i>
+                  <i>** bạn cần là tỏi vip để sử dụng chức năng này</i>
                 </div>
               )}
             </Form.Group>

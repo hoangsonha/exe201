@@ -332,13 +332,12 @@ public class DatabaseInit implements CommandLineRunner {
             // Tạo media tương ứng
             List<ReviewMedia> mediaList = new ArrayList<>();
 
-            mediaList.add(createMedia(techReview, "smartphone1.jpg", EnumReviewUploadType.IMAGE, 1));
-            mediaList.add(createMedia(techReview, "smartphone2.jpg", EnumReviewUploadType.IMAGE, 2));
+            mediaList.add(createMedia(techReview, "https://www.electronicsforu.com/wp-contents/uploads/2016/07/smartphone-1.jpg", EnumReviewUploadType.IMAGE, 1));
+            mediaList.add(createMedia(techReview, "https://fscl01.fonpit.de/userfiles/7687254/image/Best_Smartphones_Mai_2023.jpg", EnumReviewUploadType.IMAGE, 2));
 
-            mediaList.add(createMedia(foodReview, "restaurant.jpg", EnumReviewUploadType.IMAGE, 1));
+            mediaList.add(createMedia(foodReview, "https://img3.parisbouge.com/W3ucCm-KATQRXVQIB--Uf1Ii3wL0oHrIQ5LPrilYW9s/rs:fill:1500:1000:1/g:ce/M2Q2MTI1OWMtOGNmZS00MzQ3LTlmNDEtM2NmZWNlNWUyYzdmLmpwZw.jpg", EnumReviewUploadType.IMAGE, 1));
 
-            mediaList.add(createMedia(travelReview, "beach.mp4", EnumReviewUploadType.VIDEO, 1));
-            mediaList.add(createMedia(travelReview, "beach_thumbnail.jpg", EnumReviewUploadType.IMAGE, 2));
+            mediaList.add(createMedia(travelReview, "https://www.youtube.com/embed/Kz1_dIN-sjA?si=f8jShfAPWG8NvO1i", EnumReviewUploadType.VIDEO, 1));
 
             reviewMediaRepository.saveAll(mediaList);
         }

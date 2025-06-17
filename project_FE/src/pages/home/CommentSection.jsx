@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { IoSend } from "react-icons/io5"
 import CommentItem from "./CommentItem"
 
 const CommentSection = ({ post }) => {
@@ -12,40 +13,45 @@ const CommentSection = ({ post }) => {
   }
 
   return (
-    <div style={{ borderTop: "1px solid #eee", padding: "16px" }}>
-      <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+    <div style={{ borderTop: "1px solid black", padding: "16px", paddingTop: "23px" }}>
+      <div style={{ position: "relative", marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Write a comment..."
+          placeholder="Bình luận của bạn..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
           style={{
-            flex: "1",
-            padding: "10px 16px",
-            border: "1px solid #ddd",
-            borderRadius: "20px",
+            width: "100%",
+            padding: "10px 50px 10px 16px",
             outline: "none",
-            fontSize: "14px",
+            fontSize: "1.4rem",
+            fontWeight: "600",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            boxSizing: "border-box",
           }}
         />
         <button
           onClick={handleAddComment}
           style={{
-            padding: "10px 20px",
-            background: "#007bff",
-            color: "white",
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            transform: "translateY(-50%)",
+            background: "transparent",
+            color: "black",
             border: "none",
-            borderRadius: "20px",
+            padding: "6px 8px",
             cursor: "pointer",
-            fontSize: "14px",
+            fontSize: "1.6rem",
           }}
         >
-          Post
+          <IoSend />
         </button>
       </div>
-
-      <div>
+      
+      <div style={{ marginBottom: "25px"}}>
         {post.comments && post.comments.map((comment) => (
           <CommentItem 
             key={comment.commentID} 

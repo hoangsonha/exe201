@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { FaComment, FaHeart } from "react-icons/fa"
+import { FaRegComment, FaHeart, FaRegHeart } from "react-icons/fa"
 import { BiLike } from "react-icons/bi"
+import { IoSend } from "react-icons/io5"
 
 const CommentItem = ({ comment, reviewId, isReply = false }) => {
   const [replyContent, setReplyContent] = useState("")
@@ -25,13 +26,13 @@ const CommentItem = ({ comment, reviewId, isReply = false }) => {
     <div
       style={{
         marginBottom: "16px",
-        marginLeft: isReply ? "40px" : "0",
+        marginLeft: isReply ? "14px" : "0",
         paddingLeft: isReply ? "16px" : "0",
-        borderLeft: isReply ? "2px solid #eee" : "none",
+        borderLeft: isReply ? "1px solid black" : "none",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-        <img 
+        {/* <img 
           src={comment.user.avatar} 
           style={{
             width: "45px",
@@ -39,15 +40,16 @@ const CommentItem = ({ comment, reviewId, isReply = false }) => {
             borderRadius: "50%"
           }} 
           alt={comment.user.userName}
-        />
-        <span style={{ fontSize: "14px", fontWeight: "600", color: "#333" }}>{comment.user.userName}</span>
+        /> */}
+        <span style={{ fontSize: "1.5rem", fontWeight: "700", color: "#333" }}>@{comment.user.userName}</span>
+        <p style={{ fontSize: "1.5rem", lineHeight: "1.5", color: "#646464", margin: "0", marginTop: "1px", marginLeft: "2px" }}>{comment.content}</p>
       </div>
 
-      <div style={{ marginBottom: "8px" }}>
+      {/* <div style={{ marginBottom: "8px" }}>
         <p style={{ fontSize: "14px", lineHeight: "1.5", color: "#333", margin: "0" }}>{comment.content}</p>
-      </div>
+      </div> */}
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+      <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
         <button
           onClick={toggleReply}
           style={{
@@ -58,12 +60,12 @@ const CommentItem = ({ comment, reviewId, isReply = false }) => {
             border: "none",
             color: "#666",
             cursor: "pointer",
-            fontSize: "12px",
+            fontSize: "16px",
             padding: "4px 8px",
             borderRadius: "12px",
           }}
         >
-          <FaComment /> Reply
+          <FaRegComment /> Trả lời
         </button>
 
         <button
@@ -76,7 +78,7 @@ const CommentItem = ({ comment, reviewId, isReply = false }) => {
             border: "none",
             color: commentLikes > 0 ? "#007bff" : "#666",
             cursor: "pointer",
-            fontSize: "12px",
+            fontSize: "18px",
             padding: "4px 8px",
             borderRadius: "12px",
           }}
@@ -94,45 +96,50 @@ const CommentItem = ({ comment, reviewId, isReply = false }) => {
             border: "none",
             color: commentHearts > 0 ? "#ff4757" : "#666",
             cursor: "pointer",
-            fontSize: "12px",
+            fontSize: "16px",
             padding: "4px 8px",
             borderRadius: "12px",
           }}
         >
-          <FaHeart /> {commentHearts > 0 && commentHearts}
+          <FaRegHeart /> {commentHearts > 0 && commentHearts}
         </button>
       </div>
 
       {isReplying && (
-        <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+        <div style={{ position: "relative", marginBottom: "12px" }}>
           <input
             type="text"
-            placeholder={`Reply to ${comment.user.userName}...`}
+            placeholder={`Trả lời ${comment.user.userName}...`}
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleReply()}
             style={{
-              flex: "1",
-              padding: "8px 12px",
-              border: "1px solid #ddd",
-              borderRadius: "16px",
+              width: "100%",
+              padding: "10px 48px 10px 16px", // room for the button inside
               outline: "none",
-              fontSize: "12px",
+              fontSize: "1.1rem",
+              fontWeight: "600",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              boxSizing: "border-box",
             }}
           />
           <button
             onClick={handleReply}
             style={{
-              padding: "8px 16px",
-              background: "#007bff",
-              color: "white",
+              position: "absolute",
+              top: "50%",
+              right: "10px",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              color: "black",
               border: "none",
-              borderRadius: "16px",
+              padding: "6px 10px",
               cursor: "pointer",
-              fontSize: "12px",
+              fontSize: "1.6rem",
             }}
           >
-            Send
+            <IoSend />
           </button>
         </div>
       )}

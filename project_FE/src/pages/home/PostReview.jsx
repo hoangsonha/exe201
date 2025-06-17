@@ -107,6 +107,11 @@ const PostReview = ({ show, onClose, onSubmit }) => {
             return
         }
 
+        if (content.length < 20 && mediaFiles.length === 0) {
+            setError("Nội dung phải có ít nhất 20 ký tự hoặc 1 hình ảnh/video")
+            return
+        }
+
         if (mediaFiles.length === 0) {
             setError("Vui lòng thêm ít nhất 1 hình ảnh hoặc 1 video")
             return

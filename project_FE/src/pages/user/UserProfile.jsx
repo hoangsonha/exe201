@@ -27,29 +27,6 @@ const fakeComments = [
   }
 ]
 
-const fakeSavedPosts = [
-  {
-    id: 3,
-    title: "Top 10 địa điểm du lịch phải đến trong năm 2025",
-    content: "Danh sách những địa điểm du lịch tuyệt vời mà bạn không nên bỏ lỡ trong năm tới...",
-    likes: 245,
-    comments: 67,
-    rating: 98,
-    date: "11/5/25",
-    category: "du lịch"
-  },
-  {
-    id: 4,
-    title: "Review phim mới: Thế giới song song",
-    content: "Bộ phim với cốt truyện độc đáo và kỹ xảo đỉnh cao...",
-    likes: 178,
-    comments: 42,
-    rating: 95,
-    date: "11/3/25",
-    category: "giải trí"
-  }
-]
-
 const UserProfile = () => {
   const navigate = useNavigate()
   const { user } = useContext(UserContext)

@@ -129,43 +129,30 @@ import { FaRegHeart, FaRegCommentDots, FaRegStar, FaRegClock, FaEllipsisH, FaHea
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6"
 import { IoMdEyeOff } from "react-icons/io"
 import { MdOutlineBlock, MdOutlineReport, MdOutlineShare } from "react-icons/md"
-import CommentSection from "./CommentSection"
 import ReviewActions from "./ReviewAction"
 import StarRating from "./StarRating"
 import './Review.css';
 
 const Review = ({ post }) => {
-  const [liked, setLiked] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
-  const [likeCount, setLikeCount] = useState(post.likes)
+  const [likeCount, setLikeCount] = useState(post.likes.filter((like) => like.type === "LIKE").length)
   const [showOptions, setShowOptions] = useState(false)
   const navigate = useNavigate()
   const optionsRef = useRef(null)
   const [showComments, setShowComments] = useState(false)
 
-  const handleLikeClick = (e) => {
-    e.stopPropagation()
-    setLiked(!liked)
-    setLikeCount(prevCount => liked ? prevCount - 1 : prevCount + 1)
-  }
-
-  const handleBookmarkClick = (e) => {
-    e.stopPropagation()
-    setBookmarked(!bookmarked)
-  }
-
   const handlePostClick = () => {
-    navigate(`/post/${post.id}`)
+    navigate(`/post/${post.reviewID}`)
+    window.scrollTo(0, 0)
   }
 
   const handleCommentClick = (e) => {
     e.stopPropagation()
-    navigate(`/post/${post.id}?section=comments`)
+    navigate(`/post/${post.reviewID}?section=comments`)
   }
 
   const handleStarClick = (e) => {
     e.stopPropagation()
-    navigate(`/post/${post.id}?section=rating`)
+    navigate(`/post/${post.reviewID}?section=rating`)
   }
 
   const handleOptionsClick = (e) => {
@@ -181,22 +168,15 @@ const Review = ({ post }) => {
   useEffect(() => {
     console.log(post)
     const handleClickOutside = (event) => {
-      if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+      if (optionsRef.current && !optionsRef.current.contains(event.target))
         setShowOptions(false)
-      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-
-    
   }, [])
-
-  const toggleComments = () => {
-    setShowComments(!showComments)
-  }
 
   return (
     <Card className="review-card" onClick={handlePostClick}>
@@ -227,27 +207,43 @@ const Review = ({ post }) => {
         </div>
         <h4 className="review-title">{post.title}</h4>
         <p className="review-content">{post.content}</p>
-        {/* <div className="review-actions">
-          <div className={`action-item ${liked ? 'liked' : ''}`} onClick={handleLikeClick}>
-            <span className="heart-icon">
-              {liked ? <FaHeart /> : <FaRegHeart />}
-            </span> {likeCount}
+        
+
+        {post.reviewMedias && post.reviewMedias.length > 0 && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "12px",
+              marginBottom: "16px",
+            }}
+          >
+            {post.reviewMedias
+              .sort((a, b) => a.orderDisplay - b.orderDisplay)
+              .map((media) => (
+                <div key={media.id} style={{ borderRadius: "8px", overflow: "hidden" }}>
+                  {media.typeUploadReview === "IMAGE" ? (
+                    <img
+                      src={media.urlImageGIFVideo || "/placeholder.svg?height=200&width=300"}
+                      alt={`Review media ${media.orderDisplay}`}
+                      style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <video
+                      src={media.urlImageGIFVideo}
+                      controls
+                      style={{ width: "100%", height: "200px", objectFit: "cover" }}
+                    />
+                  )}
+                </div>
+              ))}
           </div>
-          <div className="action-item" onClick={handleCommentClick}>
-            <span className="comment-icon"><FaRegCommentDots /></span> {post.comments}
-          </div>
-          <div className="action-item" onClick={handleStarClick}>
-            <span className="star-icon"><FaRegStar /></span> {post.rating}%
-          </div>
-          <div className="action-item">
-            <span className="time-icon"><FaRegClock /></span> {post.time}
-          </div>
-          <div className={`action-item bookmark ${bookmarked ? 'bookmarked' : ''}`} onClick={handleBookmarkClick}>
-            <span className="bookmark-icon">
-              {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
-            </span>
-          </div>
-        </div> */}
+        )}
+
+        <ReviewActions
+          post={post}
+          onToggleComments={() => setShowComments(!showComments)}
+        />
       </Card.Body>
     </Card>
     // <div

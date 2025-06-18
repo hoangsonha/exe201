@@ -3,6 +3,7 @@ package com.hsh.project.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hsh.project.pojo.Review;
 import com.hsh.project.pojo.ReviewMedia;
 import com.hsh.project.pojo.enums.EnumReviewUploadType;
@@ -71,109 +72,156 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
     }
 
     private String getPerspective(String text) throws IOException {
-        String url = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english";
+        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
+
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"),
                 "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
         );
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + apiToken)
                 .post(body)
                 .build();
+
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 String errorBody = response.body().string();
                 throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
             }
-            String jsonString = response.body().string();
-            System.out.println("Debug: Perspective response = " + jsonString); // Log để debug
-            ArrayNode json = (ArrayNode) mapper.readTree(jsonString);
-            return json.get(0).get("label").asText();
+
+            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
+            JsonNode scores = json.get(0); // list of {"label": "X stars", "score": ...}
+
+            int predictedStar = 3;
+            double maxScore = 0;
+
+            for (JsonNode node : scores) {
+                String label = node.get("label").asText(); // e.g., "5 stars"
+                double score = node.get("score").asDouble();
+                int stars = Integer.parseInt(label.substring(0, 1));
+                if (score > maxScore) {
+                    maxScore = score;
+                    predictedStar = stars;
+                }
+            }
+
+            // Trả lại nhãn như: POSITIVE / NEGATIVE / NEUTRAL tương ứng với số sao
+            if (predictedStar >= 4) return "POSITIVE";
+            if (predictedStar == 3) return "NEUTRAL";
+            return "NEGATIVE";
         }
     }
 
-//    private String getPerspective(String text) throws IOException {
-//        String url = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english";
-//        RequestBody body = RequestBody.create(
-//                MediaType.parse("application/json"),
-//                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
-//        );
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .addHeader("Authorization", "Bearer " + apiToken)
-//                .post(body)
-//                .build();
-//        try (Response response = client.newCall(request).execute()) {
-//
-//            if (!response.isSuccessful()) {
-//                String errorBody = response.body().string();
-//                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
-//            }
-//            String jsonString = response.body().string();
-//            System.out.println("Debug: Perspective response = " + jsonString);
-//
-//            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-//            return json.get(0).get("label").asText();
-//        }
-//    }
-
-    private int getRelevantStar(String text, List<String> imageUrls, String videoUrl) throws IOException {
-        // Gọi script Python
-        List<String> command = new ArrayList<>();
-        command.add("python");
-        command.add("clip_processor.py");
-        command.add(text);
-        command.addAll(imageUrls != null ? imageUrls : List.of());
-        command.add(videoUrl != null ? videoUrl : "");
-
-        ProcessBuilder pb = new ProcessBuilder(command);
-        Process process = pb.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line = reader.readLine();
-        return line != null ? Integer.parseInt(line.trim()) : 3; // Default 3 nếu lỗi
-    }
-
     private int getObjectiveStar(String text) throws IOException {
-//        String url = "https://api-inference.huggingface.co/models/roberta-base";
-
-        String url = "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment";
+        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
 
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"),
                 "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
         );
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + apiToken)
                 .post(body)
                 .build();
+
         try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body().string();
+                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
+            }
+
             ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-            double emotionalScore = 0;
-            for (JsonNode node : json.get(0)) {
-                String label = node.get("label").asText();
-                if (label.equals("POSITIVE") || label.equals("NEGATIVE")) {
-                    emotionalScore += node.get("score").asDouble();
+            JsonNode scores = json.get(0);
+
+            int predictedStar = 3;
+            double maxScore = 0;
+
+            for (JsonNode node : scores) {
+                String label = node.get("label").asText(); // e.g., "5 stars"
+                double score = node.get("score").asDouble();
+                int stars = Integer.parseInt(label.substring(0, 1));
+                if (score > maxScore) {
+                    maxScore = score;
+                    predictedStar = stars;
                 }
             }
-            int objectiveStar = (int) Math.round((1 - emotionalScore) * 5);
-            return Math.max(1, Math.min(5, objectiveStar));
+
+            // Đảo ngược score vì khách quan = ít cảm xúc (gần 3 sao nhất là khách quan nhất)
+            int objectiveScore = 5 - Math.abs(predictedStar - 3); // Max = 5 khi = 3 sao
+            return Math.max(1, Math.min(5, objectiveScore));
         }
+    }
+
+
+    private int getRelevantStar(String text, List<String> imageUrls, String videoUrl) throws IOException {
+        List<String> command = new ArrayList<>();
+        command.add("python");
+        command.add("clip_processor.py");
+        command.add(text);
+
+        if (imageUrls != null) {
+            command.addAll(imageUrls);
+        }
+
+        // Nếu videoUrl rỗng/null thì vẫn truyền vào chuỗi rỗng
+        command.add(videoUrl != null ? videoUrl : "");
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true); // Gộp cả stdout và stderr
+
+        Process process = pb.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        int star = 3; // Mặc định
+
+        while ((line = reader.readLine()) != null) {
+            try {
+                star = Integer.parseInt(line.trim());
+            } catch (NumberFormatException ignored) {
+                // Không xử lý được thì bỏ qua dòng này
+            }
+        }
+
+        try {
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return Math.max(1, Math.min(5, star)); // Clamp từ 1 -> 5
     }
 
     private String getSummary(String text) throws IOException {
         String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+        ObjectNode requestJson = mapper.createObjectNode();
+        requestJson.put("inputs", text);
+        ObjectNode parameters = requestJson.putObject("parameters");
+        parameters.put("max_length", 50);
+        parameters.put("min_length", 20);
+        parameters.put("do_sample", false);
+
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"),
-                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\", \"parameters\": {\"max_length\": 50, \"min_length\": 20}}"
+                requestJson.toString()
         );
+
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + apiToken)
                 .post(body)
                 .build();
+
         try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Summary API error: " + response.code() + " - " + response.body().string());
+            }
+
             ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
             return json.get(0).get("summary_text").asText();
         }

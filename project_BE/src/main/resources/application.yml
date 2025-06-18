@@ -12,7 +12,7 @@ spring:
     password: 123456789
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -59,7 +59,7 @@ firebase:
   bucket:
     name: swp391-f046d.appspot.com
   get:
-    stream: swp391-f046d-7605b8f4bcf1.json
+    stream: swp391-f046d-305c28aa084d.json
     url: https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/%s?alt=media
     folder: exe201_project
 

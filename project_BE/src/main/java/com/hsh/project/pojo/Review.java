@@ -2,7 +2,6 @@ package com.hsh.project.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hsh.project.pojo.enums.EnumReviewStatus;
-import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

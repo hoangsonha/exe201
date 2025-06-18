@@ -11,7 +11,6 @@ const request = axios.create({
 
 export const get = async (url, params = {}) => {
     const response = await request.get(url, params);
-
     return response;
 };
 

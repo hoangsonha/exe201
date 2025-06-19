@@ -32,7 +32,7 @@ out/
 # VS Code
 .vscode/
 
-/keys/*.json
+project_BE/src/main/resources/keys/*.json
 
 # Logs
 logs/

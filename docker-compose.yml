@@ -21,7 +21,7 @@ services:
     ports:
       - "8081:8081"
     env_file:
-      - /root/app/.env
+      - .env
     volumes:
       - ./keys/key_firebase.json:/app/keys/key_firebase.json
     depends_on:

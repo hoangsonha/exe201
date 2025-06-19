@@ -65,4 +65,4 @@ firebase:
 
 huggingface:
   api:
-    token: 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
+    token: ${API_SECRET}

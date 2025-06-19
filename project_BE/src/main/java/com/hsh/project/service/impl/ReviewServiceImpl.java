@@ -29,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -212,18 +209,55 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+//    private String uploadFile(File file, String fileName, String contentType) throws IOException {
+//        String folder = folderContainImage + "/" + fileName;
+//        BlobId blobId = BlobId.of(bucketName, folder);
+//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+//                .setContentType(contentType)  // <-- đúng loại file thật
+//                .build();
+//
+//        String firebaseKeyPath = System.getenv("FIREBASE_KEY_PATH");
+//        System.out.println("🔍 FIREBASE_KEY_PATH = " + firebaseKeyPath);
+//        System.out.println("🔍 FIREBASE_KEY_PATH = " + fileConfigFirebase);
+//
+//        try (InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase)) {
+//            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+//            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+//            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+//        }
+//
+//        return String.format(urlFirebase, URLEncoder.encode(folder, StandardCharsets.UTF_8));
+//    }
+
     private String uploadFile(File file, String fileName, String contentType) throws IOException {
         String folder = folderContainImage + "/" + fileName;
         BlobId blobId = BlobId.of(bucketName, folder);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                .setContentType(contentType)  // <-- đúng loại file thật
+                .setContentType(contentType)
                 .build();
 
-        try (InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase)) {
-            Credentials credentials = GoogleCredentials.fromStream(inputStream);
-            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        Credentials credentials;
+        String envPath = System.getenv("FIREBASE_KEY_PATH");
+
+        InputStream keyStream;
+
+        if (envPath != null && !envPath.isBlank()) {
+            System.out.println("✅ Đang dùng FIREBASE_KEY_PATH từ biến môi trường: " + envPath);
+            keyStream = new FileInputStream(envPath);
+        } else {
+            // Local dev fallback
+            String fallbackPathInResources = "keys/key_firebase.json"; // hoặc lấy từ fileConfigFirebase nếu bạn set
+            System.out.println("🔁 Không có biến FIREBASE_KEY_PATH, dùng file trong resources: " + fallbackPathInResources);
+            keyStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fallbackPathInResources);
+
+            if (keyStream == null) {
+                throw new ElementNotFoundException("Không tìm thấy key Firebase trong resources: " + fallbackPathInResources);
+            }
         }
+
+        credentials = GoogleCredentials.fromStream(keyStream);
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
         return String.format(urlFirebase, URLEncoder.encode(folder, StandardCharsets.UTF_8));
     }
@@ -239,7 +273,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
-        File tempFile = new File(fileName);          // create newFile ưith String of fileName (random String + "extension") and save to Current Working Directory or Java Virtual Machine (JVM)
+//        File tempFile = new File(fileName);
+        File tempFile = File.createTempFile("upload_", "_" + fileName);// create newFile ưith String of fileName (random String + "extension") and save to Current Working Directory or Java Virtual Machine (JVM)
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
         }

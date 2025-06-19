@@ -6,8 +6,8 @@ spring:
 
   # DATABASE
   datasource:
-    url: jdbc:mysql://exe201_db:3306/exe201_project
-    # url: jdbc:mysql://localhost:3306/exe201_project
+    # url: jdbc:mysql://exe201_db:3306/exe201_project
+    url: jdbc:mysql://localhost:3306/exe201_project
     username: root
     password: 123456789
   jpa:
@@ -59,10 +59,10 @@ firebase:
   bucket:
     name: swp391-f046d.appspot.com
   get:
-    stream: swp391-f046d-305c28aa084d.json
+    stream: ${FIREBASE_KEY_PATH}
     url: https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/%s?alt=media
     folder: exe201_project
 
 huggingface:
   api:
-    token: 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
+    token: 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

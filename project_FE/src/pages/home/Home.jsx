@@ -117,6 +117,7 @@ import ReviewPost from "./Review"
 import "./Home.css"
 import { UserContext } from "../../App"
 import { useNavigate } from 'react-router'
+import { useToast } from "../../component/Toast"
 
 const Home = () => {
   const { user } = useContext(UserContext)
@@ -127,6 +128,8 @@ const Home = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [hashtags, setHashtags] = useState([])
   const navigate = useNavigate()
+
+  const { addToast } = useToast();
   
   useEffect(() => {
     const apiAll = async () => {
@@ -203,8 +206,9 @@ const Home = () => {
 
         if (resultPurposes.status == "Success") {
           alert("Bai cua ban da dduoc tao, Vui long cho duyet")
+          addToast(`Bạn đã tạo bài thành công. Vui lòng đợi đánh giá bài trước khi bài được đăng`, true, false);
         } else {
-          alert("Dã có lỗi, Vui long cho duyet123")
+          addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);
         }
       } catch (error) {
         console.error("Có lỗi xảy ra khi gọi api review:", error)

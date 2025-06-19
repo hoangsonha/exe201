@@ -11,7 +11,7 @@ RUN apt-get update && \
     ln -s /usr/bin/python3 /usr/bin/python
 
 COPY --from=build /app/target/project_BE-0.0.1-SNAPSHOT.jar app.jar
-COPY project_BE/clip_processor.py ./clip_processor.py
+COPY clip_processor.py ./clip_processor.py
 
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app.jar"]

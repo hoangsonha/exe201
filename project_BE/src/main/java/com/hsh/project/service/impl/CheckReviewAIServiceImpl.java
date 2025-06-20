@@ -73,12 +73,60 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
         return review;
     }
 
+//    private String getPerspective(String text) throws IOException {
+//        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
+//
+//        RequestBody body = RequestBody.create(
+//                MediaType.parse("application/json"),
+//                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
+//        );
+//
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .addHeader("Authorization", "Bearer " + apiToken)
+//                .post(body)
+//                .build();
+//
+//        try (Response response = client.newCall(request).execute()) {
+//            if (!response.isSuccessful()) {
+//                String errorBody = response.body().string();
+//                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
+//            }
+//
+//            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
+//            JsonNode scores = json.get(0); // list of {"label": "X stars", "score": ...}
+//
+//            int predictedStar = 3;
+//            double maxScore = 0;
+//
+//            for (JsonNode node : scores) {
+//                String label = node.get("label").asText(); // e.g., "5 stars"
+//                double score = node.get("score").asDouble();
+//                int stars = Integer.parseInt(label.substring(0, 1));
+//                if (score > maxScore) {
+//                    maxScore = score;
+//                    predictedStar = stars;
+//                }
+//            }
+//
+//            // Trả lại nhãn như: POSITIVE / NEGATIVE / NEUTRAL tương ứng với số sao
+//            if (predictedStar >= 4) return "POSITIVE";
+//            if (predictedStar == 3) return "NEUTRAL";
+//            return "NEGATIVE";
+//        }
+//    }
+
     private String getPerspective(String text) throws IOException {
         String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
 
+        ObjectNode requestJson = mapper.createObjectNode();
+//        requestJson.put("inputs", text); // escape tự động
+
+        requestJson.put("inputs", sanitizeText(text));
+
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"),
-                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
+                requestJson.toString()
         );
 
         Request request = new Request.Builder()
@@ -89,12 +137,11 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                String errorBody = response.body().string();
-                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
+                throw new IOException("Hugging Face API error: " + response.code() + " - " + response.body().string());
             }
 
             ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-            JsonNode scores = json.get(0); // list of {"label": "X stars", "score": ...}
+            JsonNode scores = json.get(0);
 
             int predictedStar = 3;
             double maxScore = 0;
@@ -109,19 +156,32 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
                 }
             }
 
-            // Trả lại nhãn như: POSITIVE / NEGATIVE / NEUTRAL tương ứng với số sao
-            if (predictedStar >= 4) return "POSITIVE";
-            if (predictedStar == 3) return "NEUTRAL";
-            return "NEGATIVE";
+            if (predictedStar >= 4) return "TÍCH CỰC";
+            if (predictedStar == 3) return "TRUNG LẬP";
+            return "TIÊU CỰC";
         }
+    }
+
+    private String sanitizeText(String text) {
+        return text.replaceAll("[\\x00-\\x1F\\x7F]", ""); // Xoá control char trừ \n nếu cần
     }
 
     private Integer getObjectiveStar(String text) throws IOException {
         String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
 
+//        RequestBody body = RequestBody.create(
+//                MediaType.parse("application/json"),
+//                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
+//        );
+
+        ObjectNode requestJson = mapper.createObjectNode();
+//        requestJson.put("inputs", text); // escape tự động
+
+        requestJson.put("inputs", sanitizeText(text));
+
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json"),
-                "{\"inputs\": \"" + text.replace("\"", "\\\"") + "\"}"
+                requestJson.toString()
         );
 
         Request request = new Request.Builder()

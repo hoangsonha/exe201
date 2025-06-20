@@ -620,3 +620,8 @@
 .add-more-media-btn:hover {
   text-decoration: underline;
 }
+
+.add-button-tag {
+  padding-left: 2px;
+  padding-right: 2px;
+}

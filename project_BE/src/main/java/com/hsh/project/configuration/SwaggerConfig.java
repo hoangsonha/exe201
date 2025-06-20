@@ -14,9 +14,9 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("VaccineX - Hệ thống Theo dõi Lịch tiêm chủng Trẻ em"))
-                .addSecurityItem(new SecurityRequirement().addList("Dịch vụ Xác thực VaccineX"))
-                .components(new Components().addSecuritySchemes("Dịch vụ Xác thực VaccineX", new SecurityScheme()
-                        .name("VaccineX - Hệ thống Theo dõi Lịch tiêm chủng Trẻ em").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+                .info(new Info().title("TOIREVIEW - REVIEW MỌI THỨ"))
+                .addSecurityItem(new SecurityRequirement().addList("Xác thực TOIREVIEW"))
+                .components(new Components().addSecuritySchemes("Xác thực TOIREVIEW", new SecurityScheme()
+                        .name("TOIREVIEW - REVIEW MỌI THỨ").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
     }
 }

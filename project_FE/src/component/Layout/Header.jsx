@@ -19,6 +19,8 @@ import lawIcon from '@/assets/categories/law.svg'
 import scienceIcon from '@/assets/categories/science.svg'
 import travelIcon from '@/assets/categories/travel.svg'
 import sportIcon from '@/assets/categories/sport.svg'
+
+import { getHashtags } from "../../serviceAPI/hashtagService"
 import './Header.css'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
@@ -28,7 +30,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [showCategories, setShowCategories] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const [categories, setCategories] = useState([])
+  const [hashtags, setHashtags] = useState([])
   const [loading, setLoading] = useState(true)
   const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
@@ -44,30 +46,34 @@ const Header = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true)
-        setTimeout(() => {
-          const mockCategories = [
-            { id: "games", icon: gamesIcon, name: "games" },
-            { id: "tech", icon: techIcon, name: "công nghệ" },
-            { id: "tv", icon: tvIcon, name: "phim & tv" },
-            { id: "education", icon: eduIcon, name: "giáo dục" },
-            { id: "art", icon: artsIcon, name: "hội họa" },
-            { id: "career", icon: jobsIcon, name: "nghề nghiệp" },
-            { id: "fashion", icon: fashionIcon, name: "thời trang" },
-            { id: "food", icon: foodIcon, name: "đồ ăn" },
-            { id: "home", icon: householdIcon, name: "gia dụng" },
-            { id: "nature", icon: natureIcon, name: "tự nhiên" },
-            { id: "music", icon: musicIcon, name: "âm nhạc" },
-            { id: "car", icon: trafficIcon, name: "xe cộ" },
-            { id: "law", icon: lawIcon, name: "luật pháp" },
-            { id: "science", icon: scienceIcon, name: "khoa học" },
-            { id: "travel", icon: travelIcon, name: "du lịch" },
-            { id: "sports", icon: sportIcon, name: "thể thao" },
-            { id: "others", icon: <FaEllipsisH />, name: "khác" },
-          ]
+        // setTimeout(() => {
+        //   const mockCategories = [
+        //     { id: "games", icon: gamesIcon, name: "games" },
+        //     { id: "tech", icon: techIcon, name: "công nghệ" },
+        //     { id: "tv", icon: tvIcon, name: "phim & tv" },
+        //     { id: "education", icon: eduIcon, name: "giáo dục" },
+        //     { id: "art", icon: artsIcon, name: "hội họa" },
+        //     { id: "career", icon: jobsIcon, name: "nghề nghiệp" },
+        //     { id: "fashion", icon: fashionIcon, name: "thời trang" },
+        //     { id: "food", icon: foodIcon, name: "đồ ăn" },
+        //     { id: "home", icon: householdIcon, name: "gia dụng" },
+        //     { id: "nature", icon: natureIcon, name: "tự nhiên" },
+        //     { id: "music", icon: musicIcon, name: "âm nhạc" },
+        //     { id: "car", icon: trafficIcon, name: "xe cộ" },
+        //     { id: "law", icon: lawIcon, name: "luật pháp" },
+        //     { id: "science", icon: scienceIcon, name: "khoa học" },
+        //     { id: "travel", icon: travelIcon, name: "du lịch" },
+        //     { id: "sports", icon: sportIcon, name: "thể thao" },
+        //     { id: "others", icon: <FaEllipsisH />, name: "khác" },
+        //   ]
 
-          setCategories(mockCategories)
-          setLoading(false)
-        }, 500)
+        //   setCategories(mockCategories)
+        //   setLoading(false)
+        // }, 500)
+
+        const result = await getHashtags()
+        setHashtags(result.data.data || [])
+        setLoading(false)
       } catch (err) {
         console.error("Error fetching categories:", err)
         setLoading(false)
@@ -175,7 +181,7 @@ const Header = () => {
                     <div className="categories-loading">Loading categories...</div>
                   ) : (
                     <div className="categories-grid">
-                      {categories.map((category) => (
+                      {hashtags.map((category) => (
                         <div
                           key={category.id}
                           className={`category-item ${selectedCategories.includes(category.name) ? "selected" : ""}`}

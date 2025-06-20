@@ -154,7 +154,6 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
   }
 
   useEffect(() => {
-    console.log(post)
     const handleClickOutside = (event) => {
       if (optionsRef.current && !optionsRef.current.contains(event.target))
         setShowOptions(false)

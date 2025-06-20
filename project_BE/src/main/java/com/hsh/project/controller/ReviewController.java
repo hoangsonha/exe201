@@ -65,9 +65,11 @@ public class ReviewController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReview(@RequestPart("review") CreateReviewRequest request,
                                           @RequestPart("mediaFiles") List<MultipartFile> mediaFiles) {
-            reviewService.createReview(request, mediaFiles);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ObjectResponse("Success", "Get user by ID successfully", null));
+            ReviewResponseDTO reviewResponseDTO = reviewService.createReview(request, mediaFiles);
+        return reviewResponseDTO != null ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Create review successfully", reviewResponseDTO)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ObjectResponse("Failed", "Create review failed", null));
     }
 
     // return reviewID when block successfully

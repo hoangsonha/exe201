@@ -40,8 +40,6 @@ const Home = () => {
 
         if (user && user.id != null) {
 
-          console.log('user id ne', user.id)
-
           const resultPurposes = await getReviewByUserHashTag(user.id)
           if (resultPurposes.data.status == "Success") {
             setPosts(resultPurposes.data.data)
@@ -93,31 +91,56 @@ const Home = () => {
     setShowPostReview(false)
   }
 
-  const handleSubmitPost = (formData) => {
-    console.log("Post data:", formData)
-
-    createReviewAPI(formData)
-
+  const handleSubmitPost = async (formData) => {
+    console.log("Post data:", formData);
+    const result = await createReviewAPI(formData);
+    console.log("API result:", result);
+    return result;
   }
 
   const createReviewAPI = async (formData) => {
-      try {
-        // setLoading(true)
-        const resultPurposes = await createReview(formData)
+    try {
+      // setLoading(true)
+      const resultPurposes = await createReview(formData)
 
-        if (resultPurposes.status == "Success") {
-          addToast(`Bạn đã tạo bài thành công. Vui lòng đợi đánh giá bài trước khi bài được đăng`, true, false);
-        } else {
-          addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);
+      if (resultPurposes.status == "Success") {
+        var error = "Bạn đã tạo bài thành công"
+        var check = false;
+
+        if (resultPurposes.data.perspective == 'NEGATIVE') {
+          error = "Bạn đã tạo bài thành công. Nhưng do góc nhìn của bài đăng thấp nên bài sẽ không được đăng tự động"
+          check = true
         }
-      } catch (error) {
-        console.error("Có lỗi xảy ra khi gọi api review:", error)
-        alert(error.error)
-      } finally {
-        // setLoading(false)
-        setShowPostReview(false);
+
+        if (resultPurposes.data.relevantStar <= 1) {
+          error = "Bạn đã tạo bài thành công. Nhưng do độ liên quan của bài đăng thấp nên bài sẽ không được đăng tự động"
+          check = true
+        }
+
+        if (resultPurposes.data.objectiveStar <= 1) {
+          error = "Bạn đã tạo bài thành công. Nhưng do tính khách quan của bài đăng thấp nên bài sẽ không được đăng tự động"
+          check = true
+        }
+        
+        addToast(error, !check, check);
+
+        return {
+          success: true,
+          credibilityData: {
+            perspective: resultPurposes.data.perspective,
+            relevantStar: resultPurposes.data.relevantStar,
+            objectiveStar: resultPurposes.data.objectiveStar,
+            summary: resultPurposes.data.summary
+          }
+        };
+      } else {
+        addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);
       }
-    }
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi gọi api review:", error)
+      alert(error.error)
+     } 
+  }
 
   useEffect(() => {
     if (el.current) {

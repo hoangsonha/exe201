@@ -15,7 +15,7 @@ public interface ReviewService {
 
     List<ReviewResponseDTO> searchReview(String search, List<String> hashtags);
 
-    void createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles);
+    ReviewResponseDTO createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles);
 
     List<ReviewResponseDTO> getReviewsByUserHashtags(Long userId);
 

@@ -72,7 +72,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     @Override
-    public void createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles) {
+    public ReviewResponseDTO createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles) {
 
         User user = userRepository.findById(request.getUserId()).orElse(null);
 
@@ -90,15 +90,14 @@ public class ReviewServiceImpl implements ReviewService {
             throw new BadRequestException("Hashtags can not be empty");
         }
 
-        // Xử lý hashtag
-        for (Integer tagName : request.getHashtags()) {
-            Hashtag hashtag = hashtagRepository.findById(tagName).orElse(null);
-//            if (hashtag == null) {
-//                Hashtag newTag = new Hashtag();
-//                newTag.setTag(tagName);
-//                newTag.setStatus(EnumHashtagStatus.PENDING);
-//                hashtagRepository.save(newTag);
-//            }
+        for (String tagName : request.getHashtags()) {
+            Hashtag hashtag = hashtagRepository.findByTag(tagName);
+            if (hashtag == null) {
+                Hashtag newTag = new Hashtag();
+                newTag.setTag(tagName);
+                newTag.setStatus(EnumHashtagStatus.ADDED);
+                hashtagRepository.save(newTag);
+            }
             ReviewHashtag reviewHashtag = ReviewHashtag.builder()
                     .hashtag(hashtag)
                     .review(review)
@@ -173,7 +172,7 @@ public class ReviewServiceImpl implements ReviewService {
             review.setStatus(EnumReviewStatus.PUBLISHED);
         }
 
-        reviewRepository.save(review);
+        return this.mapReviewToDTOWithoutUser(reviewRepository.save(review));
     }
 
     public String uploadImages(MultipartFile imageFile) {

@@ -491,7 +491,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 3. Lọc những review không bị block
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .filter(review -> !blockReviewRepository.existsByUser_UserIdAndReview_ReviewID(userId, review.getReviewID()))
-                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED.name()))
+                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
                 .map(review -> {
                     boolean isSaved = savedReviewRepository.existsByUser_UserIdAndReview_ReviewIDAndStatusTrue(userId, review.getReviewID());
                     return mapReviewToDTOWithUser(review, userId, isSaved);

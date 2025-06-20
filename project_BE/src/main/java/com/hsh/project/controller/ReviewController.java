@@ -62,6 +62,7 @@ public class ReviewController {
                 .body(new ObjectResponse("Fail", "Get top trending failed", null));
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReview(@RequestPart("review") CreateReviewRequest request,
                                           @RequestPart("mediaFiles") List<MultipartFile> mediaFiles) {

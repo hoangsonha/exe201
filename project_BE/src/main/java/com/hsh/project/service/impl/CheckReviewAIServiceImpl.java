@@ -56,10 +56,12 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
         try {
             String perspective = getPerspective(combinedText);
             int relevantStar = getRelevantStar(combinedText, urlsImage, urlVideo);
-            int objectiveStar = getObjectiveStar(combinedText);
+            Integer objectiveStar = getObjectiveStar(combinedText);
             String summary = getSummary(combinedText);
 
-            review.setObjectiveStar((float) objectiveStar);
+            if (objectiveStar != null) {
+                review.setObjectiveStar((float) objectiveStar);
+            }
             review.setRelevantStar((float) relevantStar);
             review.setPerspective(perspective);
             review.setSummary(summary);
@@ -114,7 +116,7 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
         }
     }
 
-    private int getObjectiveStar(String text) throws IOException {
+    private Integer getObjectiveStar(String text) throws IOException {
         String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
 
         RequestBody body = RequestBody.create(

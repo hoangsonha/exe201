@@ -107,7 +107,6 @@ const Home = () => {
         const resultPurposes = await createReview(formData)
 
         if (resultPurposes.status == "Success") {
-          alert("Bai cua ban da dduoc tao, Vui long cho duyet")
           addToast(`Bạn đã tạo bài thành công. Vui lòng đợi đánh giá bài trước khi bài được đăng`, true, false);
         } else {
           addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);

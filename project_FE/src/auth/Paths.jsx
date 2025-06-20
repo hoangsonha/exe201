@@ -1,8 +1,5 @@
 import { ROLES } from "./Roles";
 import EmployeeManagement from "../pages/EmployeeManagement";
-import CompanyManagement from "../pages/CompanyManagement";
-import ProjectManagement from "../pages/ProjectManagement";
-import InformationUser from "../pages/InformationUser";
 import Empty from "../pages/Empty";
 import UserProfile from "../pages/user/UserProfile";
 import EditUser from "../pages/user/EditUser";
@@ -44,27 +41,13 @@ export const PATHS = {
         allowedRoles: [ROLES.ADMIN],
         layout: true
     },
-    MANAGER_COMPANY: {
-        path: '/manager-companies',
-        label: 'Company',
-        element: <CompanyManagement />,
-        allowedRoles: [ROLES.ADMIN],
-        layout: true
-    },
-    MANAGER_PROJECT: {
-        path: '/manager-projects',
-        label: 'Project',
-        element: <ProjectManagement />,
-        allowedRoles: [ROLES.ADMIN],
-        layout: true
-    },
 }
 
 export const FULL_PATHS_LIST = Object.values(PATHS);
 
 export const getRolePaths = (role) => {
     if (role == ROLES.ADMIN) {
-        return [PATHS.MANAGER_EMPLOYEE, PATHS.MANAGER_COMPANY, PATHS.MANAGER_PROJECT];
+        return [PATHS.MANAGER_EMPLOYEE];
     } else {
         return [PATHS.HOME];
     }

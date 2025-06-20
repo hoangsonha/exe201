@@ -425,9 +425,8 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
-
     @Override
-    public List<ReviewResponseDTO> getTopTrendingReviews(int limit) {
+    public List<ReviewResponseDTO> getTopTrendingReviews() {
         // 1. Lấy top hashtag có nhiều review nhất
         List<Long> topHashtagIds = reviewHashtagRepository.findTopHashtagIdsByReviewCount(PageRequest.of(0, 5));
 
@@ -437,12 +436,48 @@ public class ReviewServiceImpl implements ReviewService {
         // 3. Tính tương tác (like + comment)
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .map(this::mapReviewToDTOWithoutUser)
-                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
+                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED.name()))
                 .sorted(Comparator.comparingInt(r -> -((r.getLikes() != null ? r.getLikes().size() : 0) + (r.getComments() != null ? r.getComments().size() : 0))))
-                .limit(limit)
                 .collect(Collectors.toList());
 
         return reviewDTOs;
+    }
+
+    @Override
+    public List<ReviewResponseDTO> searchReview(String search, List<String> hashtags) {
+        List<Review> reviews = new ArrayList<>();
+
+        // Chuẩn hóa search term
+        String searchTerm = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+
+        // Chuẩn hóa hashtags
+        List<String> normalizedHashtags = (hashtags != null && !hashtags.isEmpty())
+                ? hashtags.stream()
+                .filter(tag -> tag != null && !tag.trim().isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toList())
+                : null;
+
+        if (normalizedHashtags != null) {
+            // Trường hợp có hashtags
+            if (searchTerm != null) {
+                // Có cả search text và hashtags
+                reviews = reviewRepository.findByTitleContainingAndHashtags(searchTerm, normalizedHashtags);
+            } else {
+                // Chỉ có hashtags
+                reviews = reviewRepository.findByHashtagsIn(normalizedHashtags);
+            }
+        } else {
+            // Trường hợp không có hashtags
+            reviews = reviewRepository.findByTitleContainingIgnoreCaseAndStatus(
+                    searchTerm != null ? searchTerm : "",
+                    EnumReviewStatus.PUBLISHED
+            );
+        }
+
+        return reviews.stream()
+                .map(this::mapReviewToDTOWithoutUser)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -456,7 +491,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 3. Lọc những review không bị block
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .filter(review -> !blockReviewRepository.existsByUser_UserIdAndReview_ReviewID(userId, review.getReviewID()))
-                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
+                .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED.name()))
                 .map(review -> {
                     boolean isSaved = savedReviewRepository.existsByUser_UserIdAndReview_ReviewIDAndStatusTrue(userId, review.getReviewID());
                     return mapReviewToDTOWithUser(review, userId, isSaved);

@@ -11,7 +11,9 @@ import java.util.List;
 public interface ReviewService {
     ReviewResponseDTO getReviewById(Long reviewId);
 
-    List<ReviewResponseDTO> getTopTrendingReviews(int limit);
+    List<ReviewResponseDTO> getTopTrendingReviews();
+
+    List<ReviewResponseDTO> searchReview(String search, List<String> hashtags);
 
     void createReview(CreateReviewRequest request, List<MultipartFile> mediaFiles);
 

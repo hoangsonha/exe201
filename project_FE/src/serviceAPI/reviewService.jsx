@@ -12,6 +12,20 @@ export const getTopTradingGlobal = async () => {
     }
 };
 
+export const searchReview = async (searchTerm, selectedCategories) => {
+  try {
+    const params = {
+      search: searchTerm,
+      hashtags: selectedCategories.join(',')
+    };
+    const res = await get(API + "/search", { params });
+    return res;
+  } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
 export const createReview = async (formData) => {
   try {
     const res = await post(API, formData,  

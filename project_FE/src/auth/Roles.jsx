@@ -14,8 +14,8 @@ export const ROLES_LABEL = {
 
 export const DEFAULT_PATHS = {
     [ROLES.ADMIN]: '/manager-employees',
-    [ROLES.MANAGER]: '/vaccines',
-    [ROLES.STAFF]: '/vaccines',
+    [ROLES.MANAGER]: '/',
+    [ROLES.STAFF]: '/',
     [ROLES.USER]: '/',
 }
 

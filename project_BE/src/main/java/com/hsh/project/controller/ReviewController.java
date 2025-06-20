@@ -40,10 +40,21 @@ public class ReviewController {
                 .body(new ObjectResponse("Fail", "Get user by ID failed", null));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ObjectResponse> searchReview(@RequestParam(name = "search", required = false) String search,
+                                                       @RequestParam(name = "hashtags", required = false) List<String> hashtags) {
+        List<ReviewResponseDTO> user = reviewService.searchReview(search, hashtags);
+        return !user.isEmpty()
+                ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Search review successfully", user))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ObjectResponse("Fail", "Search review failed", null));
+    }
+
     // get all review when user not login in homepage by the most interact of hashtag and have the most using hashtag
     @GetMapping("/top-trending")
     public ResponseEntity<ObjectResponse> getAllReviewGlobal() {
-        List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews(5);
+        List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews();
         return !user.isEmpty()
                 ? ResponseEntity.status(HttpStatus.OK)
                 .body(new ObjectResponse("Success", "Get top trending successfully", user))

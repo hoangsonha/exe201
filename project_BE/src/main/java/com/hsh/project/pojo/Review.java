@@ -71,7 +71,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<BlockReview> blockReviews;
 
-    @OneToOne(mappedBy = "review")
+    @OneToOne(mappedBy = "review", cascade = CascadeType.ALL)
     CheckReviewAI checkReviewAI;
 
     @OneToMany

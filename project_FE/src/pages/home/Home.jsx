@@ -68,7 +68,6 @@ const Home = () => {
         setLoading(false)
       }
     }
-
     apiAll()
   }, [])
 

@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.hsh.project.security.CustomAccountDetail;
 
 @Slf4j
 @RestController
@@ -22,10 +25,10 @@ public class RatingController {
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/toggle")
     public ResponseEntity<String> toggleRating(
-            @RequestParam @Parameter(description = "ID of the user rating the review") Integer userId,
             @RequestParam @Parameter(description = "ID of the review") Long reviewId,
             @RequestParam @Parameter(description = "Rating value (1.0 to 5.0)") Double stars) {
 
+        Integer userId = getCurrentUserId().intValue();
         String result = ratingService.toggleRating(userId, reviewId, stars);
         return ResponseEntity.ok(result);
     }
@@ -49,4 +52,10 @@ public class RatingController {
         RatingResponseDTO response = ratingService.createRating(userId, reviewId, stars);
         return ResponseEntity.ok(response);
     }
+
+    private Long getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    CustomAccountDetail userDetails = (CustomAccountDetail) authentication.getPrincipal();
+    return userDetails.getId(); // assuming getId() returns Integer
+}
 }

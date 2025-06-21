@@ -1,0 +1,22 @@
+.notification-page{
+  background: url("@/assets/background/topicBackground.svg") no-repeat center center;
+  background-size: 100% auto;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  image-rendering: auto;
+}
+
+.notification-message {
+  background-color: white;
+  border: 1px solid #000000;
+  box-shadow: 2px 2px 0px #000000 !important;
+  height: 100px;
+  width: 800px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}

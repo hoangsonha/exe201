@@ -15,6 +15,7 @@ import Explore from './pages/explore/Explore.jsx'
 import Upgrade from './pages/upgrade/Upgrade.jsx'
 import UserProfile from './pages/user/UserProfile.jsx'
 import EditUser from './pages/user/EditUser.jsx'
+import Notification from './pages/notification/Notification.jsx'
 
 export const UserContext = createContext(null)
 
@@ -58,6 +59,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/" element={<Home />} />
+                    <Route path="/notifications" element={<Notification />} />
                     <Route path="/explore" element={<Explore />} />
                     <Route path="/about-us" element={<AboutUs />} />
                     <Route path="/post/:id" element={<PostDetail />} />

@@ -242,7 +242,7 @@ const Home = () => {
                         <ReviewPost key={post.reviewID} post={post} />
                       ))
                     ) : (
-                      <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                      <div className="profile-no-content">
                         <p>Không tìm thấy review phù hợp</p>
                       </div>
                     )}
@@ -251,7 +251,7 @@ const Home = () => {
               ) : (
                 <div className="review-posts">
                   {loading ? (
-                    <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                    <div className="profile-no-content">
                       <p>Đang tải reviews...</p>
                     </div>
                   ) : posts.length > 0 ? (
@@ -259,7 +259,7 @@ const Home = () => {
                       <ReviewPost key={post.reviewID} post={post} />
                     ))
                   ) : (
-                    <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                    <div className="profile-no-content">
                       <p>Chưa có review nào</p>
                     </div>
                   )}

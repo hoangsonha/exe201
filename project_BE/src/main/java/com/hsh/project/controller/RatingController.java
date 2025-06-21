@@ -1,5 +1,6 @@
 package com.hsh.project.controller;
 
+import com.hsh.project.configuration.CustomAccountDetail;
 import com.hsh.project.dto.response.RatingResponseDTO;
 import com.hsh.project.service.spec.RatingService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,7 +54,7 @@ public class RatingController {
         return ResponseEntity.ok(response);
     }
 
-        private Long getCurrentUserId() {
+    private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomAccountDetail userDetails = (CustomAccountDetail) authentication.getPrincipal();
         return userDetails.getId(); // returns Long

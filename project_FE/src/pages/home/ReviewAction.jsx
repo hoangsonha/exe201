@@ -6,27 +6,54 @@ import { LuStar } from "react-icons/lu"
 import { saveReview, unSaveReview } from "../../serviceAPI/reviewService"
 import { useToast } from '../../component/Toast'
 import { UserContext } from '../../App'
+import { useNavigate } from 'react-router'
 
 const ReviewActions = ({ post, onToggleComments }) => {
   const [review, setReview] = useState(post)
   const { user } = useContext(UserContext)
   const [liked, setLiked] = useState(false)
   const [hearted, setHearted] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
+  const [bookmarked, setBookmarked] = useState(post.isSaved)
   const likeCount = review.likes.filter((like) => like.type === "LIKE").length
   const heartCount = review.likes.filter((like) => like.type === "HEART").length
+
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const navigate = useNavigate()
 
   const { addToast } = useToast();
 
   const handleLikeClick = () => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
     setLiked(!liked)
   }
 
   const handleHeartClick = () => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
     setHearted(!hearted)
   }
 
+    const handleLogin = () => {
+    setShowLoginPrompt(false)
+    navigate("/login")
+  }
+
+  const handleCloseLoginPrompt = () => {
+    setShowLoginPrompt(false)
+  }
+
   const handleBookmarkClick = () => {
+
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
+
     setBookmarked(!bookmarked)
 
     const params = {
@@ -34,7 +61,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         userID: user.id
     }
 
-    if (bookmarked) {
+    if (!bookmarked) {
       saveReviewAPI(params);
     } else {
       unSaveReviewAPI(params);
@@ -47,6 +74,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await saveReview(formData)
 
       if (resultPurposes.status == "Success") {
+
         setReview(resultPurposes.data)
         addToast("Bạn đã lưu lại bài đăng thành công", true, false);
       } else {
@@ -55,7 +83,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)
       alert(error.error)
-      } 
+    } 
   }
 
     const unSaveReviewAPI = async (formData) => {
@@ -63,6 +91,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await unSaveReview(formData)
 
       if (resultPurposes.status == "Success") {
+
         setReview(resultPurposes.data)
         addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
       } else {
@@ -122,6 +151,30 @@ const ReviewActions = ({ post, onToggleComments }) => {
           {review.isSaved ? <FaBookmark /> : <FaRegBookmark />}
         </span>
       </div>
+      {showLoginPrompt && (
+          <div className="home-login-popup-overlay" onClick={handleCloseLoginPrompt}>
+            <div className="home-login-popup-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="home-login-popup-title">
+                Đăng nhập để tiếp tục
+              </h3>
+              
+              <div className="home-login-popup-buttons">
+                <button 
+                  onClick={handleCloseLoginPrompt}
+                  className="home-login-popup-btn home-login-popup-btn-close"
+                >
+                  Đóng
+                </button>
+                <button 
+                  onClick={handleLogin}
+                  className="home-login-popup-btn home-login-popup-btn-login"
+                >
+                  Đăng nhập
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   )
 }

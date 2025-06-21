@@ -1,25 +1,32 @@
 import Header from '@/component/Layout/Header'
 import Sidebar from '@/component/Layout/Sidebar';
 import Advertisement from '@/pages/home/Advertisement';
-import './Explore.css';
+import './Bookmark.css';
+import { useContext, useEffect, useState } from 'react';
+import { UserContext } from '../../App';
+
+import { getUserSavedPosts } from '@/serviceAPI/userService'
 import Review from '../home/Review';
-import { useEffect, useState } from 'react';
 
-import {getTopTradingGlobal} from '../../serviceAPI/reviewService'
+const Bookmark = () => {
 
-const Explore = () => {
     const [userSaves, setUserSaves] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const { user } = useContext(UserContext)
+
     useEffect(() => {
         fetchUserInfo()
-    }, [])
+      }, [])
     
     const fetchUserInfo = async () => {
         setLoading(true)
         try {
-            const savedPosts = await getTopTradingGlobal()
-            setUserSaves(savedPosts.data.data)
+
+            const savedPosts = await getUserSavedPosts(user.id)
+
+            setUserSaves(savedPosts.data)
+
         } catch (error) {
             console.error("Lỗi khi lấy thông tin người dùng:", error)
         } finally {
@@ -40,16 +47,16 @@ const Explore = () => {
                     <div className="main-content">
                         <div className="content-container">
                             {loading ? (
-                              <div className="profile-loading">
-                                <p>Đang tải nội dung thịnh hành...</p>
-                              </div>
-                            ) : userSaves && userSaves.length > 0 ? (
-                              userSaves.map(saved => renderPostItem(saved))
-                            ) : (
-                              <div className="profile-no-content">
-                                <p>Không có nội dung nào để hiển thị</p>
-                              </div>
-                            )}
+                                <div className="profile-loading">
+                                    <p>Đang tải bài đã lưu...</p>
+                                </div>
+                                ) : userSaves && userSaves.length > 0 ? (
+                                userSaves.map(saved => renderPostItem(saved))
+                                ) : (
+                                <div className="profile-no-content">
+                                    <p>Không có nội dung nào để hiển thị</p>
+                                </div>
+                                )}
                         </div>
                     </div>
             </div>
@@ -57,4 +64,4 @@ const Explore = () => {
     )
 }
 
-export default Explore
+export default Bookmark

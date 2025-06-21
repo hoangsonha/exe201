@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
+import com.hsh.project.configuration.CustomAccountDetail;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +54,7 @@ public class RatingController {
         return ResponseEntity.ok(response);
     }
 
-        private Long getCurrentUserId() {
+    private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomAccountDetail userDetails = (CustomAccountDetail) authentication.getPrincipal();
         return userDetails.getId(); // returns Long

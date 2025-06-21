@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.hsh.project.security.CustomAccountDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +31,10 @@ public class LikeController {
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/togglelike")
     public ResponseEntity<String> toggleLike(
-            @RequestParam @Parameter(description = "ID of the user") Integer userId,
             @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
             @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
 
+        Integer userId = getCurrentUserId().intValue();
         String result = likeService.toggleLike(userId, targetType, targetId);
         return ResponseEntity.ok(result);
     }
@@ -74,12 +76,18 @@ public class LikeController {
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/toggle-heart")
     public ResponseEntity<String> toggleHeart(
-            @RequestParam @Parameter(description = "ID of the user") Integer userId,
             @RequestParam @Parameter(description = "Type of target (REVIEW or COMMENT)") EnumTargetType targetType,
             @RequestParam @Parameter(description = "ID of the target entity") Long targetId) {
 
+        Integer userId = getCurrentUserId().intValue();
         String result = likeService.toggleHeart(userId, targetType, targetId);
         return ResponseEntity.ok(result);
     }
+
+    private Long getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    CustomAccountDetail userDetails = (CustomAccountDetail) authentication.getPrincipal();
+    return userDetails.getId(); // returns Long
+}
 }
 

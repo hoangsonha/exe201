@@ -46,10 +46,17 @@ const Bookmark = () => {
                 <Sidebar />
                     <div className="main-content">
                         <div className="content-container">
-                            {userSaves ? userSaves.map(saved => renderPostItem(saved)) 
-                                        :   <div className="profile-no-content">
-                                                <p>Không có nội dung nào để hiển thị</p>
-                                            </div>}
+                            {loading ? (
+                                <div className="profile-loading">
+                                    <p>Đang tải bài đã lưu...</p>
+                                </div>
+                                ) : userSaves && userSaves.length > 0 ? (
+                                userSaves.map(saved => renderPostItem(saved))
+                                ) : (
+                                <div className="profile-no-content">
+                                    <p>Không có nội dung nào để hiển thị</p>
+                                </div>
+                                )}
                         </div>
                     </div>
             </div>

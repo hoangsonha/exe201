@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import './Sidebar.css'
-import { BiBell, BiBookmark, BiQuestionMark, BiSearch, BiFile, BiFileBlank, BiInfoCircle } from 'react-icons/bi'
+import { BiBell, BiBookmark, BiQuestionMark, BiSearch, BiFile, BiFileBlank, BiInfoCircle, BiHomeAlt } from 'react-icons/bi'
 import { IoMegaphoneOutline } from "react-icons/io5"
 import { useNavigate } from 'react-router-dom'
 import toi from '../../assets/toi.png'
@@ -11,11 +11,11 @@ const Sidebar = () => {
   const { user } = useContext(UserContext)
 
   const publicMenuItems = [
+    { id: 'home', icon: <BiHomeAlt />, label: 'trang chủ', path: '/' },
     { id: 'help', icon: <BiQuestionMark />, label: 'trợ giúp', path: '/help' },
     { id: 'explore', icon: <BiSearch />, label: 'khám phá', path: '/explore' },
     { id: 'ads', icon: <IoMegaphoneOutline />, label: 'quảng cáo', path: '/' },
-    { id: 'privacy', icon: <BiFile />, label: 'chính sách quyền riêng tư', path: '/' },
-    { id: 'terms', icon: <BiFileBlank />, label: 'điều khoản sử dụng', path: '/' },
+    { id: 'privacy', icon: <BiFile />, label: 'chính sách và điều khoản sử dụng', path: '/' },
     { id: 'about', icon: <BiInfoCircle />, label: 'về chúng tôi', path: '/about-us' },
   ]
 
@@ -28,6 +28,11 @@ const Sidebar = () => {
     ? [...privateMenuItems, ...publicMenuItems]
     : [...publicMenuItems];
 
+    const sortedMenuItems = [
+    ...menuItems.filter(item => item.id === 'home'),
+    ...menuItems.filter(item => item.id !== 'home')
+  ];
+
   const handleItemClick = (path) => {
     navigate(path);
   }
@@ -35,7 +40,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <ul className="sidebar-menu">
-        {menuItems.map(item => (
+        {sortedMenuItems.map(item => (
           <li 
             key={item.id} 
             className="sidebar-item"

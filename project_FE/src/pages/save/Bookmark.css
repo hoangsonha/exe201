@@ -56,3 +56,10 @@
 .profile-no-content p {
   margin-top: 1rem;
 }
+
+.profile-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #555;
+}

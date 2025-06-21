@@ -70,6 +70,7 @@ const Home = () => {
   }, [])
 
   const handleCreatePostClick = () => {
+
     if (!user) {
       setShowLoginPrompt(true)
       return
@@ -133,7 +134,7 @@ const Home = () => {
           }
         };
       } else {
-        addToast(`Đã có lỗi, Vui lòng chờ duyệt`, false, true);
+        addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)

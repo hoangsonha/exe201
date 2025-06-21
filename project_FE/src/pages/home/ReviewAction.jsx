@@ -6,6 +6,7 @@ import { LuStar } from "react-icons/lu"
 import { saveReview, unSaveReview } from "../../serviceAPI/reviewService"
 import { useToast } from '../../component/Toast'
 import { UserContext } from '../../App'
+import { useNavigate } from 'react-router'
 
 const ReviewActions = ({ post, onToggleComments }) => {
   const [review, setReview] = useState(post)
@@ -16,20 +17,44 @@ const ReviewActions = ({ post, onToggleComments }) => {
   const likeCount = review.likes.filter((like) => like.type === "LIKE").length
   const heartCount = review.likes.filter((like) => like.type === "HEART").length
 
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const navigate = useNavigate()
+
   const { addToast } = useToast();
 
   const handleLikeClick = () => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
     setLiked(!liked)
   }
 
   const handleHeartClick = () => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
     setHearted(!hearted)
   }
 
-  const handleBookmarkClick = () => {
-    setBookmarked(!bookmarked)
+    const handleLogin = () => {
+    setShowLoginPrompt(false)
+    navigate("/login")
+  }
 
-    console.log(bookmarked)
+  const handleCloseLoginPrompt = () => {
+    setShowLoginPrompt(false)
+  }
+
+  const handleBookmarkClick = () => {
+
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
+
+    setBookmarked(!bookmarked)
 
     const params = {
         reviewerID: review.reviewID,
@@ -49,7 +74,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await saveReview(formData)
 
       if (resultPurposes.status == "Success") {
-        console.log(resultPurposes)
 
         setReview(resultPurposes.data)
         addToast("Bạn đã lưu lại bài đăng thành công", true, false);
@@ -67,8 +91,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await unSaveReview(formData)
 
       if (resultPurposes.status == "Success") {
-
-        console.log(resultPurposes)
 
         setReview(resultPurposes.data)
         addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
@@ -129,6 +151,30 @@ const ReviewActions = ({ post, onToggleComments }) => {
           {review.isSaved ? <FaBookmark /> : <FaRegBookmark />}
         </span>
       </div>
+      {showLoginPrompt && (
+          <div className="home-login-popup-overlay" onClick={handleCloseLoginPrompt}>
+            <div className="home-login-popup-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="home-login-popup-title">
+                Đăng nhập để tiếp tục
+              </h3>
+              
+              <div className="home-login-popup-buttons">
+                <button 
+                  onClick={handleCloseLoginPrompt}
+                  className="home-login-popup-btn home-login-popup-btn-close"
+                >
+                  Đóng
+                </button>
+                <button 
+                  onClick={handleLogin}
+                  className="home-login-popup-btn home-login-popup-btn-login"
+                >
+                  Đăng nhập
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   )
 }

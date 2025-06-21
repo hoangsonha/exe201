@@ -3,7 +3,7 @@ package com.hsh.project.utils;
 import com.hsh.project.pojo.User;
 import org.springframework.data.jpa.domain.Specification;
 
-public class EmployeeSpecification {
+public class UserSpecification {
 
     public static Specification<User> searchByField(String field, String value) {
         return (root, query, criteriaBuilder) -> {

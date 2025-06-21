@@ -93,13 +93,15 @@ public class ReviewServiceImpl implements ReviewService {
         for (String tagName : request.getHashtags()) {
             Hashtag hashtag = hashtagRepository.findByTag(tagName);
             if (hashtag == null) {
-                Hashtag newTag = new Hashtag();
-                newTag.setTag(tagName);
-                newTag.setStatus(EnumHashtagStatus.ADDED);
-                hashtagRepository.save(newTag);
+                Hashtag newHashtag = Hashtag.builder()
+                        .tag(tagName)
+                        .status(EnumHashtagStatus.ADDED)
+                        .build();
+                hashtagRepository.save(newHashtag);
             }
+
             ReviewHashtag reviewHashtag = ReviewHashtag.builder()
-                    .hashtag(hashtag)
+                    .hashtag(hashtagRepository.findByTag(tagName))
                     .review(review)
                     .build();
             list.add(reviewHashtag);
@@ -112,19 +114,19 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(review);
 
-        // Auto-like the review
-        likeService.createLike(
-            request.getUserId(),     // userId
-            EnumTargetType.REVIEW,   // targetType
-            review.getReviewID(),    // targetId (reviewID)
-            EnumLikeType.LIKE        // likeType (assuming EnumLikeType.LIKE exists)
-        );
-
-        ratingService.createRating(
-            request.getUserId(),     // userId
-            review.getReviewID(),    // reviewId
-            1.0                     // stars (default value)
-    );
+//        // Auto-like the review
+//        likeService.createLike(
+//            request.getUserId(),     // userId
+//            EnumTargetType.REVIEW,   // targetType
+//            review.getReviewID(),    // targetId (reviewID)
+//            EnumLikeType.LIKE        // likeType (assuming EnumLikeType.LIKE exists)
+//        );
+//
+//        ratingService.createRating(
+//            request.getUserId(),     // userId
+//            review.getReviewID(),    // reviewId
+//            1.0                     // stars (default value)
+//    );
 
         // Lưu media
 
@@ -158,14 +160,14 @@ public class ReviewServiceImpl implements ReviewService {
             media.setUrlImageGIFVideo(uploadedUrl);
             media.setTypeUploadReview(type);
             media.setOrderDisplay(order++);
-//            reviewMediaRepository.save(media);
+
             reviewMediaList.add(media);
         }
 
         review.setReviewMedias(reviewMediaList);
 
         review = checkReviewAIService.checkReview(review);
-        if (review.getPerspective() == "NEGATIVE" || review.getObjectiveStar() <= 1 ||  review.getObjectiveStar() > 5 || review.getRelevantStar() <= 1 || review.getRelevantStar() > 5) {
+        if (review.getPerspective() == "NEGATIVE" || review.getObjectiveStar() <= 2 ||  review.getObjectiveStar() > 5 || review.getRelevantStar() <= 2 || review.getRelevantStar() > 5) {
             review.setStatus(EnumReviewStatus.REMOVED);
             review.setDeleted(true);
         } else {
@@ -491,6 +493,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .filter(review -> !blockReviewRepository.existsByUser_UserIdAndReview_ReviewID(userId, review.getReviewID()))
                 .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
+                .filter(re -> !re.getUser().getUserId().equals(userId))
                 .map(review -> {
                     boolean isSaved = savedReviewRepository.existsByUser_UserIdAndReview_ReviewIDAndStatusTrue(userId, review.getReviewID());
                     return mapReviewToDTOWithUser(review, userId, isSaved);
@@ -539,6 +542,7 @@ public class ReviewServiceImpl implements ReviewService {
         SavedReview savedReview = new SavedReview();
         savedReview.setUser(user);
         savedReview.setReview(review);
+        savedReview.setStatus(true);
         savedReviewRepository.save(savedReview);
 
         return mapReviewToDTOWithUser(review, user.getUserId(), true);

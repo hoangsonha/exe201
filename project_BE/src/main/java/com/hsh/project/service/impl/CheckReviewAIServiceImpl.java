@@ -439,101 +439,99 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
         }
     }
 
-    private String getMultimodalSummary(String text, List<String> imageUrls, String videoUrl) throws IOException {
-        // Bước 1: Chuẩn hóa text đầu vào
-        String normalizedText = normalizeVietnameseText(text);
-
-        // Bước 2: Xây dựng context
-        String context = buildSummaryContext(normalizedText, imageUrls, videoUrl);
-
-        // Bước 3: Gọi API với encoding chuẩn
-        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-
-        ObjectNode requestJson = mapper.createObjectNode();
-        requestJson.put("inputs", context);
-
-        ObjectNode parameters = requestJson.putObject("parameters");
-        parameters.put("max_length", 120);  // Tăng độ dài để đủ chứa tiếng Việt
-        parameters.put("min_length", 50);
-        parameters.put("do_sample", false);
-        parameters.put("clean_up_tokenization_spaces", true);
-
-        Request request = new Request.Builder()
-                .url(url)
-                .header("Authorization", "Bearer " + apiToken)
-                .header("Content-Type", "application/json; charset=utf-8")
-                .post(RequestBody.create(
-                        requestJson.toString().getBytes(StandardCharsets.UTF_8),
-                        MediaType.parse("application/json; charset=utf-8")
-                ))
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            validateResponse(response);
-
-            // Bước 4: Xử lý response với encoding UTF-8
-            String responseBody = new String(response.body().bytes(), StandardCharsets.UTF_8);
-            JsonNode json = mapper.readTree(responseBody);
-
-            // Bước 5: Chuẩn hóa kết quả
-            String summary = json.get(0).get("summary_text").asText();
-            return cleanVietnameseText(summary);
-        }
-    }
-
-    // ===== Các phương thức helper mới =====
-    private String normalizeVietnameseText(String text) {
-        // Chuẩn hóa các ký tự tiếng Việt phổ biến
-        return text.replaceAll("[\\x00-\\x1F\\x7F]", "")
-                .replaceAll("[ạảãàáâậầấẩẫăắằặẳẵ]", "a")
-                .replaceAll("[ẠẢÃÀÁÂẬẦẤẨẪĂẮẰẶẲẴ]", "A")
-                .replaceAll("[đ]", "d")
-                .replaceAll("[Đ]", "D")
-                .replaceAll("[ệểễèéêềếểễë]", "e")
-                .replaceAll("[ỆỂỄÈÉÊỀẾỂỄË]", "E")
-                .replaceAll("[ịỉĩìíîï]", "i")
-                .replaceAll("[ỊỈĨÌÍÎÏ]", "I")
-                .replaceAll("[ọỏõòóôộồốổỗơớờợởỡ]", "o")
-                .replaceAll("[ỌỎÕÒÓÔỘỒỐỔỖƠỚỜỢỞỠ]", "O")
-                .replaceAll("[ụủũùúûưứừựửữ]", "u")
-                .replaceAll("[ỤỦŨÙÚÛƯỨỪỰỬỮ]", "U")
-                .replaceAll("[ỳýỵỷỹ]", "y")
-                .replaceAll("[ỲÝỴỶỸ]", "Y")
-                .replaceAll("\\s+", " ")
-                .trim();
-    }
-
-    private String cleanVietnameseText(String text) {
-        // Lọc các ký tự lạ nhưng giữ lại tiếng Việt
-        return text.replaceAll("[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]", "")
-                .replaceAll("\\s+", " ")
-                .trim();
-    }
-
 //    private String getMultimodalSummary(String text, List<String> imageUrls, String videoUrl) throws IOException {
-//        String context = buildSummaryContext(text, imageUrls, videoUrl);
+//
+//        String normalizedText = normalizeVietnameseText(text);
+//
+//        String context = buildSummaryContext(normalizedText, imageUrls, videoUrl);
+//
 //        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 //
 //        ObjectNode requestJson = mapper.createObjectNode();
 //        requestJson.put("inputs", context);
 //
 //        ObjectNode parameters = requestJson.putObject("parameters");
-//        parameters.put("max_length", 150);
-//        parameters.put("min_length", 30);
+//        parameters.put("max_length", 120);  // Tăng độ dài để đủ chứa tiếng Việt
+//        parameters.put("min_length", 50);
 //        parameters.put("do_sample", false);
 //        parameters.put("clean_up_tokenization_spaces", true);
 //
-//        Request request = buildHuggingFaceRequest(url, requestJson);
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .header("Authorization", "Bearer " + apiToken)
+//                .header("Content-Type", "application/json; charset=utf-8")
+//                .post(RequestBody.create(
+//                        requestJson.toString().getBytes(StandardCharsets.UTF_8),
+//                        MediaType.parse("application/json; charset=utf-8")
+//                ))
+//                .build();
 //
 //        try (Response response = client.newCall(request).execute()) {
 //            validateResponse(response);
-//            String responseBody = response.body().string();
-//            return mapper.readTree(responseBody)
-//                    .get(0)
-//                    .get("summary_text")
-//                    .asText();
+//
+//            // Bước 4: Xử lý response với encoding UTF-8
+//            String responseBody = new String(response.body().bytes(), StandardCharsets.UTF_8);
+//            JsonNode json = mapper.readTree(responseBody);
+//
+//            // Bước 5: Chuẩn hóa kết quả
+//            String summary = json.get(0).get("summary_text").asText();
+//            return cleanVietnameseText(summary);
 //        }
 //    }
+//
+//    // ===== Các phương thức helper mới =====
+//    private String normalizeVietnameseText(String text) {
+//        // Chuẩn hóa các ký tự tiếng Việt phổ biến
+//        return text.replaceAll("[\\x00-\\x1F\\x7F]", "")
+//                .replaceAll("[ạảãàáâậầấẩẫăắằặẳẵ]", "a")
+//                .replaceAll("[ẠẢÃÀÁÂẬẦẤẨẪĂẮẰẶẲẴ]", "A")
+//                .replaceAll("[đ]", "d")
+//                .replaceAll("[Đ]", "D")
+//                .replaceAll("[ệểễèéêềếểễë]", "e")
+//                .replaceAll("[ỆỂỄÈÉÊỀẾỂỄË]", "E")
+//                .replaceAll("[ịỉĩìíîï]", "i")
+//                .replaceAll("[ỊỈĨÌÍÎÏ]", "I")
+//                .replaceAll("[ọỏõòóôộồốổỗơớờợởỡ]", "o")
+//                .replaceAll("[ỌỎÕÒÓÔỘỒỐỔỖƠỚỜỢỞỠ]", "O")
+//                .replaceAll("[ụủũùúûưứừựửữ]", "u")
+//                .replaceAll("[ỤỦŨÙÚÛƯỨỪỰỬỮ]", "U")
+//                .replaceAll("[ỳýỵỷỹ]", "y")
+//                .replaceAll("[ỲÝỴỶỸ]", "Y")
+//                .replaceAll("\\s+", " ")
+//                .trim();
+//    }
+//
+//    private String cleanVietnameseText(String text) {
+//        // Lọc các ký tự lạ nhưng giữ lại tiếng Việt
+//        return text.replaceAll("[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]", "")
+//                .replaceAll("\\s+", " ")
+//                .trim();
+//    }
+
+    private String getMultimodalSummary(String text, List<String> imageUrls, String videoUrl) throws IOException {
+        String context = buildSummaryContext(text, imageUrls, videoUrl);
+        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+        ObjectNode requestJson = mapper.createObjectNode();
+        requestJson.put("inputs", context);
+
+        ObjectNode parameters = requestJson.putObject("parameters");
+        parameters.put("max_length", 150);
+        parameters.put("min_length", 30);
+        parameters.put("do_sample", false);
+        parameters.put("clean_up_tokenization_spaces", true);
+
+        Request request = buildHuggingFaceRequest(url, requestJson);
+
+        try (Response response = client.newCall(request).execute()) {
+            validateResponse(response);
+            String responseBody = response.body().string();
+            return mapper.readTree(responseBody)
+                    .get(0)
+                    .get("summary_text")
+                    .asText();
+        }
+    }
 
     // ===== Các phương thức helper =====
     private String sanitizeText(String text) {

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -93,8 +94,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<UserHashtag> userHashtags;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<UserHashtag> userHashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     List<Rating> ratings;

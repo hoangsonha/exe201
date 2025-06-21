@@ -1,6 +1,5 @@
 package com.hsh.project.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -11,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEmployeeRequest {
+public class UpdateUserRoleRequest {
     @NotBlank(message = "Username không được để trống")
     String userName;
 

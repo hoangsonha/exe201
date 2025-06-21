@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateEmployeeRequest {
+public class CreateUserRequest {
     @NotBlank(message = "Username không được để trống")
     String userName;
 

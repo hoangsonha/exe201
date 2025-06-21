@@ -107,17 +107,17 @@ const Home = () => {
         var error = "Bạn đã tạo bài thành công"
         var check = false;
 
-        if (resultPurposes.data.perspective == 'NEGATIVE') {
+        if (resultPurposes.data.perspective == 'TIÊU CỰC') {
           error = "Bạn đã tạo bài thành công. Nhưng do góc nhìn của bài đăng thấp nên bài sẽ không được đăng tự động"
           check = true
         }
 
-        if (resultPurposes.data.relevantStar <= 1) {
+        if (resultPurposes.data.relevantStar <= 2) {
           error = "Bạn đã tạo bài thành công. Nhưng do độ liên quan của bài đăng thấp nên bài sẽ không được đăng tự động"
           check = true
         }
 
-        if (resultPurposes.data.objectiveStar <= 1) {
+        if (resultPurposes.data.objectiveStar <= 2) {
           error = "Bạn đã tạo bài thành công. Nhưng do tính khách quan của bài đăng thấp nên bài sẽ không được đăng tự động"
           check = true
         }

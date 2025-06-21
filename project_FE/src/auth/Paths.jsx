@@ -17,21 +17,21 @@ export const PATHS = {
         path: '/profile',
         label: 'Profile',
         element: <UserProfile />,
-        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF, ROLES.ADMIN],
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.ADMIN],
         layout: false
     },
     EDIT_PROFILE: {
         path: '/edit-profile',
         label: 'Edit Profile',
         element: <EditUser />,
-        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF, ROLES.ADMIN],
+        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.ADMIN],
         layout: false
     },
     UPGRADE: {
         path: '/upgrade',
         label: 'Upgrade',
         element: <Upgrade />,
-        allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.STAFF],
+        allowedRoles: [ROLES.USER, ROLES.MANAGER],
         layout: false
     },
     MANAGER_EMPLOYEE: {
@@ -47,7 +47,11 @@ export const FULL_PATHS_LIST = Object.values(PATHS);
 
 export const getRolePaths = (role) => {
     if (role == ROLES.ADMIN) {
-        return [PATHS.MANAGER_EMPLOYEE];
+        return [PATHS.MANAGER_EMPLOYEE, PATHS.EDIT_PROFILE, PATHS.PROFILE];
+    } if (role == ROLES.USER) {
+        return [PATHS.UPGRADE, PATHS.EDIT_PROFILE, PATHS.PROFILE, PATHS.HOME];
+    } if (role == ROLES.MANAGER) {
+        return [PATHS.UPGRADE, PATHS.EDIT_PROFILE, PATHS.PROFILE, PATHS.HOME];
     } else {
         return [PATHS.HOME];
     }

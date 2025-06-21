@@ -6,18 +6,22 @@ import pointLogo from '@/assets/logo.png'
 import { RiArrowGoBackFill } from 'react-icons/ri'
 import { FaTimes, FaPlus } from 'react-icons/fa'
 import { getHashtags } from '@/serviceAPI/hashtagService'
-import { getUserById } from '@/serviceAPI/userService'
+import { getUserById, updateAccount } from '@/serviceAPI/userService'
 import { UserContext } from '../../App'
 import './EditUser.css'
+import { useToast } from '../../component/Toast'
+import { jwtDecode } from 'jwt-decode'
 
 const EditUser = () => {
   const navigate = useNavigate()
-  const { user } = useContext(UserContext)
+  const { user, updateUser } = useContext(UserContext)
   const [loading, setLoading] = useState(true)
   const [hashtags, setHashtags] = useState([])
   const [showTagDropdown, setShowTagDropdown] = useState(false)
   const dropdownRef = useRef(null)
   const [isVIP, setIsVIP] = useState(false)
+
+  const { addToast } = useToast();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -75,8 +79,32 @@ const EditUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
-    navigate('/profile')
+  
+    const updateData = {
+      gender: formData.gender.toUpperCase(),
+      hashTags: formData.selectedTags.map(tags => tags.name),
+    }
+
+    createReviewAPI(updateData)
+  }
+
+  const createReviewAPI = async (formData) => {
+    try {
+      // setLoading(true)
+      const resultPurposes = await updateAccount(formData, user.id)
+
+      console.log(resultPurposes)
+
+      if (resultPurposes.status == "Success") {
+        addToast("Bạn đã sửa thong tin thành công", true, false);
+        navigate('/profile')
+      } else {
+        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
+      }
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi gọi api review:", error)
+      alert(error.error)
+      } 
   }
 
   const handleSwitchChange = (name) => {
@@ -106,6 +134,8 @@ const EditUser = () => {
       selectedTags: prev.selectedTags.filter(tag => tag.id !== tagId)
     }))
   }
+
+  console.log(formData)
 
   return (
     <div className="edit-profile-page">
@@ -185,7 +215,7 @@ const EditUser = () => {
                 <h2>giới tính</h2>
               </div>
               <div className="gender-options">
-                <div className={`gender-option ${formData.gender === 'Male' ? 'selected' : ''}`}>
+                <div className={`gender-option ${formData.gender.toLowerCase().charAt(0).toUpperCase() + formData.gender.toLowerCase().slice(1) == 'Male' ? 'selected' : ''}`}>
                   <input
                     type="radio"
                     name="gender"
@@ -195,7 +225,7 @@ const EditUser = () => {
                   />
                   <label htmlFor="male">nam</label>
                 </div>
-                <div className={`gender-option ${formData.gender === 'Female' ? 'selected' : ''}`}>
+                <div className={`gender-option ${formData.gender.toLowerCase().charAt(0).toUpperCase() + formData.gender.toLowerCase().slice(1) == 'Female' ? 'selected' : ''}`}>
                   <input
                     type="radio"
                     name="gender"

@@ -55,3 +55,33 @@ export const getReviewById = async (id) => {
     return { status: "Fail", message: "Failed to get review", data: null };
   }
 };
+
+export const saveReview = async (params) => {
+  try {
+    const res = await post(`${API}/saved`, params);
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+        console.error("Error response from server:", error.response.data);
+        return error.response.data;
+    } else {
+        console.error("Unexpected error:", error);
+        return { status: "Fail", message: "Unexpected error occurred.", data: null };
+    }
+  }
+};
+
+export const unSaveReview = async (params) => {
+  try {
+    const res = await post(`${API}/unsaved`, params);
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+        console.error("Error response from server:", error.response.data);
+        return error.response.data;
+    } else {
+        console.error("Unexpected error:", error);
+        return { status: "Fail", message: "Unexpected error occurred.", data: null };
+    }
+  }
+};

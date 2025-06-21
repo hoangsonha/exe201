@@ -3,10 +3,7 @@ package com.hsh.project.service.impl;
 import com.hsh.project.configuration.CustomAccountDetail;
 import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
-import com.hsh.project.dto.request.CreateEmployeeRequest;
-import com.hsh.project.dto.request.UpdateEmployeeRequest;
-import com.hsh.project.dto.request.UserCreateImageRequest;
-import com.hsh.project.dto.request.UserRegisterHashTagRequest;
+import com.hsh.project.dto.request.*;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementExistException;
 import com.hsh.project.exception.ElementNotFoundException;
@@ -15,12 +12,13 @@ import com.hsh.project.pojo.Hashtag;
 import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.Role;
 import com.hsh.project.pojo.UserHashtag;
+import com.hsh.project.pojo.enums.EnumGenderType;
 import com.hsh.project.pojo.enums.EnumRoleNameType;
 import com.hsh.project.repository.HashtagRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.repository.RoleRepository;
 import com.hsh.project.service.spec.UserService;
-import com.hsh.project.utils.EmployeeSpecification;
+import com.hsh.project.utils.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PagingResponse searchEmployees(Integer currentPage, Integer pageSize, String userName, String fullName, String email) {
+    public PagingResponse searchUsers(Integer currentPage, Integer pageSize, String userName, String fullName, String email) {
         Pageable pageable;
 
         CustomAccountDetail accountDetail = (CustomAccountDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -114,7 +112,7 @@ public class UserServiceImpl implements UserService {
             for(int i = 0; i < keys.size(); i++) {
                 String field = keys.get(i);
                 String value = values.get(i);
-                Specification<User> newSpec = EmployeeSpecification.searchByField(field, value);
+                Specification<User> newSpec = UserSpecification.searchByField(field, value);
                 if(newSpec != null) {
                     spec = spec.and(newSpec);
                 }
@@ -127,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
         return !pageData.getContent().isEmpty() ? PagingResponse.builder()
                 .code("Success")
-                .message("Get all employees paging successfully")
+                .message("Get all Users paging successfully")
                 .currentPage(currentPage)
                 .pageSize(pageSize)
                 .totalElements(pageData.getTotalElements())
@@ -138,7 +136,7 @@ public class UserServiceImpl implements UserService {
                 .build() :
                 PagingResponse.builder()
                         .code("Failed")
-                        .message("Get all employees paging failed")
+                        .message("Get all Users paging failed")
                         .currentPage(currentPage)
                         .pageSize(pageSize)
                         .totalElements(pageData.getTotalElements())
@@ -164,14 +162,14 @@ public class UserServiceImpl implements UserService {
         User e = userRepository.findById(id).orElse(null);
 
         if (e == null) {
-            throw new ElementNotFoundException("Employee not found");
+            throw new ElementNotFoundException("User not found");
         }
 
         return userMapper.accountToAccountDTO(e);
     }
 
     @Override
-    public UserDTO createEmployee(CreateEmployeeRequest request) {
+    public UserDTO createUser(CreateUserRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail());
         User user3 = userRepository.findByPhone(request.getPhone());
@@ -202,12 +200,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateEmployee(UpdateEmployeeRequest request, int id) {
+    public UserDTO updateUserRole(UpdateUserRoleRequest request, int id) {
 
         User user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
-            throw new ElementNotFoundException("Employee not found");
+            throw new ElementNotFoundException("User not found");
         } else {
 
             if (!request.getPhone().matches("^0\\d{9}$")) {
@@ -237,22 +235,57 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getEmployeeById(int id) {
+    public UserDTO updateUser(UpdateUserRequest request, int id) {
+
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            throw new ElementNotFoundException("User not found");
+        }
+
+        if (request.getGender() != null) {
+            user.setGender(EnumGenderType.valueOf(request.getGender()));
+        }
+
+        List<UserHashtag> userHashtags = user.getUserHashtags();
+        userHashtags.clear();
+
+        if (request.getHashTags() != null && !request.getHashTags().isEmpty()) {
+            for (String hashTag : request.getHashTags()) {
+                Hashtag hashtag = hashtagRepository.findByTag(hashTag);
+                if (hashtag != null) {
+                    UserHashtag userHashtag = UserHashtag.builder()
+                            .user(user)
+                            .hashtag(hashtag)
+                            .build();
+                    userHashtags.add(userHashtag);
+                }
+            }
+        } else {
+            throw new BadRequestException("Bạn phải chọn ít nhất 1 chủ đề");
+        }
+
+        user.setUserHashtags(userHashtags);
+        return userMapper.accountToAccountDTO(userRepository.save(user));
+    }
+
+    @Override
+    public User getUserById(int id) {
         return userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public User saveEmployee(User user) {
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
     @Override
     public UserDTO createHashTagUser(UserRegisterHashTagRequest request) {
 
-        User user = getEmployeeById(request.getUserId());
+        User user = getUserById(request.getUserId());
 
         if (user == null) {
-            throw new ElementNotFoundException("Employee not found");
+            throw new ElementNotFoundException("User not found");
         }
 
         List<Hashtag> lists = hashtagRepository.findAllById(request.getHashtagID());
@@ -273,10 +306,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createImageUser(UserCreateImageRequest request) {
-        User user = getEmployeeById(request.getUserId());
+        User user = getUserById(request.getUserId());
 
         if (user == null) {
-            throw new ElementNotFoundException("Employee not found");
+            throw new ElementNotFoundException("User not found");
         }
         user.setAvatar(request.getImageUrl());
         return userMapper.accountToAccountDTO(userRepository.save(user));

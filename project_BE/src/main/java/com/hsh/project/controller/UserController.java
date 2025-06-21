@@ -3,10 +3,7 @@ package com.hsh.project.controller;
 import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.internal.PagingResponse;
-import com.hsh.project.dto.request.CreateEmployeeRequest;
-import com.hsh.project.dto.request.UpdateEmployeeRequest;
-import com.hsh.project.dto.request.UserCreateImageRequest;
-import com.hsh.project.dto.request.UserRegisterHashTagRequest;
+import com.hsh.project.dto.request.*;
 import com.hsh.project.dto.response.ReviewResponseDTO;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementExistException;
@@ -143,7 +140,7 @@ public class UserController {
         int resolvedCurrentPage = (currentPage != null) ? currentPage : defaultCurrentPage;
         int resolvedPageSize = (pageSize != null) ? pageSize : defaultPageSize;
 
-        PagingResponse results = userService.searchEmployees(resolvedCurrentPage, resolvedPageSize, userName,
+        PagingResponse results = userService.searchUsers(resolvedCurrentPage, resolvedPageSize, userName,
                 fullName, email);
         List<?> data = (List<?>) results.getData();
         return ResponseEntity.status(!data.isEmpty() ? HttpStatus.OK : HttpStatus.BAD_REQUEST).body(results);
@@ -162,11 +159,11 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
-    public ResponseEntity<ObjectResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest req) {
+    public ResponseEntity<ObjectResponse> createuser(@Valid @RequestBody CreateUserRequest req) {
         try {
-            UserDTO employee = userService.createEmployee(req);
+            UserDTO user = userService.createUser(req);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ObjectResponse("Success", "Create user successfully", employee));
+                    .body(new ObjectResponse("Success", "Create user successfully", user));
         } catch (BadRequestException e) {
             log.error("Error creating user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", e.getMessage(), null));
@@ -181,14 +178,14 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<ObjectResponse> updateUser(@PathVariable("id") int id,
-            @RequestBody UpdateEmployeeRequest req) {
+    @PutMapping("/{id}/role")
+    public ResponseEntity<ObjectResponse> updateUserRole(@PathVariable("id") int id,
+            @RequestBody UpdateUserRoleRequest req) {
         try {
-            UserDTO employee = userService.updateEmployee(req, id);
-            if (employee != null) {
+            UserDTO user = userService.updateUserRole(req, id);
+            if (user != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ObjectResponse("Success", "Update user successfully", employee));
+                        .body(new ObjectResponse("Success", "Update user successfully", user));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ObjectResponse("Fail", "Update user failed. user is null", null));
@@ -201,7 +198,36 @@ public class UserController {
         } catch (ElementNotFoundException e) {
             log.error("Error while updating user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ObjectResponse("Fail", "Update Employee failed. Employee not found", null));
+                    .body(new ObjectResponse("Fail", "Update user failed. user not found", null));
+        } catch (Exception e) {
+            log.error("Error updating user", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update user failed", null));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<ObjectResponse> updateUser(@PathVariable("id") int id,
+                                                     @RequestBody UpdateUserRequest req) {
+        try {
+            UserDTO user = userService.updateUser(req, id);
+            if (user != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ObjectResponse("Success", "Update user successfully", user));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update user failed. user is null", null));
+        } catch (BadRequestException e) {
+            log.error("Error creating user", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", e.getMessage(), null));
+        } catch (ElementExistException e) {
+            log.error("Error while updating user", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", e.getMessage(), null));
+        } catch (ElementNotFoundException e) {
+            log.error("Error while updating user", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update user failed. user not found", null));
         } catch (Exception e) {
             log.error("Error updating user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -213,12 +239,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ObjectResponse> deleteUserByID(@PathVariable("id") int userID) {
         try {
-            User user = userService.getEmployeeById(userID);
+            User user = userService.getUserById(userID);
             if (user != null) {
                 user.setDeleted(true);
                 user.setEnabled(false);
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "Delete user successfully", userService.saveEmployee(user)));
+                        new ObjectResponse("Success", "Delete user successfully", userService.saveUser(user)));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ObjectResponse("Fail", "Delete user failed", null));
@@ -233,15 +259,15 @@ public class UserController {
     @PostMapping("/{id}/restore")
     public ResponseEntity<ObjectResponse> unDeleteUserByID(@PathVariable("id") int id) {
         try {
-            User user = userService.getEmployeeById(id);
+            User user = userService.getUserById(id);
             if (user != null) {
                 user.setDeleted(false);
                 user.setEnabled(true);
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        new ObjectResponse("Success", "UnDelete user successfully", userService.saveEmployee(user)));
+                        new ObjectResponse("Success", "UnDelete user successfully", userService.saveUser(user)));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ObjectResponse("Fail", "Employee is null", null));
+                    .body(new ObjectResponse("Fail", "user is null", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ObjectResponse("Fail", "Undelete user failed", null));

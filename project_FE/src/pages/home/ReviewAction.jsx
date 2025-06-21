@@ -2,7 +2,6 @@ import { useContext, useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegCommentDots, FaRegClock, FaBookmark, FaRegBookmark } from 'react-icons/fa'
 import { BiSolidLike, BiLike } from 'react-icons/bi'
 import { LuStar } from "react-icons/lu"
-
 import { saveReview, unSaveReview } from "../../serviceAPI/reviewService"
 import { useToast } from '../../component/Toast'
 import { UserContext } from '../../App'
@@ -20,6 +19,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
 
   const handleLikeClick = () => {
     setLiked(!liked)
+
   }
 
   const handleHeartClick = () => {
@@ -50,7 +50,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         setReview(resultPurposes.data)
         addToast("Bạn đã lưu lại bài đăng thành công", true, false);
       } else {
-        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
+        addToast(`Đã có lỗi, Vui lòng thử lại`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)
@@ -58,20 +58,20 @@ const ReviewActions = ({ post, onToggleComments }) => {
       } 
   }
 
-    const unSaveReviewAPI = async (formData) => {
-    try {
-      const resultPurposes = await unSaveReview(formData)
+  const unSaveReviewAPI = async (formData) => {
+  try {
+    const resultPurposes = await unSaveReview(formData)
 
-      if (resultPurposes.status == "Success") {
-        setReview(resultPurposes.data)
-        addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
-      } else {
-        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
-      }
-    } catch (error) {
-      console.error("Có lỗi xảy ra khi gọi api review:", error)
-      alert(error.error)
-      } 
+    if (resultPurposes.status == "Success") {
+      setReview(resultPurposes.data)
+      addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
+    } else {
+      addToast(`Đã có lỗi, Vui lòng thử lại`, false, true);
+    }
+  } catch (error) {
+    console.error("Có lỗi xảy ra khi gọi api review:", error)
+    alert(error.error)
+    } 
   }
 
   return (

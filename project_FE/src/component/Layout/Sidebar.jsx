@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   const privateMenuItems = [
     { id: 'notification', icon: <BiBell />, label: 'thông báo', path: '/notifications' },
-    { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ', path: '/bookmarks' },
+    // { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ', path: '/bookmarks' },
   ]
 
   const menuItems = user 

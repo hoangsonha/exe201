@@ -12,7 +12,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
   const { user } = useContext(UserContext)
   const [liked, setLiked] = useState(false)
   const [hearted, setHearted] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
+  const [bookmarked, setBookmarked] = useState(post.isSaved)
   const likeCount = review.likes.filter((like) => like.type === "LIKE").length
   const heartCount = review.likes.filter((like) => like.type === "HEART").length
 
@@ -29,12 +29,14 @@ const ReviewActions = ({ post, onToggleComments }) => {
   const handleBookmarkClick = () => {
     setBookmarked(!bookmarked)
 
+    console.log(bookmarked)
+
     const params = {
         reviewerID: review.reviewID,
         userID: user.id
     }
 
-    if (bookmarked) {
+    if (!bookmarked) {
       saveReviewAPI(params);
     } else {
       unSaveReviewAPI(params);
@@ -47,6 +49,8 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await saveReview(formData)
 
       if (resultPurposes.status == "Success") {
+        console.log(resultPurposes)
+
         setReview(resultPurposes.data)
         addToast("Bạn đã lưu lại bài đăng thành công", true, false);
       } else {
@@ -55,7 +59,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)
       alert(error.error)
-      } 
+    } 
   }
 
     const unSaveReviewAPI = async (formData) => {
@@ -63,6 +67,9 @@ const ReviewActions = ({ post, onToggleComments }) => {
       const resultPurposes = await unSaveReview(formData)
 
       if (resultPurposes.status == "Success") {
+
+        console.log(resultPurposes)
+
         setReview(resultPurposes.data)
         addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
       } else {

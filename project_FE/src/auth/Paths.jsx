@@ -4,6 +4,7 @@ import Empty from "../pages/Empty";
 import UserProfile from "../pages/user/UserProfile";
 import EditUser from "../pages/user/EditUser";
 import Upgrade from "../pages/upgrade/Upgrade";
+import Bookmark from "../pages/save/Bookmark";
 
 export const PATHS = {
     HOME: {
@@ -25,6 +26,13 @@ export const PATHS = {
         label: 'Edit Profile',
         element: <EditUser />,
         allowedRoles: [ROLES.USER, ROLES.MANAGER, ROLES.ADMIN],
+        layout: false
+    },
+    SAVED: {
+        path: '/bookmarks',
+        label: 'Bookmarks',
+        element: <Bookmark />,
+        allowedRoles: [ROLES.USER],
         layout: false
     },
     UPGRADE: {
@@ -49,7 +57,7 @@ export const getRolePaths = (role) => {
     if (role == ROLES.ADMIN) {
         return [PATHS.MANAGER_EMPLOYEE, PATHS.EDIT_PROFILE, PATHS.PROFILE];
     } if (role == ROLES.USER) {
-        return [PATHS.UPGRADE, PATHS.EDIT_PROFILE, PATHS.PROFILE, PATHS.HOME];
+        return [PATHS.UPGRADE, PATHS.EDIT_PROFILE, PATHS.PROFILE, PATHS.HOME, PATHS.SAVED];
     } if (role == ROLES.MANAGER) {
         return [PATHS.UPGRADE, PATHS.EDIT_PROFILE, PATHS.PROFILE, PATHS.HOME];
     } else {

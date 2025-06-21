@@ -1,5 +1,6 @@
 package com.hsh.project.controller;
 
+import com.hsh.project.configuration.CustomAccountDetail;
 import com.hsh.project.dto.response.RatingResponseDTO;
 import com.hsh.project.service.spec.RatingService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.hsh.project.security.CustomAccountDetail;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

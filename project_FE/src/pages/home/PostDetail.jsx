@@ -45,7 +45,7 @@ const PostDetail = () => {
   }
 
   const handleBack = () => {
-    navigate(-1)
+    navigate('/')
   }
 
   useEffect(() => {

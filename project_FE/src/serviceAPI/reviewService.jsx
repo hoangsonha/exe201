@@ -56,6 +56,21 @@ export const getReviewById = async (id) => {
   }
 };
 
+export const blockReview = async (params) => {
+  try {
+    const res = await post(`${API}/block`, params);
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+        console.error("Error response from server:", error.response.data);
+        return error.response.data;
+    } else {
+        console.error("Unexpected error:", error);
+        return { status: "Fail", message: "Unexpected error occurred.", data: null };
+    }
+  }
+};
+
 export const saveReview = async (params) => {
   try {
     const res = await post(`${API}/saved`, params);

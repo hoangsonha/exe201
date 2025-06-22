@@ -265,7 +265,7 @@ const SignupStep1And2 = ({
         if (/^\d{6}$/.test(pasteData)) {
             const newOtp = pasteData.split('')
             setVerificationCode(newOtp)
-            inputRefs[5].current?.focus()
+            codeInputRefs[5].current?.focus()
         }
     }
 

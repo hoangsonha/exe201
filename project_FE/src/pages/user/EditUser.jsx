@@ -80,7 +80,16 @@ const EditUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-  
+    
+    if (!formData.gender) {
+      addToast("Vui lòng chọn giới tính", false, true);
+      return;
+    }
+    
+    if (formData.selectedTags.length === 0) {
+      addToast("Vui lòng chọn ít nhất một hashtag", false, true);
+      return;
+    } 
     const updateData = {
       gender: formData.gender.toUpperCase(),
       hashTags: formData.selectedTags.map(tags => tags.name),
@@ -97,10 +106,10 @@ const EditUser = () => {
       console.log(resultPurposes)
 
       if (resultPurposes.status == "Success") {
-        addToast("Bạn đã sửa thong tin thành công", true, false);
+        addToast("Bạn đã sửa thông tin tài khoản thành công.", true, false);
         navigate('/profile')
       } else {
-        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
+        addToast(`Đã có lỗi xảy ra, vui lòng thử lại.`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)

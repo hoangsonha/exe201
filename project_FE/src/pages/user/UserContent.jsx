@@ -68,7 +68,7 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
   const counts = getTabCounts()
 
   const renderPostItem = (post) => (
-    <Review post={post} showCommentSection={false} isOwner={true} />
+    <Review post={post} showCommentSection={false} />
   )
 
   const renderCommentItem = (comment) => {

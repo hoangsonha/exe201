@@ -10,12 +10,10 @@ import StarRating from "./StarRating"
 import { UserContext } from "../../App"
 import { blockReview } from "../../serviceAPI/reviewService"
 import { reportReview } from "../../serviceAPI/reportService"
-import { useToast } from '../../component/Toast'
 import { toast } from "react-toastify"
-import { createPortal } from 'react-dom'
 import './Review.css'
 
-const Review = ({ post, showCommentSection = false, isOwner = false }) => {
+const Review = ({ post, showCommentSection = false }) => {
   const [showOptions, setShowOptions] = useState(false)
   const navigate = useNavigate()
   const optionsRef = useRef(null)
@@ -23,7 +21,6 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportContent, setReportContent] = useState('')
-  const { addToast } = useToast()
   const { user } = useContext(UserContext)
 
   const handlePostClick = () => {
@@ -217,31 +214,18 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
             </div>
             {showOptions && (
               <div className="options-dropdown">
-                {isOwner ? (
-                  <>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'edit')}>
-                      <IoMdEyeOff /> ẩn bài viết
-                    </div>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'delete')}>
-                      <MdDelete /> xóa bài viết
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'hide')}>
-                      <IoMdEyeOff /> ẩn bài viết
-                    </div>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'block')}>
-                      <MdOutlineBlock /> chặn
-                    </div>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'report')}>
-                      <MdOutlineReport /> báo cáo
-                    </div>
-                    <div className="option-item" onClick={(e) => handleOptionAction(e, 'share')}>
-                      <MdOutlineShare /> chia sẻ liên kết
-                    </div>
-                  </>
-                )}
+                <div className="option-item" onClick={(e) => handleOptionAction(e, 'hide')}>
+                  <IoMdEyeOff /> ẩn bài viết
+                </div>
+                <div className="option-item" onClick={(e) => handleOptionAction(e, 'block')}>
+                  <MdOutlineBlock /> chặn
+                </div>
+                <div className="option-item" onClick={(e) => handleOptionAction(e, 'report')}>
+                  <MdOutlineReport /> báo cáo
+                </div>
+                <div className="option-item" onClick={(e) => handleOptionAction(e, 'share')}>
+                  <MdOutlineShare /> chia sẻ liên kết
+                </div>
               </div>
             )}
           </div>

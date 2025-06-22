@@ -1,10 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
-import { Card, Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { RiArrowGoBackFill } from 'react-icons/ri'
-import { IoMdEyeOff } from 'react-icons/io'
-import { MdOutlineBlock, MdOutlineReport, MdOutlineShare } from 'react-icons/md'
-import { FaEllipsisH } from 'react-icons/fa'
 import Header from '@/component/Layout/Header.jsx'
 import Sidebar from '@/component/Layout/Sidebar.jsx'
 import Advertisement from './Advertisement'
@@ -21,7 +18,6 @@ const PostDetail = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showOptions, setShowOptions] = useState(false)
-  const [showComments, setShowComments] = useState(true)
   const optionsRef = useRef(null)
 
   useEffect(() => {

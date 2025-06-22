@@ -21,7 +21,6 @@
 .review-options-container {
   position: relative;
   margin-top: 3rem;
-  z-index: 9999;
 }
 
 .review-options {
@@ -41,7 +40,7 @@
   border: 1px solid #000000;
   box-shadow: 3px 3px 0px #000000;
   border-radius: 0;
-  z-index: 9998;
+  z-index: 1000;
 }
 
 .option-item {
@@ -148,6 +147,96 @@
 .action-item.bookmarked .bookmark-icon {
   animation: bookmarkPop 0.4s ease;
   color: #e1f62b;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999 !important;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content p {
+  margin: 0 0 16px 0;
+  color: #666;
+  margin-left: 12px;
+}
+
+.report-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #000000 !important;
+  border-radius: 0 !important;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 16px;
+}
+
+.report-textarea:focus {
+  border: 1px solid #000000 !important;
+  outline: none;
+}
+
+.report-textarea:active {
+  border: 1px solid #000000 !important;
+}
+
+.report-textarea:hover,
+.report-textarea:visited {
+  border: 1px solid #000000 !important;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 5px 13px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 1px 1px 0px #000000 !important;
+  background: white;
+  cursor: pointer;
+}
+
+.btn-submit {
+  padding: 5px 13px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 1px 1px 0px #000000 !important;
+  cursor: pointer;
+  background: #dc3545;
+  color: white;
+}
+
+.btn-cancel:hover {
+  transform: translateY(-5px);
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+.btn-submit:hover {
+  transform: translateY(-5px);
+  box-shadow: 2px 2px 0px #000000 !important;
 }
 
 @keyframes heartPop {

@@ -15,7 +15,7 @@
   margin: 0 auto;
   padding: 8rem 20px 2rem;
   position: relative;
-  z-index: 2;
+  z-index: 8888;
 }
 
 .loading {

@@ -15,12 +15,12 @@ const UserInfo = ({ userData }) => {
       }
     }
     switch (userData.gender) {
-      case 'Male':
+      case 'MALE':
         return {
           icon: <FaMale />,
           text: 'Không phải nữ'
         }
-      case 'Female':
+      case 'FEMALE':
         return {
           icon: <FaFemale />,
           text: 'Không phải nam'

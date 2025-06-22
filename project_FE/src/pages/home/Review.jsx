@@ -8,15 +8,22 @@ import CommentSection from "./CommentSection"
 import ReviewActions from "./ReviewAction"
 import StarRating from "./StarRating"
 import { UserContext } from "../../App"
+import { blockReview } from "../../serviceAPI/reviewService"
+import { reportReview } from "../../serviceAPI/reportService"
+import { useToast } from '../../component/Toast'
+import { toast } from "react-toastify"
+import { createPortal } from 'react-dom'
 import './Review.css'
 
 const Review = ({ post, showCommentSection = false, isOwner = false }) => {
-  const [likeCount, setLikeCount] = useState(post.likes.filter((like) => like.type === "LIKE").length)
   const [showOptions, setShowOptions] = useState(false)
   const navigate = useNavigate()
   const optionsRef = useRef(null)
   const [showComments, setShowComments] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportContent, setReportContent] = useState('')
+  const { addToast } = useToast()
   const { user } = useContext(UserContext)
 
   const handlePostClick = () => {
@@ -39,6 +46,22 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
       setShowLoginPrompt(true)
       return
     }
+
+    switch (action) {
+      case 'hide':
+        handleHide()
+        break
+      case 'block':
+        handleBlock()
+        break
+      case 'report':
+        handleReport()
+        break
+      case 'share':
+        handleShare()
+        break
+    }
+
     setShowOptions(false)
   }
 
@@ -62,6 +85,66 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  const handleHide = () => {
+    console.log("Hide post action triggered")
+  }
+
+  const handleBlock = async () => {
+    try {
+      const blockData = {
+        reviewerID: post.reviewID,
+        userID: user.id
+      }
+      
+      const result = await blockReview(blockData)
+      if (result.status === "Success") {
+        toast.success("Đã chặn thành công!")
+      } else {
+        toast.error("Có lỗi xảy ra khi chặn.")
+      }
+    } catch (error) {
+      console.error("Error blocking user:", error)
+      toast.error("Có lỗi xảy ra")
+    }
+  }
+
+  const handleReport = () => {
+    setShowReportModal(true)
+  }
+
+  const handleReportSubmit = async () => {
+    if (!reportContent.trim()) {
+      toast.info("Vui lòng nhập lý do báo cáo")
+      return
+    }
+    
+    try {
+      const result = await reportReview(post.reviewID, { content: reportContent })
+      console.log("Report result:", result)
+      if (result) {
+        toast.success("Đã báo cáo bài viết thành công!")
+        setShowReportModal(false)
+        setReportContent('')
+      } else {
+        toast.error("Có lỗi xảy ra khi báo cáo. Vui lòng thử lại sau.")
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra")
+    }
+  }
+
+  const handleShare = async () => {
+    try {
+      const currentUrl = `${window.location.origin}/post/${post.reviewID}`
+      await navigator.clipboard.writeText(currentUrl)
+      
+      toast.success("Đã sao chép liên kết bài viết vào clipboard")
+    } catch (error) {
+      console.error("Error copying to clipboard:", error)
+      toast.error("Không thể sao chép liên kết")
+    }
+  }
 
   return (
     <Card className="review-card" onClick={handlePostClick}>
@@ -90,6 +173,36 @@ const Review = ({ post, showCommentSection = false, isOwner = false }) => {
             </div>
           </div>
         )}
+
+        {showReportModal && (
+          <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <p>Vui lòng ghi rõ lý do báo cáo bài viết này</p>
+              <textarea
+                value={reportContent}
+                onChange={(e) => setReportContent(e.target.value)}
+                placeholder="Nhập lý do báo cáo..."
+                className="report-textarea"
+                rows={4}
+              />
+              <div className="modal-buttons">
+                <button 
+                  onClick={() => setShowReportModal(false)}
+                  className="btn-cancel"
+                >
+                  Hủy
+                </button>
+                <button 
+                  onClick={handleReportSubmit}
+                  className="btn-submit"
+                >
+                  Gửi
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="review-header">
           {post.reviewHashtags.length > 0 ? (
             post.reviewHashtags.map(tag => (

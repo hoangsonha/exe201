@@ -35,6 +35,7 @@ const EditUser = () => {
   })
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     const fetchData = async () => {
       try {
         const [userResult, hashtagsResult] = await Promise.all([

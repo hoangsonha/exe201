@@ -250,27 +250,24 @@
   font-weight: bold;
 }
 
-.back-button {
-  width: 120px;
+.about-back-button {
+  width: 60px;
+  height: 40px;
   position: fixed;
   top: 120px;
-  left: 20px;
-  background: #fff;
-  border: 2px solid #007bff;
-  color: #007bff;
-  padding: 8px 16px;
-  border-radius: 8px;
+  left: 50px;
+  background-color: #f8eee5 !important;
+  color: black !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 1px 1px 0px #000000 !important;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1.5rem;
   font-weight: 500;
   z-index: 1000;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.back-button:hover {
-  background: #007bff;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+.about-back-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0px #000000 !important;
 }

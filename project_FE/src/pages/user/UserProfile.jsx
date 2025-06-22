@@ -23,6 +23,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     fetchUserInfo()
   }, [])
 

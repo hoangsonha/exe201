@@ -143,6 +143,7 @@ const Home = () => {
   }
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     if (el.current) {
       const typed = new Typed(el.current, {
         strings: ["các tỏi đang review gì zayyy?"],

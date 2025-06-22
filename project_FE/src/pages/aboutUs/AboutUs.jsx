@@ -2,6 +2,7 @@ import Header from '@/component/Layout/Header'
 import ezgoGif from '@/assets/gif/ezgo.gif'
 import logo3 from '@/assets/logo3.png'
 import { FaStar } from 'react-icons/fa'
+import { RiArrowGoBackFill } from 'react-icons/ri'
 import { useEffect, useRef } from 'react'
 import './AboutUs.css'
 
@@ -52,8 +53,8 @@ const AboutUs = () => {
           <img src={ezgoGif} alt="EZ Go" className="ezgo-gif" />
         </div>
         
-        <button className="back-button" onClick={() => navigate(-1)}>
-          ← Trở lại
+        <button className="about-back-button" onClick={() => navigate(-1)}>
+          <RiArrowGoBackFill />
         </button>
 
         <div ref={blueSection} className="blue-section fade-up">

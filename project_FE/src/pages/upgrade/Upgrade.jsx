@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { RiArrowGoBackFill } from 'react-icons/ri'
+import { IoHome } from 'react-icons/io5'
 import logo from '@/assets/logo3.png'
 import toi from '@/assets/toi.png'
 import { UserContext } from '../../App'
@@ -151,7 +152,9 @@ const Upgrade = () => {
       <div className="upgrade-header">
         <img src={logo} alt="Logo" className="logo-img" onClick={() => navigate('/')} style={{ cursor: 'pointer' }} />
       </div>
-
+      <Button className="back-button" onClick={() => navigate('/')}>
+        <IoHome />
+      </Button>
       <div className="upgrade-packages">
         {packages.map((p) => (
           <div key={p.id} className={`package-card ${p.title === "tỏi VIP" ? 'vip-package' : ''}`}>

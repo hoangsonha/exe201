@@ -78,7 +78,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         setReview(resultPurposes.data)
         addToast("Bạn đã lưu lại bài đăng thành công", true, false);
       } else {
-        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
+        addToast(`Đã có lỗi, Vui lòng thử lại`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)
@@ -95,7 +95,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         setReview(resultPurposes.data)
         addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
       } else {
-        addToast(`Dã có lỗi, Vui lòng thử lại`, false, true);
+        addToast(`Đã có lỗi, Vui lòng thử lại`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)

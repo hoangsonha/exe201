@@ -41,6 +41,7 @@
   border: 1px solid #000000;
   box-shadow: 3px 3px 0px #000000;
   border-radius: 0;
+  z-index: 9998;
 }
 
 .option-item {

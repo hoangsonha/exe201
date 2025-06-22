@@ -6,33 +6,28 @@ import Sidebar from '../../component/Layout/Sidebar.jsx'
 import Advertisement from '../home/Advertisement.jsx'
 import { Button } from 'react-bootstrap'
 import { RiArrowGoBackFill } from 'react-icons/ri'
+import { use } from 'react'
 
 const Notification = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const navigate = useNavigate()
 
-  const handleBack = () => {
-    navigate(-1)
-  }
-
   return (
-    <div className='notification-page'>
+    <div className="home-page">
       <Header />
-      <Sidebar />
+      <Advertisement />
       <div className="home-content">
         <Sidebar />
-        <div className="main-content">
-          <div className="content-container">
-            <Button className="home-back-button" onClick={handleBack}>
-              <RiArrowGoBackFill />
-            </Button>
-            
-            <div className="notification-message">
-              <p>Không có thông báo mới...</p>
+          <div className="main-content">
+            <div className="content-container">
+              <div className="profile-no-content">
+                <p>Không có thông báo mới...</p>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <Advertisement />
       </div>
     </div>
   )

@@ -172,8 +172,8 @@ const Review = ({ post, showCommentSection = false }) => {
         )}
 
         {showReportModal && (
-          <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="report-modal-overlay" onClick={() => setShowReportModal(false)}>
+            <div className="report-modal-content" onClick={(e) => e.stopPropagation()}>
               <p>Vui lòng ghi rõ lý do báo cáo bài viết này</p>
               <textarea
                 value={reportContent}
@@ -182,16 +182,16 @@ const Review = ({ post, showCommentSection = false }) => {
                 className="report-textarea"
                 rows={4}
               />
-              <div className="modal-buttons">
+              <div className="report-modal-buttons">
                 <button 
                   onClick={() => setShowReportModal(false)}
-                  className="btn-cancel"
+                  className="report-btn-cancel"
                 >
                   Hủy
                 </button>
                 <button 
                   onClick={handleReportSubmit}
-                  className="btn-submit"
+                  className="report-btn-submit"
                 >
                   Gửi
                 </button>

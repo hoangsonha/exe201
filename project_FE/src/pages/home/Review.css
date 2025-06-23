@@ -149,7 +149,7 @@
   color: #e1f62b;
 }
 
-.modal-overlay {
+.report-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -162,7 +162,7 @@
   z-index: 9999 !important;
 }
 
-.modal-content {
+.report-modal-content {
   background: white;
   padding: 24px;
   border-radius: 0 !important;
@@ -174,7 +174,7 @@
   overflow-y: auto;
 }
 
-.modal-content p {
+.report-modal-content p {
   margin: 0 0 16px 0;
   color: #666;
   margin-left: 12px;
@@ -204,13 +204,13 @@
   border: 1px solid #000000 !important;
 }
 
-.modal-buttons {
+.report-modal-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
-.btn-cancel {
+.report-btn-cancel {
   padding: 5px 13px;
   border-radius: 0 !important;
   border: 1px solid #000000 !important;
@@ -219,7 +219,7 @@
   cursor: pointer;
 }
 
-.btn-submit {
+.report-btn-submit {
   padding: 5px 13px;
   border-radius: 0 !important;
   border: 1px solid #000000 !important;
@@ -229,12 +229,12 @@
   color: white;
 }
 
-.btn-cancel:hover {
+.report-btn-cancel:hover {
   transform: translateY(-5px);
   box-shadow: 2px 2px 0px #000000 !important;
 }
 
-.btn-submit:hover {
+.report-btn-submit:hover {
   transform: translateY(-5px);
   box-shadow: 2px 2px 0px #000000 !important;
 }

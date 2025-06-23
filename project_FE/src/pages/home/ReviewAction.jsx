@@ -135,7 +135,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
       </div>
 
       <div className="action-item">
-        <span className="action-star-icon"><LuStar /></span> 20%
+        <span className="action-star-icon"><LuStar /></span> --%
       </div>
 
       {/* <div className="action-item">

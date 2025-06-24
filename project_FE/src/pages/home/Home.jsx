@@ -92,10 +92,10 @@ const Home = () => {
   }
 
   const handleSubmitPost = async (formData) => {
-    console.log("Post data:", formData);
-    const result = await createReviewAPI(formData);
-    console.log("API result:", result);
-    return result;
+    console.log("Post data:", formData)
+    const result = await createReviewAPI(formData)
+    console.log("API result:", result)
+    return result
   }
 
   const createReviewAPI = async (formData) => {
@@ -134,12 +134,14 @@ const Home = () => {
           }
         };
       } else {
-        addToast(`Dã có lỗi, Vui lòng chờ duyệt`, false, true);
+        addToast(`Đã có lỗi, Vui lòng chờ duyệt`, false, true);
       }
     } catch (error) {
       console.error("Có lỗi xảy ra khi gọi api review:", error)
       alert(error.error)
-     } 
+    } finally {
+      setShowPostReview(false)
+    }
   }
 
   useEffect(() => {

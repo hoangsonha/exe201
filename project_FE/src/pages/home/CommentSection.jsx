@@ -1,62 +1,56 @@
 import { useState } from "react"
 import { IoSend } from "react-icons/io5"
 import CommentItem from "./CommentItem"
+import { createReviewComment } from "../../serviceAPI/commentService"
+import "./CommentSection.css"
 
 const CommentSection = ({ post }) => {
   const [newComment, setNewComment] = useState("")
-
-  const handleAddComment = () => {
+  const [comments, setComments] = useState(post.comments || [])
+  const [activeReplyId, setActiveReplyId] = useState(null)
+  
+  const handleAddComment = async () => {
     if (newComment.trim()) {
-      console.log(`Adding comment to review ${post.reviewID}:`, newComment)
-      setNewComment("")
+      const res = await createReviewComment(post.reviewID, newComment)
+      if (res) {
+        console.log(`Adding comment to review ${post.reviewID}:`, newComment)
+        setComments((prev) => [...prev, res.data])
+        setNewComment("")
+      }
     }
   }
 
+  const handleReplyToggle = (commentId) => {
+    setActiveReplyId(activeReplyId === commentId ? null : commentId)
+  }
+
   return (
-    <div style={{ borderTop: "1px solid black", padding: "16px", paddingTop: "23px" }}>
-      <div style={{ position: "relative", marginBottom: "20px" }}>
+    <div className="comment-section">
+      <div className="comment-input-container">
         <input
           type="text"
           placeholder="Bình luận của bạn..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
-          style={{
-            width: "100%",
-            padding: "10px 50px 10px 16px",
-            outline: "none",
-            fontSize: "1.4rem",
-            fontWeight: "600",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            boxSizing: "border-box",
-          }}
+          className="comment-input"
         />
         <button
           onClick={handleAddComment}
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: "10px",
-            transform: "translateY(-50%)",
-            background: "transparent",
-            color: "black",
-            border: "none",
-            padding: "6px 8px",
-            cursor: "pointer",
-            fontSize: "1.6rem",
-          }}
+          className="comment-submit-btn"
         >
           <IoSend />
         </button>
       </div>
       
-      <div style={{ marginBottom: "25px"}}>
-        {post.comments && post.comments.map((comment) => (
+      <div className="comments-list">
+        {comments.map((comment) => (
           <CommentItem 
             key={comment.commentID} 
             comment={comment} 
-            reviewId={post.reviewID} 
+            reviewId={post.reviewID}
+            activeReplyId={activeReplyId}
+            onReplyToggle={handleReplyToggle}
           />
         ))}
       </div>

@@ -61,6 +61,7 @@ const UserContent = ({ activeTab, displayData, setActiveTab, loading }) => {
   }
 
   const handleCommentClick = (comment) => {
+    console.log('Comment clicked:', comment)
     // navigate(`/post/${comment.reviewID}`)
     // window.scrollTo(0, 0)
   }

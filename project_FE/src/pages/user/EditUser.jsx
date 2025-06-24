@@ -28,8 +28,8 @@ const EditUser = () => {
     gender: '',
     selectedTags: [],
     showPersonalAccount: false,
-    showPoints: false,
-    showHotTopics: false,
+    showPoints: true,
+    showHotTopics: true,
     point: 0,
     avatar: ''
   })
@@ -102,7 +102,6 @@ const EditUser = () => {
     try {
       // setLoading(true)
       const resultPurposes = await updateAccount(formData, user.id)
-
       console.log(resultPurposes)
 
       if (resultPurposes.status == "Success") {
@@ -176,6 +175,7 @@ const EditUser = () => {
               onChange={() => handleSwitchChange('showPoints')}
               label="hiển thị điểm tỏi"
               className="switch-right"
+              disabled={true}
             />
             <Form.Check
               type="switch"
@@ -184,6 +184,7 @@ const EditUser = () => {
               onChange={() => handleSwitchChange('showHotTopics')}
               label="gợi ý chủ đề hot"
               className="switch-right"
+              disabled={true}
             />
           </div>
         </div>

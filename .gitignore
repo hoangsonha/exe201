@@ -32,6 +32,8 @@ out/
 # VS Code
 .vscode/
 
+project_BE/src/main/resources/keys/*.json
+
 # Logs
 logs/
 *.log

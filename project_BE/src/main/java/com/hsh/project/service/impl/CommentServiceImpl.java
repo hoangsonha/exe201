@@ -265,32 +265,26 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponseDTO> getCommentsByUserEmail(String userEmail) {
-        log.info("Fetching comments for userEmail: {}", userEmail);
+    public List<CommentResponseDTO> getCommentsByUserId(Long userId) {
+        log.info("Fetching comments for userId: {}", userId);
         try {
-            if (userEmail == null || userEmail.trim().isEmpty()) {
-                throw new IllegalArgumentException("User email cannot be null or empty");
+            if (userId == null) {
+                throw new IllegalArgumentException("User ID cannot be null");
             }
-            User user = findUserByEmail(userEmail);
-            List<Comment> comments = commentRepository.findByUser(user);
+            List<Comment> comments = commentRepository.findByUserUserId(userId);
             if (comments == null || comments.isEmpty()) {
-                log.warn("No comments found for userEmail: {}", userEmail);
+                log.warn("No comments found for userId: {}", userId);
                 return new ArrayList<>();
             }
-            log.debug("Found {} comments before filtering", comments.size());
-            // Filter out deleted comments
-            List<Comment> activeComments = comments.stream()
-                    .filter(comment -> !comment.isDeleted())
-                    .collect(Collectors.toList());
-            log.debug("Found {} active comments after filtering", activeComments.size());
-            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+            log.debug("Found {} comments", comments.size());
+            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("Error fetching comments by userEmail: {}", e.getMessage(), e);
+            log.error("Error fetching comments by userId: {}", e.getMessage(), e);
             throw e;
         }
     }
 
-    @Override
+   @Override
     public CommentResponseDTO updateComment(Long commentId, String content, String userEmail) {
         log.info("Updating comment with commentId: {}, content: {}, userEmail: {}", commentId, content, userEmail);
         try {
@@ -349,7 +343,4 @@ public class CommentServiceImpl implements CommentService {
             throw e;
         }
     }
-
-    
-
 }

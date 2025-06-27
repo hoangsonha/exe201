@@ -97,20 +97,17 @@ public class CommentController {
     }
 
     @GetMapping("/by-user")
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByUserEmail(
-            Principal principal) {
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByUserId(
+            @RequestParam Long userId) {
         try {
-            if (principal == null) {
-                throw new IllegalStateException("User must be authenticated to view their comments");
-            }
-            log.info("Fetching comments for userEmail: {}", principal.getName());
-            List<CommentResponseDTO> comments = commentService.getCommentsByUserEmail(principal.getName());
+            log.info("Fetching comments for userId: {}", userId);
+            List<CommentResponseDTO> comments = commentService.getCommentsByUserId(userId);
             return ResponseEntity.ok(comments);
         } catch (IllegalArgumentException e) {
-            log.error("Invalid userEmail: {}", e.getMessage());
+            log.error("Invalid userId: {}", e.getMessage());
             return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
-            log.error("Error fetching comments by userEmail: {}", e.getMessage(), e);
+            log.error("Error fetching comments by userId: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -166,6 +163,23 @@ public class CommentController {
         } catch (Exception e) {
             log.error("Error deleting comment: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(createErrorResponse("Internal server error")); // Updated to match signature
+
+    @GetMapping("/parent")
+    public ResponseEntity<CommentResponseDTO> getParentCommentById(
+            @RequestParam Long commentId) {
+        try {
+            log.info("Fetching parent comment for commentId: {}", commentId);
+            CommentResponseDTO parentComment = commentService.getParentCommentById(commentId);
+            if (parentComment == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(parentComment);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid commentId: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            log.error("Error fetching parent comment: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
         }
     }
 

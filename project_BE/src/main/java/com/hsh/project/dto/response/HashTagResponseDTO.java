@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HashTagResponseDTO {
-    Long hashTagID;
-    String tag;
+    Long id;
+    String name;
 }

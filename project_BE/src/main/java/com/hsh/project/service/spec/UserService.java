@@ -2,9 +2,7 @@ package com.hsh.project.service.spec;
 
 import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.PagingResponse;
-import com.hsh.project.dto.request.CreateEmployeeRequest;
-import com.hsh.project.dto.request.UpdateEmployeeRequest;
-import com.hsh.project.dto.request.UserRegisterHashTagRequest;
+import com.hsh.project.dto.request.*;
 import com.hsh.project.pojo.User;
 import org.apache.coyote.BadRequestException;
 
@@ -14,20 +12,23 @@ public interface UserService {
 
     PagingResponse getAllAccountPaging(Integer currentPage, Integer pageSize);
 
-    PagingResponse searchEmployees(Integer currentPage, Integer pageSize, String userName, String fullName, String email);
+    PagingResponse searchUsers(Integer currentPage, Integer pageSize, String userName, String fullName, String email);
 
     List<UserDTO> getAccounts();
 
     UserDTO getAccountById(int id);
 
-    UserDTO createEmployee(CreateEmployeeRequest request) throws BadRequestException;
+    UserDTO createUser(CreateUserRequest request) throws BadRequestException;
 
-    UserDTO updateEmployee(UpdateEmployeeRequest request, int id);
+    UserDTO updateUserRole(UpdateUserRoleRequest request, int id);
 
-    User getEmployeeById(int id);
+    UserDTO updateUser(UpdateUserRequest request, int id);
 
-    User saveEmployee(User user);
+    User getUserById(int id);
+
+    User saveUser(User user);
 
     UserDTO createHashTagUser(UserRegisterHashTagRequest request);
 
+    UserDTO createImageUser(UserCreateImageRequest request);
 }

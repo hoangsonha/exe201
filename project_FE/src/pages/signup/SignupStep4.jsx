@@ -1,44 +1,59 @@
-import { useState } from "react";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import "./Signup.css";
+import { useContext, useEffect, useState } from "react"
+import { Form, Button, Container, Row, Col } from "react-bootstrap"
+import { getHashtags } from "../../serviceAPI/hashtagService"
+import { createHashtagUser } from "../../serviceAPI/userService"
+import "./Signup.css"
+import { UserContext } from "../../App"
+import { useNavigate } from "react-router"
+import { DEFAULT_PATHS } from "../../auth/Roles"
 
 const SignupStep4 = ({ onComplete }) => {
-    const [selectedTopics, setSelectedTopics] = useState([]);
+    const navigate = useNavigate()
+    const [selectedTopics, setSelectedTopics] = useState([])
+    const { user } = useContext(UserContext)
+    const [hashtags, setHashtag] = useState([])
+
+    useEffect(() => {
+        const apiAll = async () => {
     
-    const topics = [
-        { id: 1, name: "nghệ thuật" },
-        { id: 2, name: "sức khỏe" },
-        { id: 3, name: "giáo dục" },
-        { id: 4, name: "giáo dục" },
-        { id: 5, name: "talk" },
-        { id: 6, name: "mỹ phẩm" },
-        { id: 7, name: "lối sống" },
-        { id: 8, name: "phim ảnh" },
-        { id: 9, name: "minecraft" },
-        { id: 10, name: "rap" },
-        { id: 11, name: "công việc" },
-        { id: 12, name: "công nghệ" },
-        { id: 13, name: "khoa học" },
-        { id: 14, name: "game" },
-        { id: 15, name: "thiết kế" }
-    ];
+            try {
+                const resultPurposes = await getHashtags();
+                setHashtag(resultPurposes.data.data);
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi gọi api công dụng:", error)
+            }
+        }
+        apiAll()
+    }, [])
 
     const handleTopicSelection = (topicId) => {
         setSelectedTopics(prevTopics => {
             if (prevTopics.includes(topicId)) {
-                return prevTopics.filter(id => id !== topicId);
+                return prevTopics.filter(id => id !== topicId)
             } else {
-                return [...prevTopics, topicId];
+                return [...prevTopics, topicId]
             }
-        });
-    };
+        })
+    }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (onComplete) {
-            onComplete(selectedTopics);
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        try {
+
+            const userData = await createHashtagUser({ userId: user.id, hashtagID: selectedTopics })
+            
+            if (userData.data.code == 'Success') {
+                navigate(DEFAULT_PATHS[user.role])
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            if (onComplete) {
+                onComplete(selectedTopics)
+            }
         }
-    };
+    }
 
     return (
         <div className="topic-background" style={{ opacity: 1 }}>
@@ -46,54 +61,39 @@ const SignupStep4 = ({ onComplete }) => {
                 <h2 className="topic-title-custom">bạn hay đọc review topic nào?</h2>
                 
                 <Form onSubmit={handleSubmit}>
-                    <Row className="topic-list">
-                        {topics.slice(0, 5).map(topic => (
-                            <Col xs={6} sm={4} lg={2} key={topic.id} className="topic-item-wrapper">
-                                <div 
-                                    className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}
-                                    onClick={() => handleTopicSelection(topic.id)}
-                                >
-                                    {topic.name}
+                    <Row className="topic-list fixed-four-per-row">
+                        {hashtags.map((topic, index) => {
+                            const isLastRow = Math.floor(index / 4) === Math.floor((hashtags.length - 1) / 4);
+                            const itemsInLastRow = hashtags.length % 4 || 4;
+                            const isFirstInLastRow = isLastRow && index % 4 === 0;
+                            const shouldCenter = isFirstInLastRow && itemsInLastRow < 4;
+
+                            return (
+                            <div
+                                key={topic.id}
+                                className="topic-item-wrapper"
+                                style={shouldCenter ? { marginLeft: `calc((100% - ${itemsInLastRow * 25}%) / 2)` } : {}}
+                                onClick={() => handleTopicSelection(topic.id)}
+                            >
+                                <div className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}>
+                                {topic.name}
                                 </div>
-                            </Col>
-                        ))}
+                            </div>
+                            );
+                        })}
                     </Row>
-                    <Row className="topic-list">
-                        {topics.slice(5, 10).map(topic => (
-                            <Col xs={6} sm={4} lg={2} key={topic.id} className="topic-item-wrapper">
-                                <div 
-                                    className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}
-                                    onClick={() => handleTopicSelection(topic.id)}
-                                >
-                                    {topic.name}
-                                </div>
-                            </Col>
-                        ))}
-                    </Row>
-                    <Row className="topic-list">
-                        {topics.slice(10, 15).map(topic => (
-                            <Col xs={6} sm={4} lg={2} key={topic.id} className="topic-item-wrapper">
-                                <div 
-                                    className={`topic-item ${selectedTopics.includes(topic.id) ? 'selected' : ''}`}
-                                    onClick={() => handleTopicSelection(topic.id)}
-                                >
-                                    {topic.name}
-                                </div>
-                            </Col>
-                        ))}
-                    </Row>
-                    
+
                     <Button 
                         variant="primary" 
                         type="submit" 
                         className="topic-continue-btn"
                     >
-                        tiếp tục
+                        lưu
                     </Button>
                 </Form>
             </Container>
         </div>
-    );
-};
+    )
+}
 
-export default SignupStep4; 
+export default SignupStep4

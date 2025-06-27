@@ -20,6 +20,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    env_file:
+      - .env
+    volumes:
+      - ./keys/key_firebase.json:/app/keys/key_firebase.json
     depends_on:
       - exe201_db
     restart: always

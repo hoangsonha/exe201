@@ -5,13 +5,12 @@ import { jwtDecode } from 'jwt-decode';
 const request = axios.create({
     // baseURL: `${import.meta.env.VITE_BASE_URL}`,
     baseURL: ``,
-    headers: { 'Content-Type': 'application/json' },
+    // headers: { 'Content-Type': 'application/json' },
     // withCredentials: true,
 });
 
 export const get = async (url, params = {}) => {
     const response = await request.get(url, params);
-
     return response;
 };
 
@@ -63,9 +62,9 @@ request.interceptors.request.use(async function (config) {
     const publicUrls = [
         '/api/v1/public/login',
         '/api/v1/public/refresh-token',
-        '/api/v1/public/logout',
         '/api/v1/public/register',
-        '/api/v1/public/register/verification'
+        '/api/v1/public/register/verification',
+        '/api/v1/reviews/top-trending'
     ];
 
     if (publicUrls.some(url => config.url.includes(url))) {

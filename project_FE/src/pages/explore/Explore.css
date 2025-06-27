@@ -1,0 +1,65 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: transparent;
+  position: relative;
+  overflow: hidden;
+  background: url("@/assets/background/topicBackground.svg") no-repeat center center;
+  background-size: 100% auto;
+  background-position: center;
+}
+
+.home-content {
+  display: flex;
+  flex: 1;
+  padding-top: 8rem;
+  margin-left: 0.5rem;
+  position: relative;
+  z-index: 100;
+  height: calc(100vh);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  margin-right: 320px;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+  overflow-y: auto;
+  height: calc(100vh - 6rem);
+}
+
+.content-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.profile-no-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
+  color: #666;
+  font-style: italic;
+  background-color: white;
+  border: 1px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.profile-no-content p {
+  margin-top: 1rem;
+}
+
+.profile-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #555;
+}

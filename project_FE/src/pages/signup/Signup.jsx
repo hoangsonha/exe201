@@ -11,6 +11,7 @@ const SignUp = () => {
     const [userData, setUserData] = useState({
         email: "",
         password: "",
+        selectedAvatar: null,
         selectedTopics: []
     });
     const navigate = useNavigate();
@@ -24,7 +25,11 @@ const SignUp = () => {
         setCurrentScreen(3);
     };
     
-    const handleAvatarComplete = () => {
+    const handleAvatarComplete = (selectedAvatar) => {
+        setUserData(prev => ({
+            ...prev,
+            selectedAvatar
+        }));
         setCurrentScreen(4);
     };
     

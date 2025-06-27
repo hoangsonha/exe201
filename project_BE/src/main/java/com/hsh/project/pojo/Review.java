@@ -2,7 +2,6 @@ package com.hsh.project.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hsh.project.pojo.enums.EnumReviewStatus;
-import com.hsh.project.pojo.enums.EnumReviewUploadType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +38,8 @@ public class Review extends BaseEntity {
 
     Float objectiveStar;
 
+    String summary;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     User user;
@@ -52,7 +53,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<HistoryPoint> historyPoints;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     List<ReviewMedia> reviewMedias;
 
     @OneToMany(mappedBy = "review")
@@ -61,7 +62,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     List<ReviewHashtag> reviewHashtags;
 
     @OneToMany(mappedBy = "review")
@@ -70,7 +71,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review")
     List<BlockReview> blockReviews;
 
-    @OneToOne(mappedBy = "review")
+    @OneToOne(mappedBy = "review", cascade = CascadeType.ALL)
     CheckReviewAI checkReviewAI;
 
     @OneToMany

@@ -7,7 +7,7 @@
   left: 0;
   top: 5.5rem;
   padding: 35px;
-  z-index: 1000;
+  z-index: 1;
 }
 
 .sidebar-menu {
@@ -81,8 +81,8 @@
 
 .sidebar-toi-image {
   image-rendering: auto;
-  width: 83%;
+  width: 70%;
   height: auto;
-  margin-left: -8rem;
-  margin-bottom: -3rem;
+  margin-left: -10rem;
+  margin-bottom: -1.5rem;
 }

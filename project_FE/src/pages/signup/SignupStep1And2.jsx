@@ -1,15 +1,12 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import { Form, Button, Alert, Spinner } from "react-bootstrap";
-import Typed from "typed.js";
-import "react-phone-number-input/style.css";
-import { FiSmile } from "react-icons/fi";
-import { UserContext } from "../../App";
-
-import { DEFAULT_PATHS } from "../../auth/Roles";
-import { jwtDecode } from "jwt-decode";
-import { register, verificationCodeAPi } from "../../serviceAPI/authenticationService";
-import "./Signup.css";
-import { useNavigate } from "react-router";
+import { useState, useEffect, useRef, useContext } from "react"
+import { Form, Button, Alert, Spinner } from "react-bootstrap"
+import Typed from "typed.js"
+import "react-phone-number-input/style.css"
+import { FiSmile } from "react-icons/fi"
+import { UserContext } from "../../App"
+import { jwtDecode } from "jwt-decode"
+import { register, verificationCodeAPi } from "../../serviceAPI/authenticationService"
+import "./Signup.css"
 
 const SignupStep1And2 = ({ 
     onVerificationComplete, 
@@ -18,51 +15,42 @@ const SignupStep1And2 = ({
     initialemail = "",
     initialPassword = "" 
 }) => {
-    const [email, setemail] = useState(initialemail);
-    const [inputPassword, setInputPassword] = useState(initialPassword);
-    const [show, setShow] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [currentScreen, setCurrentScreen] = useState(1);
-    const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
-    const codeInputRefs = useRef([]);
-    const [showPassword, setShowPassword] = useState(false);
-    const el = useRef(null);
-    const timerRef = useRef(null);
-    const [timer, setTimer] = useState(180);
-    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
-    const [errorType, setErrorType] = useState("");
+    const [email, setemail] = useState(initialemail)
+    const [inputPassword, setInputPassword] = useState(initialPassword)
+    const [show, setShow] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [currentScreen, setCurrentScreen] = useState(1)
+    const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""])
+    const codeInputRefs = useRef([])
+    const [showPassword, setShowPassword] = useState(false)
+    const el = useRef(null)
+    const timerRef = useRef(null)
+    const [timer, setTimer] = useState(180)
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false)
+    const [errorType, setErrorType] = useState("")
 
-    const { signIn } = useContext(UserContext);
-    const navigate = useNavigate();
+    const { signIn } = useContext(UserContext)
 
-    const handleemailChange = (e) => {
-
-        console.log(e.target.value);
-
-        setemail(e.target.value || "");
-        if (show) setShow(false);
-        if (onemailChange) onemailChange(e.target.value || "");
-    };
+    const handleEmailChange = (e) => {
+        setemail(e.target.value || "")
+        if (show) setShow(false)
+        if (onemailChange) onemailChange(e.target.value || "")
+    }
 
     const handlePasswordChange = (e) => {
-        setInputPassword(e.target.value);
-        if (show) setShow(false);
-        if (onPasswordChange) onPasswordChange(e.target.value);
-    };
+        setInputPassword(e.target.value)
+        if (show) setShow(false)
+        if (onPasswordChange) onPasswordChange(e.target.value)
+    }
 
     const togglePasswordVisibility = () => {
-        setShowPassword((prev) => !prev);
-    };
+        setShowPassword((prev) => !prev)
+    }
 
     const validateForm = () => {
-        if (!isTermsAccepted) {
-            setErrorType("terms");
-            return false;
-        }
-
         if (!email) {
-            setErrorType("email_empty");
-            return false;
+            setErrorType("email_empty")
+            return false
         }
 
         // if (email.length < 10 || email.length > 11) {
@@ -71,43 +59,47 @@ const SignupStep1And2 = ({
         // }
 
         if (!inputPassword) {
-            setErrorType("password_empty");
-            return false;
+            setErrorType("password_empty")
+            return false
         }
 
         if (inputPassword.length < 6) {
-            setErrorType("password_short");
-            return false;
+            setErrorType("password_short")
+            return false
         }
 
         if (inputPassword.length > 50) {
-            setErrorType("password_long");
-            return false;
+            setErrorType("password_long")
+            return false
         }
 
-        return true;
-    };
+        if (!isTermsAccepted) {
+            setErrorType("terms")
+            return false
+        }
+        return true
+    }
 
     const getErrorMessage = () => {
         switch (errorType) {
             case "terms":
-                return "Vui lòng đồng ý với điều khoản sử dụng!";
+                return "Vui lòng đồng ý với điều khoản sử dụng!"
             case "email_empty":
-                return "Vui lòng nhập số điện thoại!";
+                return "Vui lòng nhập địa chỉ email!"
             // case "email_invalid":
             //     return "Số điện thoại không hợp lệ. Vui lòng nhập 8-9 số!";
             case "password_empty":
-                return "Vui lòng nhập mật khẩu!";
+                return "Vui lòng nhập mật khẩu!"
             case "password_short":
-                return "Mật khẩu phải có ít nhất 6 ký tự!";
+                return "Mật khẩu phải có ít nhất 6 ký tự!"
             case "password_long":
-                return "Mật khẩu không được quá 50 ký tự!";
+                return "Mật khẩu không được quá 50 ký tự!"
             case "verification_invalid":
-                return "Mã xác thực không hợp lệ. Vui lòng thử lại!";
-            default:
-                return "Vui lòng thử lại!";
+                return "Mã xác thực không hợp lệ. Vui lòng thử lại!"
+            case "general":
+                return "Đăng ký không thành công. Vui lòng thử lại!"
         }
-    };
+    }
 
     useEffect(() => {
         if (!show && el.current && currentScreen === 1) {
@@ -118,174 +110,170 @@ const SignupStep1And2 = ({
                 backSpeed: 30,
                 startDelay: 500,
                 showCursor: false
-            });
+            })
 
             return () => {
-                typed.destroy();
-            };
+                typed.destroy()
+            }
         }
-    }, [show, currentScreen]);
+    }, [show, currentScreen])
 
     useEffect(() => {
         if (currentScreen === 2 && timer > 0) {
             timerRef.current = setInterval(() => {
-                setTimer((prevTime) => prevTime - 1);
-            }, 1000);
+                setTimer((prevTime) => prevTime - 1)
+            }, 1000)
         } else if (timer === 0) {
-            clearInterval(timerRef.current);
+            clearInterval(timerRef.current)
         }
 
         return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-        };
-    }, [currentScreen, timer]);
+            if (timerRef.current) clearInterval(timerRef.current)
+        }
+    }, [currentScreen, timer])
 
     const formatTime = (time) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
-
-    const handleRegisterAccount = async (event) => {
-        event.preventDefault();
-        setLoading(true);
-
-        try {
-            const userData = await register({ email: email, password: inputPassword });
-
-            if (userData.data.data) {
-                setLoading(false)
-                setCurrentScreen(2);
-            } else
-                setLoading(true) 
-        } catch (error) {
-            console.log(error);
-            setShow(true);
-        } finally {
-            setLoading(false);
-        }
+        const minutes = Math.floor(time / 60)
+        const seconds = time % 60
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
     }
 
     const handleVerificationCode = async (event) => {
-        event.preventDefault();
-        setLoading(true);
+        event.preventDefault()
+        setLoading(true)
 
         try {
-
             let verification = verificationCode.join('')
 
-            console.log(verification)
+            const userData = await verificationCodeAPi({ email: email, verificationCode: verification })
 
-            const userData = await verificationCodeAPi({ email: email, verificationCode: verification });
-
-            console.log(userData)
-
-            const userFetch = userData.data;
+            const userFetch = userData.data
                 if (userFetch.code == 'Success') {
-                    const decodedToken = jwtDecode(userFetch['token']);
-                    const role = decodedToken.role?.[0]?.authority;
+                    const decodedToken = jwtDecode(userFetch['token'])
+                    const role = decodedToken.role?.[0]?.authority
         
                     const user = {
                         accessToken: userFetch['token'],
                         refreshToken: userFetch['refreshToken'],
                         email: userFetch['email'],
                         id: userFetch['userId'],
-                        role: role
+                        role: role,
+                        avatar: userFetch['avatar']
                     }
         
-                    signIn(user);
-                    setShow(false);
-                    navigate(DEFAULT_PATHS[role]);
-                    setLoading(false);
+                    signIn(user)
+                    
+                    if (onVerificationComplete) {
+                        onVerificationComplete({
+                            email: email,
+                            password: inputPassword
+                        })
+                    }
+                    setShow(false)
+
+                    setLoading(false)
                 } else {
-                    setErrorType('verification_invalid');
+                    setErrorType('verification_invalid')
                 }    
         } catch (error) {
-            console.log(error);
-            setErrorType('verification_invalid');
-            setShow(true);
+            console.log(error)
+            setErrorType('verification_invalid')
+            setShow(true)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        setLoading(true);
+        event.preventDefault()
+        setLoading(true)
         
         try {
-            setTimeout(() => {
-                if (validateForm()) {
-                    setCurrentScreen(2);
-                    setTimer(180);
-                    setShow(false);
-                    setErrorType("");
-                } else {
-                    setShow(true);
-                }
-                setLoading(false);
-            }, 1500);
+            if (!validateForm()) {
+                setShow(true)
+                setLoading(false)
+                return
+            }
+            const userData = await register({ email: email, password: inputPassword })
+
+            if (userData.data.data) {
+                setLoading(false)
+                setShow(false)
+                setCurrentScreen(2)
+            } else {
+                setErrorType("general")
+                setShow(true)
+            }
         } catch (error) {
-            console.log(error);
-            setErrorType("general");
-            setShow(true);
-            setLoading(false);
+            console.log(error)
+            setErrorType("general")
+            setShow(true)
+            setLoading(false)
         }
-    };
+    }
 
     const handleVerifySubmit = async (event) => {
-        event.preventDefault();
-        setLoading(true);
+        event.preventDefault()
+        setLoading(true)
         
         try {
             setTimeout(() => {
-                const isVerificationComplete = verificationCode.every(code => code !== "");
+                const isVerificationComplete = verificationCode.every(code => code !== "")
                 
                 if (isVerificationComplete) {
                     if (onVerificationComplete) {
                         onVerificationComplete({
                             email: email,
                             password: inputPassword
-                        });
+                        })
                     }
-                    setShow(false);
+                    setShow(false)
                 } else {
-                    setErrorType("verification_invalid");
-                    setShow(true);
+                    setErrorType("verification_invalid")
+                    setShow(true)
                 }
-                setLoading(false);
-            }, 1500);
+                setLoading(false)
+            }, 1500)
         } catch (error) {
-            console.log(error);
-            setErrorType("verification_invalid");
-            setShow(true);
-            setLoading(false);
+            console.log(error)
+            setErrorType("verification_invalid")
+            setShow(true)
+            setLoading(false)
         }
-    };
+    }
 
     const handleCodeChange = (index, value) => {
         if (value.length <= 1) {
-            const newVerificationCode = [...verificationCode];
-            newVerificationCode[index] = value;
-            setVerificationCode(newVerificationCode);
+            const newVerificationCode = [...verificationCode]
+            newVerificationCode[index] = value
+            setVerificationCode(newVerificationCode)
             
             if (value && index < 5) {
-                codeInputRefs.current[index + 1].focus();
+                codeInputRefs.current[index + 1].focus()
             }
         }
-    };
+    }
 
     const handleCodeKeyDown = (index, e) => {
         if (e.key === "Backspace" && !verificationCode[index] && index > 0) {
-            codeInputRefs.current[index - 1].focus();
+            codeInputRefs.current[index - 1].focus()
         }
-    };
+    }
+
+    const handlePaste = (e) => {
+        const pasteData = e.clipboardData.getData('Text').trim().slice(0, 6)
+        if (/^\d{6}$/.test(pasteData)) {
+            const newOtp = pasteData.split('')
+            setVerificationCode(newOtp)
+            codeInputRefs[5].current?.focus()
+        }
+    }
 
     const handleResendCode = () => {
-        setTimer(180);
-        setShow(false);
-        setErrorType("");
-    };
+        setTimer(180)
+        setShow(false)
+        setErrorType("")
+    }
 
     if (currentScreen === 1) {
         return (
@@ -315,18 +303,17 @@ const SignupStep1And2 = ({
                         <Form onSubmit={handleSubmit} className="mt-4 submit-form">
                             <Form.Group className="mb-4">
                                 <Form.Label htmlFor="email">
-                                    <i className="bi bi-teleemail-fill me-2"></i>
-                                    Email
+                                    <i className="bi bi-envelope-fill me-2"></i>
+                                    email
                                 </Form.Label>
                                 <div className="email-input-wrapper">
                                     <Form.Control
                                         type="text"
                                         id="email"
                                         value={email}
-                                        placeholder=" "
-                                        required
+                                        placeholder=""
                                         className="email-input-custom"
-                                        onChange={handleemailChange}
+                                        onChange={handleEmailChange}
                                     />
                                 </div>
                             </Form.Group>
@@ -365,7 +352,6 @@ const SignupStep1And2 = ({
                                 type="submit" 
                                 disabled={loading}
                                 className="py-3 login-btn"
-                                onClick={handleRegisterAccount}
                             >
                                 {loading ? (
                                     <>
@@ -395,7 +381,7 @@ const SignupStep1And2 = ({
                     </div>
                 </div>
             </div>
-        );
+        )
 
     } else if (currentScreen === 2) {
         return (
@@ -431,6 +417,7 @@ const SignupStep1And2 = ({
                                         value={verificationCode[index]}
                                         onChange={(e) => handleCodeChange(index, e.target.value)}
                                         onKeyDown={(e) => handleCodeKeyDown(index, e)}
+                                        onPaste={handlePaste}
                                         ref={(el) => (codeInputRefs.current[index] = el)}
                                         className="verification-input"
                                     />
@@ -480,8 +467,8 @@ const SignupStep1And2 = ({
                     </div>
                 </div>
             </div>
-        );
+        )
     }
-};
+}
 
-export default SignupStep1And2; 
+export default SignupStep1And2

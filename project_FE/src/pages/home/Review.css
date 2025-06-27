@@ -1,0 +1,264 @@
+.review-card {
+  margin-bottom: 30px;
+  border-radius: 0;
+  border: 1px solid #000000;
+  box-shadow: 3px 3px 0px #000000 !important;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-left: -2px;
+}
+
+.review-options-container {
+  position: relative;
+  margin-top: 3rem;
+}
+
+.review-options {
+  font-weight: bold;
+  color: #383838;
+  cursor: pointer;
+  font-size: 25px;
+  margin-top: -40px;
+}
+
+.options-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  border-radius: 0;
+  z-index: 1000;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.option-item:hover {
+  background-color: #f5f5f5;
+}
+
+.option-item svg {
+  margin-right: 10px;
+  font-size: 20px;
+  color: #555;
+}
+
+.review-tag {
+  display: inline-block;
+  background-color: #e1f62b;
+  color: #5f4232;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 0;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px #000000 !important;
+}
+
+.review-title {
+  font-weight: bolder;
+  font-size: 21px;
+  margin-bottom: 12px;
+  color: black;
+}
+
+.review-content {
+  color: #555;
+  margin-bottom: 15px;
+  border-top: 1px solid #000000;
+  padding-top: 15px;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
+  padding-top: 10px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  color: #777;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 5px;
+}
+
+.action-item:hover {
+  color: #333;
+}
+
+.like-icon, .heart-icon, .comment-icon, .actionstar-icon, .time-icon, .bookmark-icon {
+  margin-right: 2px;
+  margin-top: -4px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.like-icon {
+  font-size: 2rem;
+  margin-top: -5.5px;
+}
+
+.bookmark {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.action-star-icon {
+  font-size: 1.8rem;
+  margin-top: -5.5px;
+}
+
+.time-icon {
+  font-size: 1.6rem;
+}
+
+.action-item.hearted {
+  animation: heartPop 0.4s ease;
+  color: #ff442b;
+}
+
+.action-item.liked {
+  animation: heartPop 0.4s ease;
+  color: #1284fd;
+}
+
+.action-item.bookmarked .bookmark-icon {
+  animation: bookmarkPop 0.4s ease;
+  color: #e1f62b;
+}
+
+.report-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999 !important;
+}
+
+.report-modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.report-modal-content p {
+  margin: 0 0 16px 0;
+  color: #666;
+  margin-left: 12px;
+}
+
+.report-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #000000 !important;
+  border-radius: 0 !important;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 16px;
+}
+
+.report-textarea:focus {
+  border: 1px solid #000000 !important;
+  outline: none;
+}
+
+.report-textarea:active {
+  border: 1px solid #000000 !important;
+}
+
+.report-textarea:hover,
+.report-textarea:visited {
+  border: 1px solid #000000 !important;
+}
+
+.report-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.report-btn-cancel {
+  padding: 5px 13px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 1px 1px 0px #000000 !important;
+  background: white;
+  cursor: pointer;
+}
+
+.report-btn-submit {
+  padding: 5px 13px;
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 1px 1px 0px #000000 !important;
+  cursor: pointer;
+  background: #dc3545;
+  color: white;
+}
+
+.report-btn-cancel:hover {
+  transform: translateY(-5px);
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+.report-btn-submit:hover {
+  transform: translateY(-5px);
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bookmarkPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+} 

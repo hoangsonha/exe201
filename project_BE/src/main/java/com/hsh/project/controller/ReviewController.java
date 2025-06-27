@@ -40,23 +40,37 @@ public class ReviewController {
                 .body(new ObjectResponse("Fail", "Get user by ID failed", null));
     }
 
-    // get all review when user not login in homepage by the most interact of hashtag and have the most using hashtag
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
-    @GetMapping("/top-trending")
-    public ResponseEntity<ObjectResponse> getAllReviewGlobal() {
-        List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews(5);
+    @GetMapping("/search")
+    public ResponseEntity<ObjectResponse> searchReview(@RequestParam(name = "search", required = false) String search,
+                                                       @RequestParam(name = "hashtags", required = false) List<String> hashtags) {
+        List<ReviewResponseDTO> user = reviewService.searchReview(search, hashtags);
         return !user.isEmpty()
                 ? ResponseEntity.status(HttpStatus.OK)
-                .body(new ObjectResponse("Success", "Get user by ID successfully", user))
+                .body(new ObjectResponse("Success", "Search review successfully", user))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ObjectResponse("Fail", "Get user by ID failed", null));
+                .body(new ObjectResponse("Fail", "Search review failed", null));
     }
 
+    // get all review when user not login in homepage by the most interact of hashtag and have the most using hashtag
+    @GetMapping("/top-trending")
+    public ResponseEntity<ObjectResponse> getAllReviewGlobal() {
+        List<ReviewResponseDTO> user = reviewService.getTopTrendingReviews();
+        return !user.isEmpty()
+                ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Get top trending successfully", user))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ObjectResponse("Fail", "Get top trending failed", null));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReview(@RequestPart("review") CreateReviewRequest request,
                                           @RequestPart("mediaFiles") List<MultipartFile> mediaFiles) {
-            reviewService.createReview(request, mediaFiles);
-        return ResponseEntity.ok("Review created successfully");
+            ReviewResponseDTO reviewResponseDTO = reviewService.createReview(request, mediaFiles);
+        return reviewResponseDTO != null ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Create review successfully", reviewResponseDTO)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ObjectResponse("Failed", "Create review failed", null));
     }
 
     // return reviewID when block successfully

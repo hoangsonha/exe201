@@ -64,6 +64,14 @@ public class CommentServiceImpl implements CommentService {
 
             CommentResponseDTO response = mapToResponseDTO(savedComment);
             log.debug("Response DTO created with ID: {}", response.getCommentID());
+
+            if (notificationService == null) {
+                log.error("NotificationService is null, notification will not be triggered");
+            } else {
+                sendCommentNotification(reviewId, commentId, user.getUserName(), response, user);
+                log.debug("Notification process initiated for comment ID: {}", savedComment.getCommentID());
+            }
+            
             return response;
 
         } catch (Exception e) {

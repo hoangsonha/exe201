@@ -4,6 +4,8 @@ import com.hsh.project.dto.request.BlockReviewRequest;
 import com.hsh.project.dto.request.CreateReviewRequest;
 import com.hsh.project.dto.response.BlockReviewResponseDTO;
 import com.hsh.project.dto.response.ReviewResponseDTO;
+import com.hsh.project.dto.response.UserSimpleDTO;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,5 +28,7 @@ public interface ReviewService {
     List<ReviewResponseDTO> getReviewSavedByUserId(Long userId);
 
     List<ReviewResponseDTO> getMyReview(Long userId);
+
+    UserSimpleDTO getReviewCreatorById(long id);
 
 }

@@ -7,6 +7,7 @@ import com.hsh.project.pojo.Comment;
 import com.hsh.project.pojo.Like;
 import com.hsh.project.pojo.Review;
 import com.hsh.project.pojo.User;
+import com.hsh.project.pojo.enums.EnumNotificationType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.exception.CommentNotFoundException;
 import com.hsh.project.exception.ReviewNotFoundException;
@@ -18,6 +19,7 @@ import com.hsh.project.repository.LikeRepository;
 import com.hsh.project.repository.ReviewRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.service.spec.CommentService;
+import com.hsh.project.service.spec.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
     private LikeMapper likeMapper;
 
     @Override
@@ -66,6 +69,66 @@ public class CommentServiceImpl implements CommentService {
         } catch (Exception e) {
             log.error("Error in createComment: {}", e.getMessage(), e);
             throw e;
+        }
+    }
+
+    @Override
+    public String getReviewOwnerUsername(Long reviewId) {
+        log.info("Fetching review owner username for reviewId: {}", reviewId);
+        try {
+            if (reviewId == null) {
+                throw new IllegalArgumentException("Review ID cannot be null");
+            }
+            Review review = reviewRepository.findByReviewID(reviewId)
+                    .orElseThrow(() -> new ReviewNotFoundException("Review not found with ID: " + reviewId));
+            User user = review.getUser();
+            if (user == null) {
+                throw new UserNotFoundException("User not found for review: " + reviewId);
+            }
+            return user.getUserName();
+        } catch (Exception e) {
+            log.error("Error fetching review owner username: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void sendCommentNotification(Long reviewId, Long commentId, String commenterUsername, CommentResponseDTO newComment, User commenter) {
+        try {
+            User recipient = null;
+            String notificationMessage;
+            EnumNotificationType notificationType = EnumNotificationType.NEW_COMMENT;
+            Review review = null;
+            Comment comment = null;
+
+            if (commentId != null) {
+                Comment parentComment = commentRepository.findByCommentID(commentId)
+                        .orElseThrow(() -> new CommentNotFoundException("Parent comment not found with ID: " + commentId));
+                if (parentComment.getUser() != null) {
+                    recipient = parentComment.getUser();
+                    notificationMessage = String.format("%s replied to your comment: '%s'", 
+                        commenterUsername, newComment.getContent().substring(0, Math.min(50, newComment.getContent().length())));
+                    comment = parentComment;
+                    review = parentComment.getReview();
+                } else {
+                    return;
+                }
+            } else if (reviewId != null) {
+                review = reviewRepository.findByReviewID(reviewId)
+                        .orElseThrow(() -> new ReviewNotFoundException("Review not found with ID: " + reviewId));
+                recipient = review.getUser();
+                notificationMessage = String.format("%s commented on your review: '%s'", 
+                    commenterUsername, newComment.getContent().substring(0, Math.min(50, newComment.getContent().length())));
+            } else {
+                return;
+            }
+
+            if (recipient != null && !recipient.getUserName().equals(commenterUsername)) {
+                notificationService.sendNotification(recipient, notificationMessage, notificationType, review, comment);
+                log.info("Notification sent to user ID {}: {}", recipient.getUserId(), notificationMessage);
+            }
+        } catch (Exception e) {
+            log.error("Error sending notification: {}", e.getMessage());
         }
     }
 

@@ -130,43 +130,55 @@ public class ReviewServiceImpl implements ReviewService {
 
         // Lưu media
 
-        long videoCount = mediaFiles.stream()
-                .filter(file -> {
-                    String contentType = file.getContentType();
-                    return contentType != null && contentType.startsWith("video");
-                })
-                .count();
+        if (mediaFiles != null && !mediaFiles.isEmpty()) {
+            long videoCount = mediaFiles.stream()
+                    .filter(file -> {
+                        String contentType = file.getContentType();
+                        return contentType != null && contentType.startsWith("video");
+                    })
+                    .count();
 
-        if (videoCount > 1) {
-            throw new BadRequestException("Chỉ được phép upload tối đa 1 video.");
-        }
-
-        List<ReviewMedia> reviewMediaList = new ArrayList<>();
-
-        int order = 1;
-        for (MultipartFile file : mediaFiles) {
-//            String fileName = storeFile(file); // bạn tự xử lý phần lưu file
-            EnumReviewUploadType type = detectType(file); // ví dụ: IMAGE/VIDEO
-
-            String uploadedUrl = null;
-            if (type == EnumReviewUploadType.IMAGE) {
-                uploadedUrl = uploadImages(file);  // <-- TRẢ VỀ URL
-            } else if (type == EnumReviewUploadType.VIDEO) {
-                uploadedUrl = uploadSingleVideo(file);  // <-- TRẢ VỀ URL
+            if (videoCount > 1) {
+                throw new BadRequestException("Chỉ được phép upload tối đa 1 video.");
             }
 
-            ReviewMedia media = new ReviewMedia();
-            media.setReview(review);
-            media.setUrlImageGIFVideo(uploadedUrl);
-            media.setTypeUploadReview(type);
-            media.setOrderDisplay(order++);
+            List<ReviewMedia> reviewMediaList = new ArrayList<>();
 
-            reviewMediaList.add(media);
+            String typeUpload = "";
+
+            int order = 1;
+            for (MultipartFile file : mediaFiles) {
+//            String fileName = storeFile(file); // bạn tự xử lý phần lưu file
+                EnumReviewUploadType type = detectType(file); // ví dụ: IMAGE/VIDEO
+
+                String uploadedUrl = null;
+                if (type == EnumReviewUploadType.IMAGE) {
+                    typeUpload = "image";
+                    uploadedUrl = uploadImages(file);  // <-- TRẢ VỀ URL
+                } else if (type == EnumReviewUploadType.VIDEO) {
+                    typeUpload = "video";
+                    uploadedUrl = uploadSingleVideo(file);
+                }
+
+                ReviewMedia media = new ReviewMedia();
+                media.setReview(review);
+                media.setUrlImageGIFVideo(uploadedUrl);
+                media.setTypeUploadReview(type);
+                media.setOrderDisplay(order++);
+
+                reviewMediaList.add(media);
+            }
+
+            review.setReviewMedias(reviewMediaList);
+
+            if (typeUpload.equals("video")) {
+                review.setStatus(EnumReviewStatus.PENDING);
+                return this.mapReviewToDTOWithoutUser(reviewRepository.save(review));
+            }
         }
 
-        review.setReviewMedias(reviewMediaList);
-
         review = checkReviewAIService.checkReview(review);
+
         if (review.getPerspective() == "NEGATIVE" || review.getObjectiveStar() <= 2 ||  review.getObjectiveStar() > 5 || review.getRelevantStar() <= 2 || review.getRelevantStar() > 5) {
             review.setStatus(EnumReviewStatus.REMOVED);
             review.setDeleted(true);
@@ -577,6 +589,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewResponseDTO> getMyReview(Long userId) {
         return reviewRepository.findByUserUserId(userId).stream()
+                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .map(review -> mapReviewToDTOWithUser(review, userId, false))
                 .collect(Collectors.toList());
     }

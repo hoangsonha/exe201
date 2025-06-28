@@ -108,3 +108,38 @@ request.interceptors.request.use(async function (config) {
 // }, error => {
 //     return Promise.reject(error);
 // });
+
+request.interceptors.response.use(
+    response => {
+        return response;
+    },
+    async error => {
+        const originalRequest = error.config;
+
+        if (error.response && error.response.status === 401) {
+            // Token có thể đã hết hạn mà chưa kịp refresh
+            try {
+                const newToken = await refreshAccessToken();
+
+                if (newToken && !originalRequest._retry) {
+                    originalRequest._retry = true; // tránh lặp vô hạn
+
+                    // Gắn lại token mới
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+                    return request(originalRequest); // gửi lại request
+                } else {
+                    // Nếu không lấy được token mới → redirect
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
+            } catch (e) {
+                console.error('Token refresh failed:', e);
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);

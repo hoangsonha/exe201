@@ -65,7 +65,7 @@ public class ReviewController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReview(@RequestPart("review") CreateReviewRequest request,
-                                          @RequestPart("mediaFiles") List<MultipartFile> mediaFiles) {
+                                          @RequestPart(value = "mediaFiles", required = false) List<MultipartFile> mediaFiles) {
             ReviewResponseDTO reviewResponseDTO = reviewService.createReview(request, mediaFiles);
         return reviewResponseDTO != null ? ResponseEntity.status(HttpStatus.OK)
                 .body(new ObjectResponse("Success", "Create review successfully", reviewResponseDTO)) :

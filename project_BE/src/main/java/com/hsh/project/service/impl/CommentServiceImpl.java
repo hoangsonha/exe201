@@ -351,4 +351,27 @@ public class CommentServiceImpl implements CommentService {
             throw e;
         }
     }
+
+    @Override
+    public CommentResponseDTO getParentCommentById(Long commentId) {
+        log.info("Fetching parent comment for commentId: {}", commentId);
+        try {
+            if (commentId == null) {
+                throw new IllegalArgumentException("Comment ID cannot be null");
+            }
+            Comment comment = commentRepository.findByCommentID(commentId)
+                    .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + commentId));
+            
+            Comment parentComment = comment.getParentComment();
+            if (parentComment == null) {
+                log.warn("No parent comment found for commentId: {}", commentId);
+                return null;
+            }
+            
+            return mapToResponseDTO(parentComment);
+        } catch (Exception e) {
+            log.error("Error fetching parent comment by commentId: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 }

@@ -112,7 +112,7 @@ public class CommentController {
         }
     }
 
-     @PutMapping("/update/{commentId}")
+      @PutMapping("/update/{commentId}")
         public ResponseEntity<CommentResponseDTO> updateComment(
                 @PathVariable Long commentId,
                 @RequestBody CommentRequestDTO requestBody,
@@ -163,7 +163,9 @@ public class CommentController {
         } catch (Exception e) {
             log.error("Error deleting comment: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(createErrorResponse("Internal server error")); // Updated to match signature
-
+        }
+    }
+    
     @GetMapping("/parent")
     public ResponseEntity<CommentResponseDTO> getParentCommentById(
             @RequestParam Long commentId) {

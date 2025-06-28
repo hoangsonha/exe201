@@ -12,6 +12,7 @@ public interface CommentService {
   List<CommentResponseDTO> getCommentsByUserId(Long userId);
   CommentResponseDTO updateComment(Long commentId, String content, String userEmail);
   CommentResponseDTO deleteComment(Long commentId, String userEmail);
+  CommentResponseDTO getParentCommentById(Long commentId);
   String getReviewOwnerUsername(Long reviewId);
   void sendCommentNotification(Long reviewId, Long commentId, String commenterUsername, CommentResponseDTO newComment, User commenter);
 }

@@ -99,8 +99,8 @@
   display: flex;
   align-items: center;
   margin-right: 20px;
-  color: #777;
   cursor: pointer;
+  color: #777;
   transition: all 0.2s ease;
   gap: 5px;
 }
@@ -262,3 +262,249 @@
     transform: scale(1);
   }
 } 
+
+.star-rating-modal .modal-dialog {
+  max-width: 280px;
+  margin: 1.75rem auto;
+  margin-right: 4rem;
+  margin-top: 12rem;
+}
+
+.star-rating-modal .modal-content {
+  border-radius: 0 !important;
+  border: 1px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  overflow: hidden;
+}
+
+.star-rating-modal .modal-header {
+  background: linear-gradient(135deg, #5641b8 0%, #764ba2 100%);
+  border: none;
+  padding: 20px 24px 16px;
+  position: relative;
+}
+
+.star-rating-modal .modal-header .btn-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+  filter: none;
+}
+
+.star-rating-modal .modal-header .btn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.star-rating-modal .modal-body {
+  padding: 0;
+  background: #ffffff;
+}
+
+.star-rating-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.star-rating-header {
+  margin-bottom: 24px;
+}
+
+.star-rating-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.star-rating-beta {
+  background: #667eea;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.star-rating-main {
+  margin-bottom: 24px;
+}
+
+.star-rating-percentage {
+  font-size: 48px;
+  font-weight: 700;
+  color: #5641b8;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.star-rating-percentage .star-icon {
+  font-size: 42px;
+  color: #5641b8;
+}
+
+.star-rating-subtitle {
+  font-size: 14px;
+  color: #718096;
+  margin-bottom: 16px;
+}
+
+.star-rating-section {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.star-rating-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.star-rating-section-content {
+  font-size: 15px;
+  color: #4a5568;
+  margin-bottom: 4px;
+}
+
+.star-rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 2rem;
+}
+
+.star-rating-stars .star {
+  font-size: 20px;
+  color: #5641b8;
+}
+
+.star-rating-stars .star.empty {
+  color: #e2e8f0;
+}
+
+.star-rating-interactive {
+  background: transparent;
+  border-radius: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+  .star-rating-modal .modal-dialog {
+    max-width: 340px;
+    margin: 1rem auto;
+  }
+  
+  .star-rating-content {
+    padding: 20px;
+  }
+  
+  .star-rating-percentage {
+    font-size: 40px;
+  }
+  
+  .star-rating-percentage .star-icon {
+    font-size: 36px;
+  }
+  
+  .star-rating-section-title {
+    font-size: 15px;
+  }
+  
+  .star-rating-stars .star {
+    font-size: 18px;
+  }
+}
+
+.star-rating-modal .modal-content {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.star-rating-interactive .star-rating-component {
+  margin-top: 8px;
+}
+
+.star-rating-interactive .star-rating-component .star {
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.star-rating-interactive .star-rating-component .star:hover {
+  transform: scale(1.1);
+}
+
+.star-rating-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 16px 0;
+}
+
+.star-rating-info-icon {
+  width: 16px;
+  height: 16px;
+  background: #5641b8;
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.user-rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  justify-content: center;
+}
+
+.user-rating-stars .star.interactive-star {
+  font-size: 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #e2e8f0;
+}
+
+.user-rating-stars .star.interactive-star.filled {
+  color: #5641b8;
+}
+
+.user-rating-stars .star.interactive-star:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+}
+
+.user-rating-text {
+  font-size: 14px;
+  color: #4a5568;
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 500;
+}

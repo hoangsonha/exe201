@@ -20,8 +20,8 @@ const Sidebar = () => {
   ]
 
   const privateMenuItems = [
-    { id: 'notification', icon: <BiBell />, label: 'thông báo', path: '/notifications' },
-    { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ', path: '/bookmarks' },
+    // { id: 'notification', icon: <BiBell />, label: 'thông báo', path: '/notifications' },
+    // { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ', path: '/bookmarks' },
   ]
 
   const menuItems = user 
@@ -31,10 +31,10 @@ const Sidebar = () => {
     const sortedMenuItems = [
     ...menuItems.filter(item => item.id === 'home'),
     ...menuItems.filter(item => item.id !== 'home')
-  ];
+  ]
 
   const handleItemClick = (path) => {
-    navigate(path);
+    navigate(path)
   }
 
   return (

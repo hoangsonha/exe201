@@ -7,9 +7,11 @@ import com.hsh.project.pojo.Comment;
 import com.hsh.project.pojo.Like;
 import com.hsh.project.pojo.Review;
 import com.hsh.project.pojo.User;
+import com.hsh.project.pojo.enums.EnumNotificationType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.exception.CommentNotFoundException;
 import com.hsh.project.exception.ReviewNotFoundException;
+import com.hsh.project.exception.UnauthorizedException;
 import com.hsh.project.exception.UserNotFoundException;
 import com.hsh.project.mapper.LikeMapper;
 import com.hsh.project.repository.CommentRepository;
@@ -17,6 +19,7 @@ import com.hsh.project.repository.LikeRepository;
 import com.hsh.project.repository.ReviewRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.service.spec.CommentService;
+import com.hsh.project.service.spec.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
     private LikeMapper likeMapper;
 
     @Override
@@ -60,11 +64,79 @@ public class CommentServiceImpl implements CommentService {
 
             CommentResponseDTO response = mapToResponseDTO(savedComment);
             log.debug("Response DTO created with ID: {}", response.getCommentID());
+
+            if (notificationService == null) {
+                log.error("NotificationService is null, notification will not be triggered");
+            } else {
+                sendCommentNotification(reviewId, commentId, user.getUserName(), response, user);
+                log.debug("Notification process initiated for comment ID: {}", savedComment.getCommentID());
+            }
+            
             return response;
 
         } catch (Exception e) {
             log.error("Error in createComment: {}", e.getMessage(), e);
             throw e;
+        }
+    }
+
+    @Override
+    public String getReviewOwnerUsername(Long reviewId) {
+        log.info("Fetching review owner username for reviewId: {}", reviewId);
+        try {
+            if (reviewId == null) {
+                throw new IllegalArgumentException("Review ID cannot be null");
+            }
+            Review review = reviewRepository.findByReviewID(reviewId)
+                    .orElseThrow(() -> new ReviewNotFoundException("Review not found with ID: " + reviewId));
+            User user = review.getUser();
+            if (user == null) {
+                throw new UserNotFoundException("User not found for review: " + reviewId);
+            }
+            return user.getUserName();
+        } catch (Exception e) {
+            log.error("Error fetching review owner username: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void sendCommentNotification(Long reviewId, Long commentId, String commenterUsername, CommentResponseDTO newComment, User commenter) {
+        try {
+            User recipient = null;
+            String notificationMessage;
+            EnumNotificationType notificationType = EnumNotificationType.NEW_COMMENT;
+            Review review = null;
+            Comment comment = null;
+
+            if (commentId != null) {
+                Comment parentComment = commentRepository.findByCommentID(commentId)
+                        .orElseThrow(() -> new CommentNotFoundException("Parent comment not found with ID: " + commentId));
+                if (parentComment.getUser() != null) {
+                    recipient = parentComment.getUser();
+                    notificationMessage = String.format("%s replied to your comment: '%s'", 
+                        commenterUsername, newComment.getContent().substring(0, Math.min(50, newComment.getContent().length())));
+                    comment = parentComment;
+                    review = parentComment.getReview();
+                } else {
+                    return;
+                }
+            } else if (reviewId != null) {
+                review = reviewRepository.findByReviewID(reviewId)
+                        .orElseThrow(() -> new ReviewNotFoundException("Review not found with ID: " + reviewId));
+                recipient = review.getUser();
+                notificationMessage = String.format("%s commented on your review: '%s'", 
+                    commenterUsername, newComment.getContent().substring(0, Math.min(50, newComment.getContent().length())));
+            } else {
+                return;
+            }
+
+            if (recipient != null && !recipient.getUserName().equals(commenterUsername)) {
+                notificationService.sendNotification(recipient, notificationMessage, notificationType, review, comment);
+                log.info("Notification sent to user ID {}: {}", recipient.getUserId(), notificationMessage);
+            }
+        } catch (Exception e) {
+            log.error("Error sending notification: {}", e.getMessage());
         }
     }
 
@@ -162,8 +234,13 @@ public class CommentServiceImpl implements CommentService {
                 log.warn("No comments found for reviewId: {}", reviewId);
                 return new ArrayList<>();
             }
-            log.debug("Found {} comments", comments.size());
-            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+            log.debug("Found {} comments before filtering", comments.size());
+            // Filter out deleted comments
+            List<Comment> activeComments = comments.stream()
+                    .filter(comment -> !comment.isDeleted())
+                    .collect(Collectors.toList());
+            log.debug("Found {} active comments after filtering", activeComments.size());
+            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching comments by reviewId: {}", e.getMessage(), e);
             throw e;
@@ -182,8 +259,13 @@ public class CommentServiceImpl implements CommentService {
                 log.warn("No comments found for parentCommentId: {}", parentCommentId);
                 return new ArrayList<>();
             }
-            log.debug("Found {} comments", comments.size());
-            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+            log.debug("Found {} comments before filtering", comments.size());
+            // Filter out deleted comments
+            List<Comment> activeComments = comments.stream()
+                    .filter(comment -> !comment.isDeleted())
+                    .collect(Collectors.toList());
+            log.debug("Found {} active comments after filtering", activeComments.size());
+            return activeComments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching comments by parentCommentId: {}", e.getMessage(), e);
             throw e;
@@ -206,6 +288,66 @@ public class CommentServiceImpl implements CommentService {
             return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching comments by userId: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+   @Override
+    public CommentResponseDTO updateComment(Long commentId, String content, String userEmail) {
+        log.info("Updating comment with commentId: {}, content: {}, userEmail: {}", commentId, content, userEmail);
+        try {
+            if (commentId == null) {
+                throw new IllegalArgumentException("Comment ID cannot be null");
+            }
+            if (content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("Comment content cannot be empty");
+            }
+            if (content.trim().length() > 1000) {
+                throw new IllegalArgumentException("Comment content exceeds maximum length of 1000 characters");
+            }
+
+            Comment comment = commentRepository.findByCommentID(commentId)
+                    .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + commentId));
+            User user = findUserByEmail(userEmail);
+
+            if (!comment.getUser().getUserId().equals(user.getUserId())) {
+                throw new UnauthorizedException("You are not authorized to update this comment");
+            }
+
+            comment.setContent(content.trim());
+            Comment updatedComment = commentRepository.save(comment);
+            log.debug("Comment updated with ID: {}", updatedComment.getCommentID());
+
+            return mapToResponseDTO(updatedComment);
+        } catch (Exception e) {
+            log.error("Error updating comment: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public CommentResponseDTO deleteComment(Long commentId, String userEmail) {
+        log.info("Deleting comment with commentId: {}, userEmail: {}", commentId, userEmail);
+        try {
+            if (commentId == null) {
+                throw new IllegalArgumentException("Comment ID cannot be null");
+            }
+
+            Comment comment = commentRepository.findByCommentID(commentId)
+                    .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + commentId));
+            User user = findUserByEmail(userEmail);
+
+            if (!comment.getUser().getUserId().equals(user.getUserId())) {
+                throw new UnauthorizedException("You are not authorized to delete this comment");
+            }
+
+            comment.setDeleted(true); // Assuming BaseEntity has isDeleted
+            Comment deletedComment = commentRepository.save(comment);
+            log.debug("Comment soft-deleted with ID: {}", deletedComment.getCommentID());
+
+            return mapToResponseDTO(deletedComment);
+        } catch (Exception e) {
+            log.error("Error deleting comment: {}", e.getMessage(), e);
             throw e;
         }
     }

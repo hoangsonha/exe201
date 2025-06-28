@@ -1,21 +1,28 @@
 import { useContext, useState, useEffect } from 'react'
-import { FaHeart, FaRegHeart, FaRegCommentDots, FaRegClock, FaBookmark, FaRegBookmark } from 'react-icons/fa'
+import { FaHeart, FaRegHeart, FaRegCommentDots, FaBookmark, FaRegBookmark } from 'react-icons/fa'
 import { BiSolidLike, BiLike } from 'react-icons/bi'
+import { IoStar, IoStarOutline, IoStarHalf } from 'react-icons/io5'
 import { LuStar } from 'react-icons/lu'
 import { saveReview, unSaveReview } from '../../serviceAPI/reviewService'
+import { createRating } from '../../serviceAPI/ratingService'
 import { useToast } from '../../component/Toast'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
 import { toggleLike, toggleHeart } from '../../serviceAPI/likeService'
 import { getUserSavedPosts } from '../../serviceAPI/userService'
 import { toast } from 'react-toastify'
+import { Modal } from 'react-bootstrap'
+import StarRating from './StarRating'
 
 const ReviewActions = ({ post, onToggleComments }) => {
   const [review, setReview] = useState(post)
   const { user } = useContext(UserContext)
   const [liked, setLiked] = useState(false)
   const [hearted, setHearted] = useState(false)
+  const [showRatingModal, setShowRatingModal] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
+  const [userRating, setUserRating] = useState(0)
+  const [hoveredRating, setHoveredRating] = useState(0)
   const likeCount = review.likes?.filter((like) => like.type === "LIKE").length || 0
   const heartCount = review.likes?.filter((like) => like.type === "HEART").length || 0
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
@@ -37,6 +44,12 @@ const ReviewActions = ({ post, onToggleComments }) => {
       setLiked(isLiked)
       setHearted(isHearted)
 
+      // Set user's existing rating if available
+      const existingRating = post.ratings?.find(rating => rating.userId === user.id)
+      if (existingRating) {
+        setUserRating(existingRating.stars)
+      }
+
       try {
         const saved = await getUserSavedPosts(user.id)
         const savedPosts = saved.data || []
@@ -48,7 +61,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
     }
 
     initPostInteractionStates()
-  }, [user, post.reviewID, post.likes])
+  }, [user, post.reviewID, post.likes, post.ratings])
 
   const handleLikeClick = async () => {
     if (!user) {
@@ -121,6 +134,52 @@ const ReviewActions = ({ post, onToggleComments }) => {
 
   }
 
+  const handleOpenRatingModal = () => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
+    setShowRatingModal(true)
+  }
+
+  const handleCloseRatingModal = () => {
+    setShowRatingModal(false)
+    setHoveredRating(0)
+  }
+
+  const handleUserRatingClick = async (rating) => {
+    if (!user) {
+      setShowLoginPrompt(true)
+      return
+    }
+
+    try {
+      const response = await createRating(user.id, review.reviewID, rating)
+      
+      if (response.status === "Success" || response.data) {
+        setUserRating(rating)
+        addToast("Đánh giá của bạn đã được lưu thành công", true, false)
+        
+        // Update the post ratings in the review state
+        const updatedRatings = review.ratings ? [...review.ratings] : []
+        const existingRatingIndex = updatedRatings.findIndex(r => r.userId === user.id)
+        
+        if (existingRatingIndex >= 0) {
+          updatedRatings[existingRatingIndex] = { ...updatedRatings[existingRatingIndex], stars: rating }
+        } else {
+          updatedRatings.push({ userId: user.id, stars: rating })
+        }
+        
+        setReview(prev => ({ ...prev, ratings: updatedRatings }))
+      } else {
+        addToast("Đã có lỗi khi lưu đánh giá", false, true)
+      }
+    } catch (error) {
+      console.error("Create rating failed:", error)
+      addToast("Đã có lỗi khi lưu đánh giá", false, true)
+    }
+  }
+
   const saveReviewAPI = async (formData) => {
     try {
       const resultPurposes = await saveReview(formData)
@@ -156,7 +215,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
 
   return (
     <div className="review-actions">
-      <div className={`action-item ${likeCount > 0 ? 'liked' : ''}`} 
+      <div className={`action-item ${liked ? 'liked' : ''}`} 
         onClick={(e) => {
           e.stopPropagation()
           handleLikeClick()
@@ -187,13 +246,16 @@ const ReviewActions = ({ post, onToggleComments }) => {
         <span>{review.comments ? review.comments.length : 0}</span>
       </div>
 
-      <div className="action-item">
-        <span className="action-star-icon"><LuStar /></span> --%
+      <div className="action-item"
+        onClick={(e) => {
+          e.stopPropagation()
+          handleOpenRatingModal()
+        }}
+      >
+        <span className="action-star-icon">
+          <LuStar />
+        </span>%
       </div>
-
-      {/* <div className="action-item">
-        <span className="time-icon"><FaRegClock /></span> 1 day ago
-      </div> */}
 
       <div className={`action-item bookmark ${bookmarked ? 'bookmarked' : ''}`}
         onClick={(e) => {
@@ -205,6 +267,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
           {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
         </span>
       </div>
+
       {showLoginPrompt && (
         <div className="home-login-popup-overlay" onClick={handleCloseLoginPrompt}>
           <div className="home-login-popup-modal" onClick={(e) => e.stopPropagation()}>
@@ -229,6 +292,92 @@ const ReviewActions = ({ post, onToggleComments }) => {
           </div>
         </div>
       )}
+
+      <Modal
+        show={showRatingModal}
+        onHide={handleCloseRatingModal}
+        className='star-rating-modal'
+      >
+        <Modal.Body>
+          <div className="star-rating-content">
+            <div className="star-rating-header">
+              <h3 className="star-rating-title">
+                điểm tin cậy
+                <span className="star-rating-beta">(beta)</span>
+              </h3>
+            </div>
+            
+            <div className="star-rating-section">
+              <div className="star-rating-section-title">góc nhìn của bài viết:</div>
+              <div className="star-rating-section-content">{post.perspective}</div>
+            </div>
+
+            <div className="star-rating-section">
+              <div className="star-rating-section-title">độ liên quan:</div>
+              <div className="star-rating-stars">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const rating = post.relevantStar || 0
+                  return (
+                    <span key={star} className="star">
+                      {rating >= star ? (
+                        <IoStar />
+                      ) : rating >= star - 0.5 ? (
+                        <IoStarHalf />
+                      ) : (
+                        <IoStarOutline />
+                      )}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="star-rating-section">
+              <div className="star-rating-section-title">tính khách quan:</div>
+              <div className="star-rating-stars">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const rating = post.objectiveStar || 0
+                  return (
+                    <span key={star} className="star">
+                      {rating >= star ? (
+                        <IoStar />
+                      ) : rating >= star - 0.5 ? (
+                        <IoStarHalf />
+                      ) : (
+                        <IoStarOutline />
+                      )}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="star-rating-divider"></div>
+
+            <div className="star-rating-section">
+              <div className="star-rating-section-title">Đánh giá chung:</div>
+              <StarRating rating={post.ratings?.find(r => r.userId !== user?.id)?.stars || 0} />
+            </div>
+
+            <div className="star-rating-section">
+              <div className="star-rating-section-title">Đánh giá của bạn:</div>
+              <div className="user-rating-stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span 
+                    key={star} 
+                    className={`star interactive-star ${star <= (hoveredRating || userRating) ? 'filled' : 'empty'}`}
+                    onClick={() => handleUserRatingClick(star)}
+                    onMouseEnter={() => setHoveredRating(star)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                  >
+                    <IoStar />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }

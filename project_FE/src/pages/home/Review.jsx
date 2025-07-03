@@ -201,13 +201,15 @@ const Review = ({ post, showCommentSection = false }) => {
         )}
 
         <div className="review-header">
-          {post.reviewHashtags.length > 0 ? (
-            post.reviewHashtags.map(tag => (
-              <div key={tag.id} className="review-tag">{tag.name}</div>
-            ))
-          ) : (
-            <div className="review-tag">toireview</div>
-          )}
+          <div className="review-tags-container">
+            {post.reviewHashtags.length > 0 ? (
+              post.reviewHashtags.map(tag => (
+                <div key={tag.id} className="review-tag">{tag.name}</div>
+              ))
+            ) : (
+              <div className="review-tag">toireview</div>
+            )}
+          </div>
           <div className="review-options-container" ref={optionsRef}>
             <div className="review-options" onClick={handleOptionsClick}>
               <FaEllipsisH />

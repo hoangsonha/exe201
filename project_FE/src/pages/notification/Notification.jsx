@@ -7,13 +7,26 @@ import Advertisement from '../home/Advertisement.jsx'
 import { Button } from 'react-bootstrap'
 import { RiArrowGoBackFill } from 'react-icons/ri'
 import { use } from 'react'
+import { getMyNotifications } from '../../serviceAPI/notificationService.jsx'
 
 const Notification = () => {
+  const navigate = useNavigate()
+  const [notifications, setNotifications] = useState([])
+  
   useEffect(() => {
     window.scrollTo(0, 0)
+    fetchNotifications()
   }, [])
 
-  const navigate = useNavigate()
+  const fetchNotifications = async () => {
+    try {
+      const response = await getMyNotifications()
+      console.log('Notifications:', response)
+      setNotifications(response)
+    } catch (error) {
+      console.error('Error fetching notifications:', error)
+    }
+  }
 
   return (
     <div className="home-page">

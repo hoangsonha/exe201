@@ -61,16 +61,19 @@
 }
 
 .comment-item__header {
-  display: flex;
-  align-items: center;
+  display: inline-flex;
+  align-items: baseline;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .comment-item__username {
   font-size: 1.5rem;
   font-weight: 700;
   color: #333;
+  flex-shrink: 0;
 }
 
 .comment-item__content {
@@ -78,14 +81,19 @@
   line-height: 1.5;
   color: #646464;
   margin: 0;
-  margin-top: 1px;
-  margin-left: 2px;
+  display: inline;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  flex: 1;
+  min-width: 0;
 }
 
 .comment-item__actions {
   display: flex;
   gap: 6px;
   margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .comment-item__action-btn {

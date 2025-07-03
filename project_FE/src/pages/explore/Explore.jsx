@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from '@/component/Layout/Header';
 import Sidebar from '@/component/Layout/Sidebar';
 import Advertisement from '@/pages/home/Advertisement';
@@ -7,25 +7,47 @@ import { getTopTradingGlobal } from "../../serviceAPI/reviewService";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./Explore.module.scss";
 import classNames from 'classnames/bind';
+import { RiArrowGoBackFill } from "react-icons/ri";
+import Typed from "typed.js";
+import { UserContext } from "../../App";
+import { use } from "react";
 
 const cx = classNames.bind(styles);
 
 const Explore = () => {
-  const [userSaves, setUserSaves] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedHashtag, setSelectedHashtag] = useState(null);
-  const [hashtags, setHashtags] = useState([]);
+  const [userSaves, setUserSaves] = useState([])
+  const el = useRef(null)
+  const [loading, setLoading] = useState(false)
+  const [selectedHashtag, setSelectedHashtag] = useState(null)
+  const [hashtags, setHashtags] = useState([])
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    fetchUserInfo();
-  }, []);
+    window.scrollTo(0, 0)
+    fetchUserInfo()
+  }, [])
+
+  useEffect(() => {
+    if (el.current) {
+      const typed = new Typed(el.current, {
+        strings: ['Khám phá các chủ đề hot nhất được cộng đồng quan tâm'],
+        typeSpeed: 50,
+        loop: true,
+        backSpeed: 30,
+        startDelay: 500,
+        showCursor: false
+      });
+
+      return () => {
+        typed.destroy();
+      };
+    }
+  }, [hashtags])
 
   const fetchUserInfo = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const savedPosts = await getTopTradingGlobal();
-      setUserSaves(savedPosts.data.data);
+      const savedPosts = await getTopTradingGlobal()
+      setUserSaves(savedPosts.data.data)
 
       const allHashtags = savedPosts.data.data.flatMap((post) => {
         return post.reviewHashtags.map((tag) => {
@@ -33,35 +55,35 @@ const Explore = () => {
             id: tag.id,
             name: tag.name,
             reviews: savedPosts.data.data.filter((p) => {
-              return p.reviewHashtags.some((ht) => ht.id === tag.id);
+              return p.reviewHashtags.some((ht) => ht.id === tag.id)
             }),
-          };
-        });
-      });
+          }
+        })
+      })
 
       const uniqueHashtags = Array.from(new Map(allHashtags.map((tag) => [tag.id, tag])))
         .map(([, tag]) => tag)
-        .sort((a, b) => b.reviews.length - a.reviews.length);
+        .sort((a, b) => b.reviews.length - a.reviews.length)
 
-      setHashtags(uniqueHashtags);
+      setHashtags(uniqueHashtags)
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      console.error("Lỗi khi lấy thông tin người dùng:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const renderPostItem = (post) => (
     <Review key={post.id} post={post} showCommentSection={false} isOwner={true} />
-  );
+  )
 
   const handleHashtagClick = (hashtag) => {
-    setSelectedHashtag(hashtag);
-  };
+    setSelectedHashtag(hashtag)
+  }
 
   const handleBackToHashtags = () => {
-    setSelectedHashtag(null);
-  };
+    setSelectedHashtag(null)
+  }
 
   const getHashtagBadgeClass = (index) => {
     const badgeClasses = [
@@ -70,9 +92,9 @@ const Explore = () => {
       'hashtag-badge-green',
       'hashtag-badge-yellow',
       'hashtag-badge-purple'
-    ];
-    return badgeClasses[index % badgeClasses.length];
-  };
+    ]
+    return badgeClasses[index % badgeClasses.length]
+  }
 
   return (
     <div className={cx('home-page')}>
@@ -90,7 +112,7 @@ const Explore = () => {
               <div className={cx('hashtag-detail-view')}>
                 <div className={cx('back-button-container')}>
                   <button className={cx('back-button1')} onClick={handleBackToHashtags}>
-                    ← Quay lại
+                    <RiArrowGoBackFill />
                   </button>
                 </div>
                 <div className={cx('selected-hashtag-header')}>
@@ -111,7 +133,9 @@ const Explore = () => {
               <div className={cx('hashtag-grid-view')}>
                 <div className={cx('hashtag-header')}>
                   <h2>🔥 Hashtag Thịnh Hành</h2>
-                  <p>Khám phá các chủ đề hot nhất được cộng đồng quan tâm</p>
+                  <div className={cx('hashtag-span')}>
+                    <span ref={el} />
+                  </div>
                 </div>
                 
                 <div className={cx('hashtag-grid')}>
@@ -136,16 +160,16 @@ const Explore = () => {
                         <span>{hashtag.reviews.length} bài viết</span>
                       </div>
                       
-                      <div className={cx('hashtag-badge-container')}>
+                      {/* <div className={cx('hashtag-badge-container')}>
                         <span className={cx('hashtag-badge', getHashtagBadgeClass(index))}>
                           #{hashtag.name}
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   ))}
                 </div>
 
-                <div className={cx('statistics-section')}>
+                {/* <div className={cx('statistics-section')}>
                   <div className={cx('stats-header')}>
                     <span className={cx('stats-icon')}>📊</span>
                     <h3>Thống kê</h3>
@@ -160,7 +184,7 @@ const Explore = () => {
                       <div className={cx('stat-label')}>Tổng bài viết</div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             ) : (
               <div className={cx('profile-no-content')}>
@@ -171,7 +195,7 @@ const Explore = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Explore;
+export default Explore

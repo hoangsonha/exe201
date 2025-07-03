@@ -18,6 +18,12 @@
   margin-left: -2px;
 }
 
+.review-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .review-options-container {
   position: relative;
   margin-top: 3rem;

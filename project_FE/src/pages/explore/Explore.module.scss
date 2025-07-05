@@ -1,4 +1,3 @@
-Custom styles for Explore component
 .explore-page {
   background-color: #f8f9fa;
 }
@@ -68,17 +67,17 @@ Custom styles for Explore component
   color: #555;
 }
 
-/* Hashtag Cards */
 .hashtag-card {
   transition: all 0.3s ease;
   animation: fadeInUp 0.4s ease-out;
   background-color: white;
   border: 1px solid #000000;
   box-shadow: 2px 2px 0px #000000;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 1.5rem;
   cursor: pointer;
-  border-left: 4px solid #007bff;
+  border-left: 5px solid #8f80d9;
+  margin-bottom: 1rem;
 }
 
 .hashtag-card:hover {
@@ -101,22 +100,23 @@ Custom styles for Explore component
 
 .hashtag-symbol {
   color: #007bff;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
 .hashtag-name {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  margin-left: -2px;
   color: #333;
 }
 
 .top-badge {
   background: #dc3545;
   color: white;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
@@ -124,13 +124,13 @@ Custom styles for Explore component
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
   color: #666;
-  font-size: 0.9rem;
+  font-size: 1.3rem;
 }
 
 .post-count-icon {
-  font-size: 1rem;
+  font-size: 1.3rem;
+  margin-top: -4px;
 }
 
 .hashtag-badge-container {
@@ -182,26 +182,30 @@ Custom styles for Explore component
   padding: 1.5rem;
   border: 1px solid #000000;
   box-shadow: 2px 2px 0px #000000;
-  border-radius: 8px;
+  border-radius: 0;
+}
+
+.hashtag-span {
+  font-size: 1.5rem;
 }
 
 .hashtag-header h2 {
   margin: 0 0 0.5rem 0;
   color: #333;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
 .hashtag-header p {
   margin: 0;
   color: #666;
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 
 .hashtag-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
   margin-bottom: 2rem;
 }
 
@@ -280,22 +284,19 @@ Custom styles for Explore component
 }
 
 .back-button1 {
-  background-color: white;
-  border: 1px solid #000000;
-  box-shadow: 2px 2px 0px #000000;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  position: fixed;
-  top: 105px;
-  left: 350px;
-  width: 90px;
-  z-index: 1000;
+  background-color: white !important;
+  color: #333 !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0;
+  box-shadow: 3px 3px 0px #000000 !important;
+  transition: transform 0.2s ease;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  font-weight: 500;
+  width: 6rem;
 }
 
-.back-button:hover {
+.back-button1:hover {
   transform: translateY(-1px);
   box-shadow: 3px 3px 0px #000000;
 }
@@ -304,22 +305,22 @@ Custom styles for Explore component
   background-color: white;
   border: 1px solid #000000;
   box-shadow: 2px 2px 0px #000000;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .selected-hashtag-header h2 {
   margin: 0 0 0.5rem 0;
   color: #333;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
 }
 
 .post-count {
   color: #666;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 
 /* Posts container */

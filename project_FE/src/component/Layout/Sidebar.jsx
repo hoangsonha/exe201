@@ -12,7 +12,7 @@ const Sidebar = () => {
 
   const publicMenuItems = [
     { id: 'home', icon: <BiHomeAlt />, label: 'trang chủ', path: '/' },
-    { id: 'help', icon: <BiQuestionMark />, label: 'trợ giúp', path: '/help' },
+    { id: 'help', icon: <BiQuestionMark />, label: 'trợ giúp', path: '/' },
     { id: 'explore', icon: <BiSearch />, label: 'khám phá', path: '/explore' },
     { id: 'ads', icon: <IoMegaphoneOutline />, label: 'quảng cáo', path: '/' },
     { id: 'privacy', icon: <BiFile />, label: 'chính sách và điều khoản sử dụng', path: '/' },
@@ -20,7 +20,7 @@ const Sidebar = () => {
   ]
 
   const privateMenuItems = [
-    // { id: 'notification', icon: <BiBell />, label: 'thông báo', path: '/notifications' },
+    { id: 'notification', icon: <BiBell />, label: 'thông báo', path: '/notifications' },
     // { id: 'bookmarks', icon: <BiBookmark />, label: 'lưu trữ', path: '/bookmarks' },
   ]
 

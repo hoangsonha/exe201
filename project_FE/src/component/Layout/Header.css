@@ -46,6 +46,7 @@
   border: none !important;
   border-radius: 0 !important;
   background-color: #fcf4ed !important;
+  max-width: 660px;
 }
 
 .search-input {
@@ -66,7 +67,7 @@
 
 .search-bar:hover,
 .search-bar:focus-within {
-  outline: 2px solid black;
+  outline: 1px solid black;
   outline-offset: 0;
 }
 

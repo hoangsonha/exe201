@@ -5,13 +5,12 @@ import { jwtDecode } from 'jwt-decode';
 const request = axios.create({
     // baseURL: `${import.meta.env.VITE_BASE_URL}`,
     baseURL: ``,
-    headers: { 'Content-Type': 'application/json' },
+    // headers: { 'Content-Type': 'application/json' },
     // withCredentials: true,
 });
 
 export const get = async (url, params = {}) => {
     const response = await request.get(url, params);
-
     return response;
 };
 
@@ -63,9 +62,9 @@ request.interceptors.request.use(async function (config) {
     const publicUrls = [
         '/api/v1/public/login',
         '/api/v1/public/refresh-token',
-        '/api/v1/public/logout',
         '/api/v1/public/register',
-        '/api/v1/public/register/verification'
+        '/api/v1/public/register/verification',
+        '/api/v1/reviews/top-trending'
     ];
 
     if (publicUrls.some(url => config.url.includes(url))) {
@@ -109,3 +108,38 @@ request.interceptors.request.use(async function (config) {
 // }, error => {
 //     return Promise.reject(error);
 // });
+
+request.interceptors.response.use(
+    response => {
+        return response;
+    },
+    async error => {
+        const originalRequest = error.config;
+
+        if (error.response && error.response.status === 401) {
+            // Token có thể đã hết hạn mà chưa kịp refresh
+            try {
+                const newToken = await refreshAccessToken();
+
+                if (newToken && !originalRequest._retry) {
+                    originalRequest._retry = true; // tránh lặp vô hạn
+
+                    // Gắn lại token mới
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+                    return request(originalRequest); // gửi lại request
+                } else {
+                    // Nếu không lấy được token mới → redirect
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
+            } catch (e) {
+                console.error('Token refresh failed:', e);
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);

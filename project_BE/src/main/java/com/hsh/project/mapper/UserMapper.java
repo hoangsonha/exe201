@@ -23,7 +23,8 @@ public interface UserMapper {
     @Mapping(source = "nonLocked", target = "nonLocked")
     @Mapping(source = "deleted", target = "deleted")
     @Mapping(source = "userId", target = "userId")
-    @Mapping(source = "userHashtags", target = "listHashTagUser", qualifiedByName = "mapUserHashtagToHashtagDTO") // ✅ thêm dòng này
+    @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "userHashtags", target = "listHashTagUser", qualifiedByName = "mapUserHashtagToHashtagDTO")
     UserDTO accountToAccountDTO(User user);
 
     @Named("mapUserHashtagToHashtagDTO")

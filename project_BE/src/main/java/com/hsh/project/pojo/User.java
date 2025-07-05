@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,7 +40,7 @@ public class User extends BaseEntity {
     @Column
     String rating;
 
-    @Column(columnDefinition = "nvarchar(255)")
+    @Column(columnDefinition = "nvarchar(1000)")
     String avatar;
 
     @Builder.Default
@@ -93,8 +94,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "user")
-    List<UserHashtag> userHashtags;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<UserHashtag> userHashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     List<Rating> ratings;

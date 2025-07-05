@@ -1,7 +1,6 @@
-import React from 'react';
-import './Advertisement.css';
-import fakeAds1 from '../../assets/ads/fakeAds1.svg';
-import fakeAds2 from '../../assets/ads/fakeAds2.svg';
+import './Advertisement.css'
+import fakeAds1 from '../../assets/ads/fakeAds1.svg'
+import fakeAds2 from '../../assets/ads/fakeAds2.svg'
 
 const Advertisement = () => {
   return (
@@ -20,7 +19,7 @@ const Advertisement = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Advertisement; 
+export default Advertisement

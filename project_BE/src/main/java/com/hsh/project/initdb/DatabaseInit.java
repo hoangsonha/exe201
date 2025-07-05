@@ -97,6 +97,7 @@ public class DatabaseInit implements CommandLineRunner {
             admin.setPoint(1000);
             admin.setEnabled(true);
             admin.setNonLocked(true);
+            admin.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User premiumUser = new User();
             premiumUser.setUserName("premium_user");
@@ -109,6 +110,7 @@ public class DatabaseInit implements CommandLineRunner {
             premiumUser.setPoint(500);
             premiumUser.setEnabled(true);
             premiumUser.setNonLocked(true);
+            premiumUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User regularUser = new User();
             regularUser.setUserName("regular_user");
@@ -121,6 +123,7 @@ public class DatabaseInit implements CommandLineRunner {
             regularUser.setPoint(100);
             regularUser.setEnabled(true);
             regularUser.setNonLocked(true);
+            regularUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             User moderator = new User();
             moderator.setUserName("moderator");
@@ -133,6 +136,7 @@ public class DatabaseInit implements CommandLineRunner {
             moderator.setPoint(300);
             moderator.setEnabled(true);
             moderator.setNonLocked(true);
+            moderator.setAvatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048");
 
             userRepository.saveAll(List.of(admin, premiumUser, regularUser, moderator));
         }
@@ -226,22 +230,66 @@ public class DatabaseInit implements CommandLineRunner {
     private void initHashtags() {
         if (hashtagRepository.count() == 0) {
             Hashtag technology = new Hashtag();
-            technology.setTag("technology");
+            technology.setTag("công nghệ");
             technology.setTotalPost(0);
 
             Hashtag food = new Hashtag();
-            food.setTag("food");
+            food.setTag("đồ ăn");
             food.setTotalPost(0);
 
             Hashtag travel = new Hashtag();
-            travel.setTag("travel");
+            travel.setTag("du lịch");
             travel.setTotalPost(0);
 
             Hashtag fashion = new Hashtag();
-            fashion.setTag("fashion");
+            fashion.setTag("thời trang");
             fashion.setTotalPost(0);
 
-            hashtagRepository.saveAll(List.of(technology, food, travel, fashion));
+            Hashtag movies = new Hashtag();
+            movies.setTag("phim ảnh");
+            movies.setTotalPost(0);
+
+            Hashtag education = new Hashtag();
+            education.setTag("giáo dục");
+            education.setTotalPost(0);
+
+            Hashtag art = new Hashtag();
+            art.setTag("hội họa");
+            art.setTotalPost(0);
+
+            Hashtag household = new Hashtag();
+            household.setTag("gia dụng");
+            household.setTotalPost(0);
+
+            Hashtag nature = new Hashtag();
+            nature.setTag("tự nhiên");
+            nature.setTotalPost(0);
+
+            Hashtag job = new Hashtag();
+            job.setTag("nghề nghiệp");
+            job.setTotalPost(0);
+
+            Hashtag music = new Hashtag();
+            music.setTag("âm nhạc");
+            music.setTotalPost(0);
+
+            Hashtag vehicle = new Hashtag();
+            vehicle.setTag("xe cộ");
+            vehicle.setTotalPost(0);
+
+            Hashtag law = new Hashtag();
+            law.setTag("pháp luật");
+            law.setTotalPost(0);
+
+            Hashtag science = new Hashtag();
+            science.setTag("khoa học");
+            science.setTotalPost(0);
+
+            Hashtag sports = new Hashtag();
+            sports.setTag("thể thao");
+            sports.setTotalPost(0);
+
+            hashtagRepository.saveAll(List.of(technology, food, travel, fashion, movies, education, art, household, nature, job, music, vehicle, law, science, sports));
         }
     }
 
@@ -284,13 +332,12 @@ public class DatabaseInit implements CommandLineRunner {
             // Tạo media tương ứng
             List<ReviewMedia> mediaList = new ArrayList<>();
 
-            mediaList.add(createMedia(techReview, "smartphone1.jpg", EnumReviewUploadType.IMAGE, 1));
-            mediaList.add(createMedia(techReview, "smartphone2.jpg", EnumReviewUploadType.IMAGE, 2));
+            mediaList.add(createMedia(techReview, "https://www.electronicsforu.com/wp-contents/uploads/2016/07/smartphone-1.jpg", EnumReviewUploadType.IMAGE, 1));
+            mediaList.add(createMedia(techReview, "https://fscl01.fonpit.de/userfiles/7687254/image/Best_Smartphones_Mai_2023.jpg", EnumReviewUploadType.IMAGE, 2));
 
-            mediaList.add(createMedia(foodReview, "restaurant.jpg", EnumReviewUploadType.IMAGE, 1));
+            mediaList.add(createMedia(foodReview, "https://img3.parisbouge.com/W3ucCm-KATQRXVQIB--Uf1Ii3wL0oHrIQ5LPrilYW9s/rs:fill:1500:1000:1/g:ce/M2Q2MTI1OWMtOGNmZS00MzQ3LTlmNDEtM2NmZWNlNWUyYzdmLmpwZw.jpg", EnumReviewUploadType.IMAGE, 1));
 
-            mediaList.add(createMedia(travelReview, "beach.mp4", EnumReviewUploadType.VIDEO, 1));
-            mediaList.add(createMedia(travelReview, "beach_thumbnail.jpg", EnumReviewUploadType.IMAGE, 2));
+            mediaList.add(createMedia(travelReview, "https://www.youtube.com/embed/Kz1_dIN-sjA?si=f8jShfAPWG8NvO1i", EnumReviewUploadType.VIDEO, 1));
 
             reviewMediaRepository.saveAll(mediaList);
         }
@@ -311,9 +358,9 @@ public class DatabaseInit implements CommandLineRunner {
             Review foodReview = reviewRepository.findAll().get(1);
             Review travelReview = reviewRepository.findAll().get(2);
 
-            Hashtag technology = hashtagRepository.findByTag("technology");
-            Hashtag food = hashtagRepository.findByTag("food");
-            Hashtag travel = hashtagRepository.findByTag("travel");
+            Hashtag technology = hashtagRepository.findByTag("công nghệ");
+            Hashtag food = hashtagRepository.findByTag("đồ ăn");
+            Hashtag travel = hashtagRepository.findByTag("du lịch");
 
             ReviewHashtag techTag = new ReviewHashtag();
             techTag.setReview(techReview);
@@ -336,9 +383,9 @@ public class DatabaseInit implements CommandLineRunner {
             User premiumUser = userRepository.findByUserName("premium_user");
             User regularUser = userRepository.findByUserName("regular_user");
 
-            Hashtag technology = hashtagRepository.findByTag("technology");
-            Hashtag food = hashtagRepository.findByTag("food");
-            Hashtag travel = hashtagRepository.findByTag("travel");
+            Hashtag technology = hashtagRepository.findByTag("công nghệ");
+            Hashtag food = hashtagRepository.findByTag("đồ ăn");
+            Hashtag travel = hashtagRepository.findByTag("du lịch");
 
             UserHashtag userTech = new UserHashtag();
             userTech.setUser(premiumUser);

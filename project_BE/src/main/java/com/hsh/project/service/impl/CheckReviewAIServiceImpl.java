@@ -116,7 +116,8 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
         body.put("image_url", imageUrl);
 
         Request request = new Request.Builder()
-                .url("http://localhost:5000/caption")
+//                .url("http://localhost:5000/caption")
+                .url("http://103.176.24.249:5000/caption")
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
                 .build();

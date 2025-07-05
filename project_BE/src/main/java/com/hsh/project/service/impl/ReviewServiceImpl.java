@@ -486,6 +486,11 @@ public class ReviewServiceImpl implements ReviewService {
                     searchTerm != null ? searchTerm : "",
                     EnumReviewStatus.PUBLISHED
             );
+            if (reviews.isEmpty()) {
+                reviews = reviewRepository.findByContentContainingIgnoreCaseAndStatus(
+                        searchTerm != null ? searchTerm : "",
+                        EnumReviewStatus.PUBLISHED);
+            }
         }
 
         return reviews.stream()

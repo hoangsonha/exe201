@@ -138,51 +138,108 @@ const SignupStep1And2 = ({
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
     }
 
-    const handleVerificationCode = async (event) => {
-        event.preventDefault()
-        setLoading(true)
+    // const handleVerificationCode = async (event) => {
+    //     event.preventDefault()
+    //     setLoading(true)
 
-        try {
-            let verification = verificationCode.join('')
+    //     try {
+    //         let verification = verificationCode.join('')
 
-            const userData = await verificationCodeAPi({ email: email, verificationCode: verification })
+    //         const userData = await verificationCodeAPi({ email: email, verificationCode: verification })
 
-            const userFetch = userData.data
-                if (userFetch.code == 'Success') {
-                    const decodedToken = jwtDecode(userFetch['token'])
-                    const role = decodedToken.role?.[0]?.authority
+    //         const userFetch = userData.data
+    //             if (userFetch.code == 'Success') {
+    //                 const decodedToken = jwtDecode(userFetch['token'])
+    //                 const role = decodedToken.role?.[0]?.authority
         
-                    const user = {
-                        accessToken: userFetch['token'],
-                        refreshToken: userFetch['refreshToken'],
-                        email: userFetch['email'],
-                        id: userFetch['userId'],
-                        role: role,
-                        avatar: userFetch['avatar']
-                    }
+    //                 const user = {
+    //                     accessToken: userFetch['token'],
+    //                     refreshToken: userFetch['refreshToken'],
+    //                     email: userFetch['email'],
+    //                     id: userFetch['userId'],
+    //                     role: role,
+    //                     avatar: userFetch['avatar']
+    //                 }
         
-                    signIn(user)
+    //                 signIn(user)
                     
-                    if (onVerificationComplete) {
-                        onVerificationComplete({
-                            email: email,
-                            password: inputPassword
-                        })
-                    }
-                    setShow(false)
+    //                 if (onVerificationComplete) {
+    //                     onVerificationComplete({
+    //                         email: email,
+    //                         password: inputPassword
+    //                     })
+    //                 }
+    //                 setShow(false)
 
-                    setLoading(false)
-                } else {
-                    setErrorType('verification_invalid')
-                }    
-        } catch (error) {
-            console.log(error)
-            setErrorType('verification_invalid')
-            setShow(true)
-        } finally {
-            setLoading(false)
+    //                 setLoading(false)
+    //             } else {
+    //                 setErrorType('verification_invalid')
+    //                 setShow(true)
+    //             }    
+    //     } catch (error) {
+    //         console.log(error)
+    //         setErrorType('verification_invalid')
+    //         setShow(true)
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
+
+    const handleVerificationCode = async (event) => {
+    event.preventDefault(); // Ngăn submit form mặc định
+    event.stopPropagation(); // Ngăn sự kiện nổi bọt
+    setLoading(true);
+    setShow(false); // Ẩn thông báo lỗi cũ
+
+    try {
+        const verification = verificationCode.join('');
+        
+        // Validate trước khi gọi API
+        if (verification.length !== 6) {
+            setErrorType('verification_invalid');
+            setShow(true);
+            setLoading(false);
+            return;
         }
+
+        const userData = await verificationCodeAPi({ 
+            email: email, 
+            verificationCode: verification 
+        });
+
+        const userFetch = userData.data;
+        if (userFetch.code === 'Success') {
+            const decodedToken = jwtDecode(userFetch.token);
+            const role = decodedToken.role?.[0]?.authority;
+
+            const user = {
+                accessToken: userFetch.token,
+                refreshToken: userFetch.refreshToken,
+                email: userFetch.email,
+                id: userFetch.userId,
+                role: role,
+                avatar: userFetch.avatar
+            };
+
+            signIn(user);
+            
+            if (onVerificationComplete) {
+                onVerificationComplete({
+                    email: email,
+                    password: inputPassword
+                });
+            }
+        } else {
+            throw new Error('Verification failed'); // Chuyển sang catch block
+        }
+    } catch (error) {
+        console.error('Verification error:', error);
+        setErrorType('verification_invalid');
+        setShow(true);
+    } finally {
+        setLoading(false);
     }
+};
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -342,7 +399,9 @@ const SignupStep1And2 = ({
                                 >
                                     <FiSmile />
                                 </span>
-                                <span className={`terms-text ${isTermsAccepted ? 'accepted' : ''}`}>
+                                <span className={`terms-text ${isTermsAccepted ? 'accepted' : ''}`} 
+                                    onClick={() => setIsTermsAccepted(!isTermsAccepted)}
+                                    >
                                     tôi đồng ý với mọi <strong>điều khoản sử dụng</strong>
                                 </span>
                             </div>
@@ -406,6 +465,10 @@ const SignupStep1And2 = ({
                         <div className="verification-description-custom">
                             nhập mã otp được gửi tới email: {email}
                         </div>
+
+                        <div className="verification-description-custom_text">
+                            * vui lòng kiểm tra trong mục spam nếu không thấy mail
+                        </div>
                         
                         <Form onSubmit={handleVerifySubmit} className="verification-form-custom">
                             <div className="verification-inputs-container">
@@ -440,7 +503,7 @@ const SignupStep1And2 = ({
                             
                             <Button 
                                 variant="primary" 
-                                type="submit" 
+                                type="button" 
                                 disabled={loading}
                                 className="login-btn"
                                 onClick={handleVerificationCode}

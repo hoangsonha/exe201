@@ -282,7 +282,7 @@ const SignupStep1And2 = ({
                     <div className="sign-up-form">
                         {!show && (
                             <div className="App">
-                                <span ref={el} />
+                                <span ref={el} className="typed-text"/>
                             </div>
                         )}
 

@@ -315,6 +315,13 @@
   flex-wrap: wrap;
 }
 
+.typed-text {
+  white-space: nowrap;
+  display: inline-block;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
 .topic-item-wrapper {
   flex: 0 0 25%;
   max-width: 25%;

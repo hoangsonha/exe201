@@ -66,3 +66,7 @@ firebase:
 huggingface:
   api:
     token: ${API_SECRET}
+
+openrouter:
+  api:
+    token: ${API_SECRET_OPEN_ROUTER}

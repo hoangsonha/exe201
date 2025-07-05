@@ -1,268 +1,27 @@
-//package com.hsh.project.service.impl;
-//
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
-//import com.fasterxml.jackson.databind.node.ObjectNode;
-//import com.hsh.project.pojo.Review;
-//import com.hsh.project.pojo.ReviewMedia;
-//import com.hsh.project.pojo.enums.EnumReviewUploadType;
-//import com.hsh.project.repository.ReviewRepository;
-//import com.hsh.project.service.spec.CheckReviewAIService;
-//import lombok.RequiredArgsConstructor;
-//import okhttp3.*;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//
-//import java.io.BufferedReader;
-//import java.io.IOException;
-//import java.io.InputStreamReader;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.concurrent.TimeUnit;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class CheckReviewAIServiceImpl implements CheckReviewAIService {
-//
-//    private final OkHttpClient client = new OkHttpClient.Builder()
-//            .connectTimeout(30, TimeUnit.SECONDS)
-//            .readTimeout(30, TimeUnit.SECONDS)
-//            .build();
-//    private final ObjectMapper mapper = new ObjectMapper();
-//
-//    @Value("${huggingface.api.token}")
-//    private String apiToken;
-//
-//    @Override
-//    public Review checkReview(Review review) {
-//
-//        String combinedText = review.getTitle() + ". " + review.getContent();
-//
-//        String urlVideo = "";
-//
-//        List<String> urlsImage = new ArrayList<>();
-//
-//        List<ReviewMedia> lists = review.getReviewMedias();
-//
-//        for (ReviewMedia reviewMedia : lists) {
-//            if (reviewMedia.getTypeUploadReview().equals(EnumReviewUploadType.VIDEO)) {
-//                urlVideo = reviewMedia.getUrlImageGIFVideo();
-//            } else {
-//                urlsImage.add(reviewMedia.getUrlImageGIFVideo());
-//            }
-//        }
-//
-//        try {
-//            String perspective = getPerspective(combinedText);
-//            int relevantStar = getRelevantStar(combinedText, urlsImage, urlVideo);
-//            Integer objectiveStar = getObjectiveStar(combinedText);
-//            String summary = getSummary(combinedText);
-//
-//            if (objectiveStar != null) {
-//                review.setObjectiveStar((float) objectiveStar);
-//            }
-//            review.setRelevantStar((float) relevantStar);
-//            review.setPerspective(perspective);
-//            review.setSummary(summary);
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        return review;
-//    }
-//
-//    private String getPerspective(String text) throws IOException {
-//        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
-//
-//        ObjectNode requestJson = mapper.createObjectNode();
-//        requestJson.put("inputs", sanitizeText(text));
-//
-//        RequestBody body = RequestBody.create(
-//                MediaType.parse("application/json"),
-//                requestJson.toString()
-//        );
-//
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .addHeader("Authorization", "Bearer " + apiToken)
-//                .post(body)
-//                .build();
-//
-//        try (Response response = client.newCall(request).execute()) {
-//            if (!response.isSuccessful()) {
-//                throw new IOException("Hugging Face API error: " + response.code() + " - " + response.body().string());
-//            }
-//
-//            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-//            JsonNode scores = json.get(0);
-//
-//            int predictedStar = 3;
-//            double maxScore = 0;
-//
-//            for (JsonNode node : scores) {
-//                String label = node.get("label").asText(); // e.g., "5 stars"
-//                double score = node.get("score").asDouble();
-//                int stars = Integer.parseInt(label.substring(0, 1));
-//                if (score > maxScore) {
-//                    maxScore = score;
-//                    predictedStar = stars;
-//                }
-//            }
-//
-//            if (predictedStar >= 4) return "TÍCH CỰC";
-//            if (predictedStar == 3) return "TRUNG LẬP";
-//            return "TIÊU CỰC";
-//        }
-//    }
-//
-//    private String sanitizeText(String text) {
-//        return text.replaceAll("[\\x00-\\x1F\\x7F]", "");
-//    }
-//
-//    private Integer getObjectiveStar(String text) throws IOException {
-//        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
-//
-//        ObjectNode requestJson = mapper.createObjectNode();
-//        requestJson.put("inputs", sanitizeText(text));
-//
-//        RequestBody body = RequestBody.create(
-//                MediaType.parse("application/json"),
-//                requestJson.toString()
-//        );
-//
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .addHeader("Authorization", "Bearer " + apiToken)
-//                .post(body)
-//                .build();
-//
-//        try (Response response = client.newCall(request).execute()) {
-//            if (!response.isSuccessful()) {
-//                String errorBody = response.body().string();
-//                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
-//            }
-//
-//            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-//            JsonNode scores = json.get(0);
-//
-//            int predictedStar = 3;
-//            double maxScore = 0;
-//
-//            for (JsonNode node : scores) {
-//                String label = node.get("label").asText(); // e.g., "5 stars"
-//                double score = node.get("score").asDouble();
-//                int stars = Integer.parseInt(label.substring(0, 1));
-//                if (score > maxScore) {
-//                    maxScore = score;
-//                    predictedStar = stars;
-//                }
-//            }
-//
-//            // Đảo ngược score vì khách quan = ít cảm xúc (gần 3 sao nhất là khách quan nhất)
-//            int objectiveScore = 5 - Math.abs(predictedStar - 3); // Max = 5 khi = 3 sao
-//            return Math.max(1, Math.min(5, objectiveScore));
-//        }
-//    }
-//
-//    private int getRelevantStar(String text, List<String> imageUrls, String videoUrl) throws IOException {
-//        List<String> command = new ArrayList<>();
-//        command.add("python");
-//        command.add("clip_processor.py");
-//        command.add(text);
-//
-//        if (imageUrls != null) {
-//            command.addAll(imageUrls);
-//        }
-//
-//        // Nếu videoUrl rỗng/null thì vẫn truyền vào chuỗi rỗng
-//        command.add(videoUrl != null ? videoUrl : "");
-//
-//        ProcessBuilder pb = new ProcessBuilder(command);
-//        pb.redirectErrorStream(true); // Gộp cả stdout và stderr
-//
-//        Process process = pb.start();
-//
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//        String line;
-//        int star = 3; // Mặc định
-//
-//        while ((line = reader.readLine()) != null) {
-//            try {
-//                star = Integer.parseInt(line.trim());
-//            } catch (NumberFormatException ignored) {
-//                // Không xử lý được thì bỏ qua dòng này
-//            }
-//        }
-//
-//        try {
-//            process.waitFor();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return Math.max(1, Math.min(5, star)); // Clamp từ 1 -> 5
-//    }
-//
-//    private String getSummary(String text) throws IOException {
-//        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-//
-//        ObjectNode requestJson = mapper.createObjectNode();
-//        requestJson.put("inputs", text);
-//        ObjectNode parameters = requestJson.putObject("parameters");
-//        parameters.put("max_length", 50);
-//        parameters.put("min_length", 20);
-//        parameters.put("do_sample", false);
-//
-//        RequestBody body = RequestBody.create(
-//                MediaType.parse("application/json"),
-//                requestJson.toString()
-//        );
-//
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .addHeader("Authorization", "Bearer " + apiToken)
-//                .post(body)
-//                .build();
-//
-//        try (Response response = client.newCall(request).execute()) {
-//            if (!response.isSuccessful()) {
-//                throw new IOException("Summary API error: " + response.code() + " - " + response.body().string());
-//            }
-//
-//            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-//            return json.get(0).get("summary_text").asText();
-//        }
-//    }
-//
-//}
-
-//
-
 package com.hsh.project.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hsh.project.dto.ReviewSummaryResult;
 import com.hsh.project.pojo.*;
 import com.hsh.project.pojo.enums.*;
 import com.hsh.project.repository.*;
 import com.hsh.project.service.spec.*;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
+import okhttp3.MediaType;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import org.springframework.web.client.RestTemplate;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -278,363 +37,239 @@ public class CheckReviewAIServiceImpl implements CheckReviewAIService {
     private final CheckReviewAIRepository checkReviewAIRepository;
 
     @Value("${huggingface.api.token}")
-    private String apiToken;
+    private String apiTokenHuggingface;
+
+    @Value("${openrouter.api.token}")
+    private String apiTokenOpenrouter;
 
     @Override
     public Review checkReview(Review review) {
-        String combinedText = review.getTitle() + ". " + review.getContent();
         List<String> imageUrls = new ArrayList<>();
         String videoUrl = null;
 
-        // Phân loại media
-        for (ReviewMedia media : review.getReviewMedias()) {
-            if (media.getTypeUploadReview() == EnumReviewUploadType.VIDEO) {
-                videoUrl = media.getUrlImageGIFVideo();
-            } else {
-                imageUrls.add(media.getUrlImageGIFVideo());
+        if (review.getReviewMedias() != null) {
+            for (ReviewMedia media : review.getReviewMedias()) {
+                if (media.getTypeUploadReview() == EnumReviewUploadType.VIDEO) {
+                    videoUrl = media.getUrlImageGIFVideo();
+                } else {
+                    imageUrls.add(media.getUrlImageGIFVideo());
+                }
             }
-        }
 
-        try {
-            // Gọi các service AI
-            String perspective = getPerspective(combinedText);
-            RelevantStarResult relevantResult = getRelevantStar(combinedText, imageUrls, videoUrl);
-            Integer objectiveStar = getObjectiveStar(combinedText);
-            String summary = getMultimodalSummary(combinedText, imageUrls, videoUrl);
+            List<String> imageCaptions = new ArrayList<>();
 
-            // Tính toán và lưu kết quả
-            double avgSimilarity = relevantResult.getSimilarities().stream()
-                    .mapToDouble(Double::doubleValue)
-                    .average()
-                    .orElse(0.5);
+            for (String imageUrl : imageUrls) {
+//                byte[] imageBytes = fetchImageFromFirebase(imageUrl);
+//                imageCaptions.add(extractLabels(imageBytes).stream().collect(Collectors.joining(", ")));
+                imageCaptions.add(getHfCaption(imageUrl));
 
-            saveToCheckReviewAI(review, avgSimilarity, relevantResult.getSimilarities());
+            }
 
-            // Cập nhật review
+            String resultImageCaption = "";
+            for (int i = 0; i < imageCaptions.size(); i++) {
+                String com = " và ";
+                if (i == imageCaptions.size() -1) {
+                    com = ".";
+                }
+                resultImageCaption = "ảnh thứ " + (i + 1) + " có caption là: " + imageCaptions.get(i) + com;
+            }
+
+            ReviewSummaryResult reviewSummaryResult = summarizeReview(review.getTitle(), review.getContent(), resultImageCaption);
+            String perspective = reviewSummaryResult.getPerspective();
+            Float relevantResult = reviewSummaryResult.getRelevantStar();
+            Float objectiveStar = reviewSummaryResult.getRelevantStar();
+            String summary = reviewSummaryResult.getSummary();
+
             review.setPerspective(perspective);
-            review.setRelevantStar((float) (avgSimilarity * 5));
-            review.setObjectiveStar(objectiveStar != null ? (float) objectiveStar : 3.0f);
+            review.setRelevantStar(relevantResult);
+            review.setObjectiveStar(objectiveStar);
             review.setSummary(summary);
 
-        } catch (Exception e) {
-            logger.error("AI Service Error: ", e);
-            review.setPerspective("TRUNG LẬP");
-            review.setRelevantStar(3.0f);
-            review.setObjectiveStar(3.0f);
-            review.setSummary("Không thể tạo tóm tắt tự động");
-        }
+        } else {
+            try {
+                ReviewSummaryResult reviewSummaryResult = summarizeReview(review.getTitle(), review.getContent(), null);
 
+                String perspective = reviewSummaryResult.getPerspective();
+                Float relevantResult = reviewSummaryResult.getRelevantStar();
+                Float objectiveStar = reviewSummaryResult.getRelevantStar();
+                String summary = reviewSummaryResult.getSummary();
+
+                review.setPerspective(perspective);
+                review.setRelevantStar(relevantResult);
+                review.setObjectiveStar(objectiveStar);
+                review.setSummary(summary);
+
+            } catch (Exception e) {
+                logger.error("AI Service Error: ", e);
+                review.setPerspective("TRUNG LẬP");
+                review.setRelevantStar(3.0f);
+                review.setObjectiveStar(3.0f);
+                review.setSummary("Không thể tạo tóm tắt tự động");
+            }
+        }
         return review;
     }
 
+    public String getHfCaption(String imageUrl) {
 
-    private Integer getObjectiveStar(String text) throws IOException {
-        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
-
-        ObjectNode requestJson = mapper.createObjectNode();
-        requestJson.put("inputs", sanitizeText(text));
-
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"),
-                requestJson.toString()
-        );
+        JSONObject body = new JSONObject();
+        body.put("image_url", imageUrl);
 
         Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + apiToken)
-                .post(body)
+                .url("http://localhost:5000/caption")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+
             if (!response.isSuccessful()) {
-                String errorBody = response.body().string();
-                throw new IOException("Hugging Face API error: " + response.code() + " - " + errorBody);
+                throw new IOException("Unexpected response: " + response);
             }
 
-            ArrayNode json = (ArrayNode) mapper.readTree(response.body().string());
-            JsonNode scores = json.get(0);
-
-            int predictedStar = 3;
-            double maxScore = 0;
-
-            for (JsonNode node : scores) {
-                String label = node.get("label").asText(); // e.g., "5 stars"
-                double score = node.get("score").asDouble();
-                int stars = Integer.parseInt(label.substring(0, 1));
-                if (score > maxScore) {
-                    maxScore = score;
-                    predictedStar = stars;
-                }
-            }
-
-            // Đảo ngược score vì khách quan = ít cảm xúc (gần 3 sao nhất là khách quan nhất)
-            int objectiveScore = 5 - Math.abs(predictedStar - 3); // Max = 5 khi = 3 sao
-            return Math.max(1, Math.min(5, objectiveScore));
+            String json = response.body().string();
+            JSONObject result = new JSONObject(json);
+            return result.getString("caption");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private String getPerspective(String text) throws IOException {
-        String url = "https://api-inference.huggingface.co/models/nlptown/bert-base-multilingual-uncased-sentiment";
+    public ReviewSummaryResult summarizeReview(String title, String content, String imageCaption) {
+        RestTemplate restTemplate = new RestTemplate();
 
-        ObjectNode requestJson = mapper.createObjectNode();
-        requestJson.put("inputs", sanitizeText(text));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + apiTokenOpenrouter);
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 
-        Request request = buildHuggingFaceRequest(url, requestJson);
+        String prompt = buildPrompt(title, content, null);
 
-        try (Response response = client.newCall(request).execute()) {
-            validateResponse(response);
-            JsonNode scores = mapper.readTree(response.body().string()).get(0);
-
-            int predictedStar = 3;
-            double maxScore = 0;
-
-            for (JsonNode node : scores) {
-                String label = node.get("label").asText();
-                double score = node.get("score").asDouble();
-                int stars = Integer.parseInt(label.substring(0, 1));
-                if (score > maxScore) {
-                    maxScore = score;
-                    predictedStar = stars;
-                }
-            }
-
-            return convertToPerspective(predictedStar);
+        if (imageCaption != null) {
+            prompt = buildPrompt(title, content, imageCaption);
         }
+
+        Map<String, Object> requestBody = Map.of(
+                "model", "meta-llama/llama-3-8b-instruct",
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity("https://openrouter.ai/api/v1/chat/completions", request, Map.class);
+
+        Map<String, Object> body = response.getBody();
+        List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+        String contentReply = (String) message.get("content");
+
+        return parseResponse(contentReply);
     }
 
-    private RelevantStarResult getRelevantStar(String text, List<String> imageUrls, String videoUrl) throws IOException {
-        List<String> command = new ArrayList<>(Arrays.asList(
-                "python",
-                "-W", "ignore",
-                "clip_processor.py",
-                text
-        ));
-
-        // Thêm URLs ảnh
-        if (imageUrls.isEmpty()) {
-            command.add("null");
-        } else {
-            command.addAll(imageUrls);
+    private String buildPrompt(String title, String content, String imageCaption) {
+        if (imageCaption != null) {
+            return """
+                Bạn là một hệ thống phân tích đánh giá người dùng trên nền tảng thương mại điện tử, có khả năng hiểu được cả văn bản và hình ảnh.
+                
+                Nhiệm vụ của bạn là: Dựa trên một bài đánh giá bao gồm **tiêu đề (title)**, **nội dung chi tiết (content)**, và **mô tả nội dung hình ảnh (imageCaption) với caption ngắn của hình ảnh bằng tiếng anh**, hãy phân tích và phản hồi duy nhất dưới dạng JSON với đầy đủ 4 trường sau và trả ra kết quả bằng tiếng việt:
+                
+                1. `"perspective"`: đánh giá tổng thể của người viết là tích cực, tiêu cực hay trung lập. Trả về một trong ba chuỗi: `"tích cực"`, `"tiêu cực"`, hoặc `"trung lập"`.
+                2. `"relevantStar"`: số sao phù hợp với nội dung người dùng muốn truyền tải, có thể suy luận từ cả nội dung và hình ảnh. Giá trị là **số thực** từ 1.0 đến 5.0.
+                3. `"objectiveStar"`: đánh giá theo độ hợp lý giữa tiêu đề, nội dung và ảnh minh họa. Nếu hình ảnh mâu thuẫn hoặc làm rõ hơn nội dung, hãy phản ánh vào điểm số này. Cũng là số thực từ 1.0 đến 5.0.
+                4. `"summary"`: tóm tắt ngắn gọn nhất có thể nội dung của cả `title`, `content`, và `imageCaption` — tối đa 2 câu, dưới 300 ký tự.
+                
+                ⚠️ **Yêu cầu bắt buộc:**
+                - Chỉ trả về **duy nhất** một object JSON, không thêm bất kỳ giải thích, chú thích, hay dòng mô tả nào khác.
+                - Format JSON phải **đúng chuẩn**, không thiếu dấu ngoặc, dấu phẩy, hay dấu ngoặc kép.
+                
+                ---
+                
+                Dưới đây là thông tin bài review:
+                
+                Title: %s
+                
+                Content: %s
+                
+                Image Caption (từ ảnh đính kèm): %s
+                
+                Hãy trả về kết quả JSON dưới định dạng:
+                {
+                  "perspective": "...",
+                  "relevantStar": ...,
+                  "objectiveStar": ...,
+                  "summary": "..."
+                }
+                """.formatted(title, content, imageCaption);
         }
 
-        // Thêm URL video
-        command.add(videoUrl != null ? videoUrl : "null");
+        return """
+                Bạn là một hệ thống phân tích đánh giá người dùng trên nền tảng thương mại điện tử.
+                
+                Nhiệm vụ của bạn là: Dựa trên một bài đánh giá bao gồm **title** và **content**, hãy phân tích và phản hồi duy nhất dưới dạng JSON với đầy đủ 4 trường sau:
+                
+                1. "perspective": đánh giá tổng thể của người viết là tích cực, tiêu cực hay trung lập. Trả về một trong ba chuỗi: "tích cực", "tiêu cực", "trung lập".
+                2. "relevantStar": số sao tương ứng với nội dung mà người dùng thật sự muốn truyền tải, **dù họ không nói rõ**. Giá trị là số thực từ 1.0 đến 5.0.
+                3. "objectiveStar": số sao đánh giá khách quan dựa trên **mức độ hợp lý giữa tiêu đề và nội dung**, tức có mâu thuẫn hay khớp nhau không. Giá trị cũng là số thực từ 1.0 đến 5.0.
+                4. "summary": tóm tắt súc tích nhất có thể nội dung **title** và **content** (tối đa 2 câu, dưới 300 ký tự).
+                
+                ⚠️ **Yêu cầu quan trọng:**
+                - Chỉ trả về **duy nhất** một object JSON, không thêm bất kỳ dòng giải thích, ghi chú, hay mô tả nào.
+                - Format JSON phải đúng chuẩn, không thiếu dấu ngoặc hoặc dấu phẩy.
+                
+                ---
+                
+                Dưới đây là một bài review cần bạn phân tích:
+                
+                Title: %s
+                
+                Content: %s
+                
+                Hãy trả kết quả JSON:
+                {
+                  "perspective": "...",
+                  "relevantStar": ...,
+                  "objectiveStar": ...,
+                  "summary": "..."
+                }
+                """.formatted(title, content);
+    }
 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectErrorStream(true);
+    private ReviewSummaryResult parseResponse(String contentReply) {
+        ObjectMapper mapper = new ObjectMapper();
 
         try {
-            Process process = pb.start();
-            String output = captureProcessOutput(process);
+            int jsonStart = contentReply.indexOf("{");
+            int jsonEnd = contentReply.lastIndexOf("}") + 1;
 
-            int exitCode = process.waitFor();
-            JsonNode result = mapper.readTree(extractJson(output));
-
-            validatePythonResult(exitCode, result);
-
-            return parseRelevantStarResult(result);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("Process interrupted", e);
-        }
-    }
-
-//    private String getMultimodalSummary(String text, List<String> imageUrls, String videoUrl) throws IOException {
-//
-//        String normalizedText = normalizeVietnameseText(text);
-//
-//        String context = buildSummaryContext(normalizedText, imageUrls, videoUrl);
-//
-//        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-//
-//        ObjectNode requestJson = mapper.createObjectNode();
-//        requestJson.put("inputs", context);
-//
-//        ObjectNode parameters = requestJson.putObject("parameters");
-//        parameters.put("max_length", 120);  // Tăng độ dài để đủ chứa tiếng Việt
-//        parameters.put("min_length", 50);
-//        parameters.put("do_sample", false);
-//        parameters.put("clean_up_tokenization_spaces", true);
-//
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .header("Authorization", "Bearer " + apiToken)
-//                .header("Content-Type", "application/json; charset=utf-8")
-//                .post(RequestBody.create(
-//                        requestJson.toString().getBytes(StandardCharsets.UTF_8),
-//                        MediaType.parse("application/json; charset=utf-8")
-//                ))
-//                .build();
-//
-//        try (Response response = client.newCall(request).execute()) {
-//            validateResponse(response);
-//
-//            // Bước 4: Xử lý response với encoding UTF-8
-//            String responseBody = new String(response.body().bytes(), StandardCharsets.UTF_8);
-//            JsonNode json = mapper.readTree(responseBody);
-//
-//            // Bước 5: Chuẩn hóa kết quả
-//            String summary = json.get(0).get("summary_text").asText();
-//            return cleanVietnameseText(summary);
-//        }
-//    }
-//
-//    // ===== Các phương thức helper mới =====
-//    private String normalizeVietnameseText(String text) {
-//        // Chuẩn hóa các ký tự tiếng Việt phổ biến
-//        return text.replaceAll("[\\x00-\\x1F\\x7F]", "")
-//                .replaceAll("[ạảãàáâậầấẩẫăắằặẳẵ]", "a")
-//                .replaceAll("[ẠẢÃÀÁÂẬẦẤẨẪĂẮẰẶẲẴ]", "A")
-//                .replaceAll("[đ]", "d")
-//                .replaceAll("[Đ]", "D")
-//                .replaceAll("[ệểễèéêềếểễë]", "e")
-//                .replaceAll("[ỆỂỄÈÉÊỀẾỂỄË]", "E")
-//                .replaceAll("[ịỉĩìíîï]", "i")
-//                .replaceAll("[ỊỈĨÌÍÎÏ]", "I")
-//                .replaceAll("[ọỏõòóôộồốổỗơớờợởỡ]", "o")
-//                .replaceAll("[ỌỎÕÒÓÔỘỒỐỔỖƠỚỜỢỞỠ]", "O")
-//                .replaceAll("[ụủũùúûưứừựửữ]", "u")
-//                .replaceAll("[ỤỦŨÙÚÛƯỨỪỰỬỮ]", "U")
-//                .replaceAll("[ỳýỵỷỹ]", "y")
-//                .replaceAll("[ỲÝỴỶỸ]", "Y")
-//                .replaceAll("\\s+", " ")
-//                .trim();
-//    }
-//
-//    private String cleanVietnameseText(String text) {
-//        // Lọc các ký tự lạ nhưng giữ lại tiếng Việt
-//        return text.replaceAll("[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]", "")
-//                .replaceAll("\\s+", " ")
-//                .trim();
-//    }
-
-    private String getMultimodalSummary(String text, List<String> imageUrls, String videoUrl) throws IOException {
-        String context = buildSummaryContext(text, imageUrls, videoUrl);
-        String url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-
-        ObjectNode requestJson = mapper.createObjectNode();
-        requestJson.put("inputs", context);
-
-        ObjectNode parameters = requestJson.putObject("parameters");
-        parameters.put("max_length", 150);
-        parameters.put("min_length", 30);
-        parameters.put("do_sample", false);
-        parameters.put("clean_up_tokenization_spaces", true);
-
-        Request request = buildHuggingFaceRequest(url, requestJson);
-
-        try (Response response = client.newCall(request).execute()) {
-            validateResponse(response);
-            String responseBody = response.body().string();
-            return mapper.readTree(responseBody)
-                    .get(0)
-                    .get("summary_text")
-                    .asText();
-        }
-    }
-
-    // ===== Các phương thức helper =====
-    private String sanitizeText(String text) {
-        return text.replaceAll("[\\x00-\\x1F\\x7F]", "");
-    }
-
-    private Request buildHuggingFaceRequest(String url, ObjectNode requestJson) {
-        return new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + apiToken)
-                .post(RequestBody.create(
-                        requestJson.toString(),
-                        MediaType.parse("application/json")
-                ))
-                .build();
-    }
-
-    private void validateResponse(Response response) throws IOException {
-        if (!response.isSuccessful()) {
-            throw new IOException("API error: " + response.code() + " - " +
-                    (response.body() != null ? response.body().string() : "No body"));
-        }
-    }
-
-    private String convertToPerspective(int predictedStar) {
-        if (predictedStar >= 4) return "TÍCH CỰC";
-        if (predictedStar == 3) return "TRUNG LẬP";
-        return "TIÊU CỰC";
-    }
-
-    private String buildSummaryContext(String text, List<String> imageUrls, String videoUrl) {
-        StringBuilder context = new StringBuilder(text);
-        if (!imageUrls.isEmpty() || videoUrl != null) {
-            context.append(" [Media: ");
-            if (!imageUrls.isEmpty()) context.append(imageUrls.size()).append(" ảnh ");
-            if (videoUrl != null) context.append("1 video");
-            context.append("]");
-        }
-        return context.toString();
-    }
-
-    private String captureProcessOutput(Process process) throws IOException {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        }
-    }
-
-    private String extractJson(String output) throws IOException {
-        // Tìm dòng JSON cuối cùng
-        String[] lines = output.split("\n");
-        for (int i = lines.length - 1; i >= 0; i--) {
-            String line = lines[i].trim();
-            if (line.startsWith("{") && line.endsWith("}")) {
-                return line;
+            if (jsonStart == -1 || jsonEnd == -1) {
+                throw new RuntimeException("Không tìm thấy JSON trong phản hồi: " + contentReply);
             }
-        }
-        throw new IOException("No valid JSON found in Python output");
-    }
 
-    private void validatePythonResult(int exitCode, JsonNode result) throws IOException {
-        if (exitCode != 0 || !result.path("status").asText().equals("success")) {
-            String errorMsg = result.path("error").asText();
-            throw new IOException("Python script failed: " +
-                    (errorMsg.isEmpty() ? "Unknown error" : errorMsg));
-        }
-    }
+            String jsonPart = contentReply.substring(jsonStart, jsonEnd);
 
-    private RelevantStarResult parseRelevantStarResult(JsonNode result) {
-        int star = result.path("relevant_star").asInt();
-        List<Double> similarities = new ArrayList<>();
-        result.path("media_similarities").forEach(sim ->
-                similarities.add(sim.asDouble()));
-        return new RelevantStarResult(star, similarities);
-    }
+            return mapper.readValue(jsonPart, ReviewSummaryResult.class);
 
-    private void saveToCheckReviewAI(Review review, double avgSimilarity, List<Double> similarities) {
-        try {
-            CheckReviewAI aiAnalysis = Optional.ofNullable(review.getCheckReviewAI())
-                    .orElseGet(() -> {
-                        CheckReviewAI newAnalysis = new CheckReviewAI();
-                        newAnalysis.setReview(review);
-                        newAnalysis.setType(EnumAICheckType.AI);
-                        return newAnalysis;
-                    });
-
-            aiAnalysis.setPoint(avgSimilarity * 5);
-            aiAnalysis.setBrefContent(mapper.writeValueAsString(similarities));
-            aiAnalysis.setRelevance((int) (avgSimilarity * 100));
-            aiAnalysis.setCheckedAt(LocalDateTime.now());
-
-            checkReviewAIRepository.save(aiAnalysis);
         } catch (Exception e) {
-            logger.error("Failed to save CheckReviewAI", e);
+            throw new RuntimeException("Lỗi khi parse kết quả từ AI: " + contentReply, e);
         }
     }
 
-    @RequiredArgsConstructor
-    private static class RelevantStarResult {
-        private final int relevantStar;
-        private final List<Double> similarities;
 
-        public int getRelevantStar() { return relevantStar; }
-        public List<Double> getSimilarities() { return similarities; }
+    public byte[] fetchImageFromFirebase(String imageUrl) {
+        try (InputStream in = new URL(imageUrl).openStream();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            return out.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Không thể tải ảnh từ Firebase", e);
+        }
     }
+
 }

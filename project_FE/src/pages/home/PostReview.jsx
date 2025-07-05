@@ -1007,13 +1007,8 @@ const PostReview = ({ show, onClose, onSubmit }) => {
       return
     }
 
-    if (content.length < 20 && mediaFiles.length === 0) {
-      setError("Nội dung phải có ít nhất 20 ký tự hoặc 1 hình ảnh/video")
-      return
-    }
-
-    if (mediaFiles.length === 0) {
-      setError("Vui lòng thêm ít nhất 1 hình ảnh hoặc 1 video")
+    if (content.length < 20) {
+      setError("Nội dung phải có ít nhất 20 ký tự")
       return
     }
 
@@ -1028,8 +1023,6 @@ const PostReview = ({ show, onClose, onSubmit }) => {
             hashtags: selectedTags.map((tag) => tag.name),
             userId: user.id,
         }
-
-        console.log('hic', review)
 
         formData.append("review", new Blob([JSON.stringify(review)], { type: "application/json" }))
         mediaFiles.forEach((file) => {

@@ -10,6 +10,7 @@ public interface CommentService {
   List<CommentResponseDTO> getCommentsByReviewId(Long reviewId);
   List<CommentResponseDTO> getCommentsByParentCommentId(Long parentCommentId);
   List<CommentResponseDTO> getCommentsByUserEmail(String userEmail);
+  List<CommentResponseDTO> getCommentsByUserId(Long userId);
   CommentResponseDTO updateComment(Long commentId, String content, String userEmail);
   CommentResponseDTO deleteComment(Long commentId, String userEmail);
   CommentResponseDTO getParentCommentById(Long commentId);

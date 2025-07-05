@@ -360,6 +360,26 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<CommentResponseDTO> getCommentsByUserId(Long userId) {
+        log.info("Fetching comments for userId: {}", userId);
+        try {
+            if (userId == null) {
+                throw new IllegalArgumentException("User ID cannot be null");
+            }
+            List<Comment> comments = commentRepository.findByUserUserId(userId);
+            if (comments == null || comments.isEmpty()) {
+                log.warn("No comments found for userId: {}", userId);
+                return new ArrayList<>();
+            }
+            log.debug("Found {} comments", comments.size());
+            return comments.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error fetching comments by userId: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
     public CommentResponseDTO getParentCommentById(Long commentId) {
         log.info("Fetching parent comment for commentId: {}", commentId);
         try {

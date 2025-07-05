@@ -169,6 +169,25 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/parent")
+    public ResponseEntity<CommentResponseDTO> getParentCommentById(
+            @RequestParam Long commentId) {
+        try {
+            log.info("Fetching parent comment for commentId: {}", commentId);
+            CommentResponseDTO parentComment = commentService.getParentCommentById(commentId);
+            if (parentComment == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(parentComment);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid commentId: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            log.error("Error fetching parent comment: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
     private CommentResponseDTO createErrorResponse(String message) {
         CommentResponseDTO response = new CommentResponseDTO();
         response.setCommentID(null);

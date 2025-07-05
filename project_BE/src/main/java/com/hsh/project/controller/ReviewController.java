@@ -5,6 +5,7 @@ import com.hsh.project.dto.request.BlockReviewRequest;
 import com.hsh.project.dto.request.CreateReviewRequest;
 import com.hsh.project.dto.response.BlockReviewResponseDTO;
 import com.hsh.project.dto.response.ReviewResponseDTO;
+import com.hsh.project.dto.response.UserSimpleDTO;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.service.spec.ReviewService;
@@ -130,6 +131,31 @@ public class ReviewController {
             log.error("Error creating user", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ObjectResponse("Failed", "UnSave review failed", null));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
+    @GetMapping("/{id}/creator")
+    public ResponseEntity<ObjectResponse> getReviewCreator(@PathVariable("id") long id) {
+        try {
+            log.info("Fetching creator for review ID: {}", id);
+            UserSimpleDTO creator = reviewService.getReviewCreatorById(id);
+            if (creator == null) {
+                log.warn("No creator found for review ID: {}", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ObjectResponse("Fail", "Creator not found for review ID " + id, null));
+            }
+            log.info("Creator found for review ID {}: user ID {}, username: {}", id, creator.getUserId(), creator.getUserName());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ObjectResponse("Success", "Creator retrieved successfully", creator));
+        } catch (ElementNotFoundException e) {
+            log.error("Review not found for ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ObjectResponse("Fail", e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Error fetching creator for review ID {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Fail", "Failed to retrieve creator", null));
         }
     }
 

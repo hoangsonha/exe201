@@ -32,6 +32,4 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByHashtagsIn(@Param("hashtags") List<String> hashtags);
 
     List<Review> findByTitleContainingIgnoreCaseAndStatus(String title, EnumReviewStatus status);
-
-    List<Review> findByContentContainingIgnoreCaseAndStatus(String content, EnumReviewStatus status);
 }

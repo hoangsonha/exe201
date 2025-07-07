@@ -281,23 +281,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createHashTagUser(UserRegisterHashTagRequest request) {
+
         User user = getUserById(request.getUserId());
+
         if (user == null) {
             throw new ElementNotFoundException("User not found");
         }
 
-        List<Hashtag> hashtags = hashtagRepository.findAllById(request.getHashtagID());
+        List<Hashtag> lists = hashtagRepository.findAllById(request.getHashtagID());
 
-        // Xóa tất cả các UserHashtag hiện có trước khi thêm mới
-        user.getUserHashtags().clear();
+        List<UserHashtag> userHashtagList = new ArrayList<>();
 
-        // Thêm các UserHashtag mới
-        for (Hashtag hashtag : hashtags) {
-            UserHashtag userHashtag = new UserHashtag();
-            userHashtag.setUser(user);
-            userHashtag.setHashtag(hashtag);
-            user.getUserHashtags().add(userHashtag);
+        for (Hashtag hashtag : lists) {
+            UserHashtag userHashtag = UserHashtag.builder()
+                    .hashtag(hashtag)
+                    .user(user)
+                    .build();
+            userHashtagList.add(userHashtag);
         }
+        user.setUserHashtags(userHashtagList);
 
         return userMapper.accountToAccountDTO(userRepository.save(user));
     }

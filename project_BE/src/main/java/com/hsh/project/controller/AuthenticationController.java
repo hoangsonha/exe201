@@ -45,7 +45,7 @@ public class AuthenticationController {
     public ResponseEntity<TokenResponse> userRegister(@Valid @RequestBody AccountVerificationRequest accountRegisterRequest) {
         try {
             TokenResponse tokenResponse = accountService.verificationUser(accountRegisterRequest);
-            return ResponseEntity.status(tokenResponse.getCode().equals("Success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST).body(tokenResponse);
+            return ResponseEntity.status(tokenResponse.getCode().equals("Success") ? HttpStatus.OK : HttpStatus.UNAUTHORIZED).body(tokenResponse);
         } catch (Exception e) {
             log.error("Cannot verification : {}", e.toString());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

@@ -34,8 +34,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import lombok.extern.slf4j.Slf4j;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -52,8 +55,10 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMediaRepository reviewMediaRepository;
     private final HashtagRepository hashtagRepository;
     private final LikeService likeService;
+
     private final RatingService ratingService;
     private final CheckReviewAIService checkReviewAIService;
+
 
     // Firebase
 
@@ -486,11 +491,6 @@ public class ReviewServiceImpl implements ReviewService {
                     searchTerm != null ? searchTerm : "",
                     EnumReviewStatus.PUBLISHED
             );
-            if (reviews.isEmpty()) {
-                reviews = reviewRepository.findByContentContainingIgnoreCaseAndStatus(
-                        searchTerm != null ? searchTerm : "",
-                        EnumReviewStatus.PUBLISHED);
-            }
         }
 
         return reviews.stream()
@@ -644,6 +644,23 @@ public class ReviewServiceImpl implements ReviewService {
                 .likes(likeDTOs)
                 .isSaved(isSaved)
 //                .isBlocked(isBlocked)
+                .build();
+    }
+
+    @Override
+    public UserSimpleDTO getReviewCreatorById(long id) {
+        log.info("Fetching creator for review ID: {}", id);
+        Review review = reviewRepository.findByReviewID(id)
+                .orElseThrow(() -> new ElementNotFoundException("Review not found with ID: " + id));
+        User creator = review.getUser();
+        if (creator == null) {
+            log.warn("No creator associated with review ID: {}", id);
+            return null;
+        }
+        log.debug("Creator found: user ID {}, username: {}", creator.getUserId(), creator.getUserName());
+        return UserSimpleDTO.builder()
+                .userId(creator.getUserId())
+                .userName(creator.getUserName())
                 .build();
     }
 

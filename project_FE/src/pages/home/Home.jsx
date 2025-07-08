@@ -70,7 +70,6 @@ const Home = () => {
   }, [])
 
   const handleCreatePostClick = () => {
-
     if (!user) {
       setShowLoginPrompt(true)
       return

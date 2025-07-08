@@ -30,10 +30,6 @@ const Review = ({ post, showCommentSection = false }) => {
   const mediaRef = useRef(null)
 
   const handlePostClick = () => {
-    if (!user) {
-      setShowLoginPrompt(true)
-      return
-    }
     navigate(`/post/${post.reviewID}`)
     window.scrollTo(0, 0)
   }
@@ -494,7 +490,7 @@ const Review = ({ post, showCommentSection = false }) => {
           onToggleComments={() => setShowComments(!showComments)}
         />
 
-        {showCommentSection && <CommentSection post={post} />}
+        {showCommentSection && <CommentSection post={post} user={user} />}
       </Card.Body>
     </Card>
   )

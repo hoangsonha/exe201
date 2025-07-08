@@ -30,7 +30,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ObjectResponse> getReviewByID(@PathVariable("id") long id) {
         ReviewResponseDTO user = reviewService.getReviewById(id);

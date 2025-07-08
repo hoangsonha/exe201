@@ -50,7 +50,6 @@ public class PaymentController {
             @RequestParam Integer userId,
             @RequestParam Double amount,
             @RequestParam String orderInfo,
-            @RequestParam(required = false) String returnUrl,
             Principal principal) {
         try {
             if (principal == null) {
@@ -74,7 +73,7 @@ public class PaymentController {
             params.put("vnp_OrderType", VNPayConfig.ORDER_TYPE);
             params.put("vnp_Locale", "vn");
             params.put("vnp_CreateDate", vnpayConfig.getCurrentDateTime());
-            params.put("vnp_ReturnUrl", returnUrl != null ? returnUrl : vnpayConfig.getReturnUrl());
+            params.put("vnp_ReturnUrl", vnpayConfig.getReturnUrl());
             params.put("vnp_IpAddr", vnpayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
 
             log.info("VNPay Parameters: {}", params);
@@ -115,13 +114,14 @@ public class PaymentController {
             @RequestParam String vnp_PayDate,
             @RequestParam String vnp_ResponseCode,
             @RequestParam String vnp_TransactionNo,
-            @RequestParam String vnp_TxnRef
-            ) {
+            @RequestParam String vnp_TxnRef,
+            @RequestParam String vnp_SecureHash // Add this parameter
+    ) {
         try {
             PaymentResponseDTO payment = paymentService.processPaymentCallback(
                     "28Y7O1J5", vnp_Amount, vnp_BankCode, vnp_BankTranNo, vnp_CardType,
-                    vnp_OrderInfo, vnp_PayDate, vnp_ResponseCode, vnp_TransactionNo, vnp_TxnRef, "85LBO963AVD9X30N4LKD3SGWA53GZZNE\r\n" + //
-                                                "");
+                    vnp_OrderInfo, vnp_PayDate, vnp_ResponseCode, vnp_TransactionNo, vnp_TxnRef, vnp_SecureHash.trim() // Pass the received hash
+            );
             if (payment == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ObjectResponse("Fail", "Invalid payment callback", null));

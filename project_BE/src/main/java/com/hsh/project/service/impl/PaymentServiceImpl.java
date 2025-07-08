@@ -79,7 +79,7 @@ public class PaymentServiceImpl implements PaymentService {
                                                     String vnp_TxnRef, String vnp_SecureHash) {
         log.info("Processing payment callback for transaction reference: {}", vnp_TxnRef);
 
-        // Verify secure hash
+        // Verify secure hash with all returned parameters
         Map<String, String> params = new HashMap<>();
         params.put("vnp_TmnCode", vnp_TmnCode);
         params.put("vnp_Amount", vnp_Amount);
@@ -91,6 +91,7 @@ public class PaymentServiceImpl implements PaymentService {
         params.put("vnp_ResponseCode", vnp_ResponseCode);
         params.put("vnp_TransactionNo", vnp_TransactionNo);
         params.put("vnp_TxnRef", vnp_TxnRef);
+        params.put("vnp_TransactionStatus", "00"); // From callback URL
 
         StringBuilder data = new StringBuilder();
         TreeMap<String, String> sortedParams = new TreeMap<>(params);
@@ -102,37 +103,43 @@ public class PaymentServiceImpl implements PaymentService {
             signData = signData.substring(0, signData.length() - 1);
         }
         String calculatedHash = hmacSHA512(vnpayConfig.getHashSecret(), signData);
+        String cleanSecureHash = vnp_SecureHash.trim();
 
-        if (!calculatedHash.equals(vnp_SecureHash)) {
+        log.info("All params for hash: {}", params);
+        log.info("Received vnp_SecureHash: {}", cleanSecureHash);
+        log.info("Calculated signData: {}", signData);
+        log.info("Calculated Hash: {}", calculatedHash);
+
+        if (!calculatedHash.equals(cleanSecureHash)) {
             log.warn("Secure hash mismatch for transaction reference: {}", vnp_TxnRef);
             return null;
         }
 
+        // Extract paymentId from vnp_TxnRef (e.g., userId part)
         long paymentId;
         try {
-            paymentId = Long.parseLong(vnp_TxnRef);
+            String[] parts = vnp_TxnRef.split("_");
+            if (parts.length > 1) {
+                paymentId = Long.parseLong(parts[0]); // Use userId (e.g., 3)
+            } else {
+                paymentId = Long.parseLong(vnp_TxnRef);
+            }
+            log.info("Extracted paymentId: {}", paymentId);
         } catch (NumberFormatException e) {
             log.error("Invalid transaction reference: {}", vnp_TxnRef, e);
             return null;
         }
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ElementNotFoundException("Payment not found with ID: " + paymentId));
+        // Find payment by userId and transaction reference
+        Payment payment = paymentRepository.findByUser_UserIdAndTransactionId(paymentId, vnp_TxnRef)
+                .orElseThrow(() -> new ElementNotFoundException("Payment not found with userId: " + paymentId + " and txnRef: " + vnp_TxnRef));
         
         EnumPaymentStatus status = determinePaymentStatus(vnp_ResponseCode);
         payment.setStatus(status);
-        payment.setTransactionId(vnp_TransactionNo);
+        payment.setTransactionId(vnp_TransactionNo); // Update with VNPay transaction number
         paymentRepository.save(payment);
 
         return mapToPaymentResponseDTO(payment);
-    }
-
-    private EnumPaymentStatus determinePaymentStatus(String responseCode) {
-        return switch (responseCode) {
-            case "00" -> EnumPaymentStatus.SUCCESS;
-            case "01" -> EnumPaymentStatus.CANCELLED;
-            default -> EnumPaymentStatus.FAILED;
-        };
     }
 
     @Override
@@ -142,6 +149,14 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ElementNotFoundException("User not found with ID: " + userId));
         List<Payment> payments = paymentRepository.findByUserOrderByCreatedAtDesc(user);
         return payments.stream().map(this::mapToPaymentResponseDTO).toList();
+    }
+
+        private EnumPaymentStatus determinePaymentStatus(String responseCode) {
+        return switch (responseCode) {
+            case "00" -> EnumPaymentStatus.SUCCESS;  // Successful payment
+            case "01" -> EnumPaymentStatus.CANCELLED; // Payment cancelled
+            default -> EnumPaymentStatus.FAILED;     // All other codes considered failed
+        };
     }
 
     private PaymentResponseDTO mapToPaymentResponseDTO(Payment payment) {

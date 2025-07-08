@@ -26,6 +26,12 @@ export const put = async (url, params = {}) => {
     return response;
 };
 
+export const patch = async (url, params = {}) => {
+    const response = await request.patch(url, params);
+
+    return response;
+};
+
 export const remove = async (url, params = {}) => {
     const response = await request.delete(url, params);
 

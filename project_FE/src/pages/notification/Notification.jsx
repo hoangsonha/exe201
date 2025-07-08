@@ -78,7 +78,7 @@ const Notification = () => {
     if (message.includes('commented on your review')) {
       const username = message.split(' ')[0]
       const comment = message.split("'")[1] || ''
-      return `${username} đã bình luận về đánh giá của bạn: '${comment}'`
+      return `${username} đã bình luận về bài đánh giá của bạn: '${comment}'`
     } else if (message.includes('replied to your comment')) {
       const username = message.split(' ')[0]
       const reply = message.split("'")[1] || ''

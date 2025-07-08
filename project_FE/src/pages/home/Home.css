@@ -16,7 +16,7 @@
   padding-top: 8rem;
   margin-left: 0.5rem;
   position: relative;
-  z-index: 100;
+  z-index: 98;
   height: calc(100vh);
 }
 
@@ -65,7 +65,7 @@
   background-size: 50px 50px;
   padding: 20px;
   position: relative;
-  z-index: 2;
+  z-index: 99;
   overflow-y: auto;
   height: calc(100vh - 6rem);
 }

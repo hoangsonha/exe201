@@ -60,7 +60,7 @@ const PostDetail = () => {
   return (
     <div className="post-detail-container">
       <Header />
-      <div className="home-content">
+      <div className="post-detail-content">
         <Sidebar />
         <div className="main-content">
           <div className="content-container">

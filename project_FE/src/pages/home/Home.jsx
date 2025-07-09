@@ -70,7 +70,6 @@ const Home = () => {
   }, [])
 
   const handleCreatePostClick = () => {
-
     if (!user) {
       setShowLoginPrompt(true)
       return
@@ -100,7 +99,6 @@ const Home = () => {
 
   const createReviewAPI = async (formData) => {
     try {
-      // setLoading(true)
       const resultPurposes = await createReview(formData)
 
       if (resultPurposes.status == "Success") {
@@ -165,7 +163,6 @@ const Home = () => {
   return (
     <div className="home-page">
       <Header />
-      <Advertisement />
       <div className="home-content">
         <Sidebar />
         <div className="main-content">
@@ -271,6 +268,7 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <Advertisement />
       </div>
     </div>
   )

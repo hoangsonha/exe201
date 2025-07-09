@@ -22,7 +22,7 @@ public class CorsConfig {
                 "http://localhost:3001",
                 "http://toireview.net",
                 "https://toireview.net"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setExposedHeaders(List.of("Content-Disposition"));
         corsConfiguration.setAllowCredentials(true);

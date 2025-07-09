@@ -44,7 +44,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
       setLiked(isLiked)
       setHearted(isHearted)
 
-      // Set user's existing rating if available
       const existingRating = post.ratings?.find(rating => rating.userId === user.id)
       if (existingRating) {
         setUserRating(existingRating.stars)
@@ -160,7 +159,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
         setUserRating(rating)
         addToast("Đánh giá của bạn đã được lưu thành công", true, false)
         
-        // Update the post ratings in the review state
         const updatedRatings = review.ratings ? [...review.ratings] : []
         const existingRatingIndex = updatedRatings.findIndex(r => r.userId === user.id)
         
@@ -187,7 +185,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
       if (resultPurposes.status == "Success") {
 
         setReview(resultPurposes.data)
-        addToast("Bạn đã lưu lại bài đăng thành công", true, false)
       } else {
         addToast(`Đã có lỗi, Vui lòng thử lại`, false, true)
       }
@@ -203,7 +200,6 @@ const ReviewActions = ({ post, onToggleComments }) => {
 
       if (resultPurposes.status == "Success") {
         setReview(resultPurposes.data)
-        addToast("Bạn đã gỡ lưu lại bài đăng thành công", true, false);
       } else {
         addToast(`Đã có lỗi, Vui lòng thử lại`, false, true);
       }

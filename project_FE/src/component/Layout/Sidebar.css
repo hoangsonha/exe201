@@ -86,3 +86,16 @@
   margin-left: -10rem;
   margin-bottom: -1.5rem;
 }
+
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 0.2px;
+  width: 11px;
+  height: 11px;
+  background-color: red;
+  border-radius: 50%;
+}
+.sidebar-icon-container {
+  position: relative;
+}

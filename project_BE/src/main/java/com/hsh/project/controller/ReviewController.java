@@ -29,17 +29,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
-    @GetMapping("/{id}")
-    public ResponseEntity<ObjectResponse> getReviewByID(@PathVariable("id") long id) {
-        ReviewResponseDTO user = reviewService.getReviewById(id);
-        return user != null
-                ? ResponseEntity.status(HttpStatus.OK)
-                .body(new ObjectResponse("Success", "Get user by ID successfully", user))
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ObjectResponse("Fail", "Get user by ID failed", null));
-    }
-
     @GetMapping("/search")
     public ResponseEntity<ObjectResponse> searchReview(@RequestParam(name = "search", required = false) String search,
                                                        @RequestParam(name = "hashtags", required = false) List<String> hashtags) {

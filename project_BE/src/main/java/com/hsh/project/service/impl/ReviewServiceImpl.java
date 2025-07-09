@@ -12,11 +12,7 @@ import com.hsh.project.dto.response.*;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.pojo.*;
-import com.hsh.project.pojo.enums.EnumHashtagStatus;
-import com.hsh.project.pojo.enums.EnumLikeType;
-import com.hsh.project.pojo.enums.EnumReviewStatus;
-import com.hsh.project.pojo.enums.EnumReviewUploadType;
-import com.hsh.project.pojo.enums.EnumTargetType;
+import com.hsh.project.pojo.enums.*;
 import com.hsh.project.repository.*;
 import com.hsh.project.service.spec.CheckReviewAIService;
 import com.hsh.project.service.spec.LikeService;
@@ -184,6 +180,50 @@ public class ReviewServiceImpl implements ReviewService {
             review.setDeleted(true);
         } else {
             review.setStatus(EnumReviewStatus.PUBLISHED);
+
+            List<String> hashtags = review.getReviewHashtags().stream().map(rvht -> rvht.getHashtag().getTag()).toList();
+
+            List<User> users = new ArrayList<>();
+
+            String stringNoti = "";
+
+            for (int i = 0; i < hashtags.size(); i++) {
+                Hashtag tag = hashtagRepository.findByTag(hashtags.get(i));
+
+                String com = ", ";
+
+                if (i == hashtags.size() -1) {
+                    com = ".";
+                }
+
+                if (tag != null) {
+                    stringNoti = tag.getTag() + com;
+
+                    List<UserHashtag> userHashtags = tag.getUserHashtags();
+                    for (UserHashtag userHashtag : userHashtags) {
+                        users.add(userHashtag.getUser());
+                    }
+                }
+            }
+
+            users = users.stream().filter(u -> u != user).toList();
+
+            List<Notification> notifications = new ArrayList<>();
+
+            if (users.size() > 0) {
+                for (User user1 : users) {
+                    Notification notification = Notification.builder()
+                            .isRead(false)
+                            .content("Đã có 1 bài viết liên quan tới chủ đề " + stringNoti)
+                            .user(user1)
+                            .notificationType(EnumNotificationType.REVIEW_PUBLISHED)
+                            .isRead(false)
+                            .review(review)
+                            .build();
+                    notifications.add(notification);
+                }
+            }
+            review.setNotifications(notifications);
         }
 
         return this.mapReviewToDTOWithoutUser(reviewRepository.save(review));
@@ -221,26 +261,6 @@ public class ReviewServiceImpl implements ReviewService {
             return "Video upload thất bại";
         }
     }
-
-//    private String uploadFile(File file, String fileName, String contentType) throws IOException {
-//        String folder = folderContainImage + "/" + fileName;
-//        BlobId blobId = BlobId.of(bucketName, folder);
-//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-//                .setContentType(contentType)  // <-- đúng loại file thật
-//                .build();
-//
-//        String firebaseKeyPath = System.getenv("FIREBASE_KEY_PATH");
-//        System.out.println("🔍 FIREBASE_KEY_PATH = " + firebaseKeyPath);
-//        System.out.println("🔍 FIREBASE_KEY_PATH = " + fileConfigFirebase);
-//
-//        try (InputStream inputStream = ReviewServiceImpl.class.getClassLoader().getResourceAsStream(fileConfigFirebase)) {
-//            Credentials credentials = GoogleCredentials.fromStream(inputStream);
-//            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-//            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-//        }
-//
-//        return String.format(urlFirebase, URLEncoder.encode(folder, StandardCharsets.UTF_8));
-//    }
 
     private String uploadFile(File file, String fileName, String contentType) throws IOException {
         String folder = folderContainImage + "/" + fileName;

@@ -41,6 +41,12 @@ const Review = ({ post, showCommentSection = false }) => {
 
   const handleOptionAction = (e, action) => {
     e.stopPropagation()
+    if (action === 'share') {
+      handleShare()
+      setShowOptions(false)
+      return
+    }
+
     if (!user) {
       setShowLoginPrompt(true)
       return
@@ -56,11 +62,7 @@ const Review = ({ post, showCommentSection = false }) => {
       case 'report':
         handleReport()
         break
-      case 'share':
-        handleShare()
-        break
     }
-
     setShowOptions(false)
   }
 

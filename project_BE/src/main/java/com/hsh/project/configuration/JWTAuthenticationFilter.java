@@ -46,8 +46,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             "/api/v1/public/**",
             "/api/v1/hashtags/non-paging",
             "/api/v1/reviews/top-trending",
-            "/api/v1/reviews/search",
-            "/api/v1/payments/callback"
+            "/api/v1/reviews/search"
     );
 
     public String getToken(HttpServletRequest request) {

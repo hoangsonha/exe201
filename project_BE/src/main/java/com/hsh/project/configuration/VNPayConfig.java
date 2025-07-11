@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -16,6 +18,7 @@ import java.util.*;
 @Component
 @Slf4j
 public class VNPayConfig {
+
     @Value("${vnpay.tmn.code:28Y7O1J5}")
     private String tmnCode;
 
@@ -28,12 +31,12 @@ public class VNPayConfig {
     public static final String VNPAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static final String VNP_VERSION = "2.1.0";
     public static final String VNP_COMMAND = "pay";
-    public static final String ORDER_TYPE = "250000"; // Updated to a likely valid value (verify with VNPay)
+    public static final String ORDER_TYPE = "2500000"; // Corrected to match your log amount
 
     @PostConstruct
     public void init() {
         log.info("VNPay Config initialized with tmnCode: {}, hashSecret: {}, returnUrl: {}", tmnCode, hashSecret, returnUrl);
-        if (hashSecret == null || hashSecret.isEmpty()) {
+        if (hashSecret == null || hashSecret.trim().isEmpty()) {
             throw new IllegalStateException("VNPay hash secret is not properly injected");
         }
     }
@@ -64,51 +67,102 @@ public class VNPayConfig {
         return sdf.format(new Date());
     }
 
-    public String hashAllFields(Map<String, String> fields) {
+    // public String hashAllFields(Map<String, String> fields) {
+    //     List<String> fieldNames = new ArrayList<>(fields.keySet());
+    //     Collections.sort(fieldNames);
+    //     StringBuilder sb = new StringBuilder();
+    //     for (String fieldName : fieldNames) {
+    //         String fieldValue = fields.get(fieldName);
+    //         if (fieldValue != null && !fieldValue.isEmpty() && !fieldName.equals("vnp_SecureHash")) {
+    //             sb.append(fieldName).append("=").append(fieldValue).append("&"); // No URL encoding, matches first example
+    //         }
+    //     }
+    //     if (sb.length() > 0) {
+    //         sb.setLength(sb.length() - 1); // Remove trailing "&"
+    //     }
+    //     String hashData = sb.toString();
+    //     log.info("Hash data string: {}", hashData);
+    //     return hmacSHA512(hashData, hashSecret);
+    // }
+
+        public String hashAllFields(Map<String, String> fields) {
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
+        Collections.sort(fieldNames);
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : new TreeMap<>(fields).entrySet()) {
-            String fieldName = entry.getKey();
-            String fieldValue = entry.getValue();
+        for (String fieldName : fieldNames) {
+            String fieldValue = fields.get(fieldName);
             if (fieldValue != null && !fieldValue.isEmpty() && !fieldName.equals("vnp_SecureHash")) {
-                sb.append(fieldName).append("=").append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8)).append("&");
+                try {
+                    sb.append(fieldName).append("=").append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8)).append("&");
+                } catch (Exception e) {
+                    log.error("Error encoding field {}: {}", fieldName, e.getMessage());
+                    throw new RuntimeException("Failed to encode hash data", e);
+                }
             }
         }
         if (sb.length() > 0) {
             sb.setLength(sb.length() - 1); // Remove trailing "&"
         }
-        log.info("Hash data string: {}", sb);
-        return hmacSHA512(sb.toString(), hashSecret);
+        String hashData = sb.toString();
+        log.info("Hash data string: {}", hashData);
+        return hmacSHA512(hashData, hashSecret);
     }
 
+    public static String createQueryString(Map<String, String> params) throws UnsupportedEncodingException {
+        TreeMap<String, String> sortedParams = new TreeMap<>(params);
+        StringBuilder query = new StringBuilder();
+        for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+                query.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                query.append("=");
+                query.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                query.append("&");
+            }
+        }
+        return query.length() > 0 ? query.substring(0, query.length() - 1) : ""; // Xóa "&" cuối cùng
+    }
+
+    // Removed createQueryString as it's not used in the first example; add back if needed with:
+    /*
     public static String createQueryString(Map<String, String> params) {
         StringBuilder query = new StringBuilder();
         for (Map.Entry<String, String> entry : new TreeMap<>(params).entrySet()) {
             String fieldValue = entry.getValue();
             if (fieldValue != null && !fieldValue.isEmpty()) {
-                query.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
-                     .append("=")
-                     .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8))
-                     .append("&");
+                try {
+                    query.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
+                         .append("=")
+                         .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8))
+                         .append("&");
+                } catch (Exception e) {
+                    log.error("Error encoding query parameter {}: {}", entry.getKey(), e.getMessage(), e);
+                    throw new RuntimeException("Failed to encode query string", e);
+                }
             }
         }
-        String result = query.length() > 0 ? query.substring(0, query.length() - 1) : "";
-        log.info("Query String: {}", result);
-        return result;
+        return query.length() > 0 ? query.substring(0, query.length() - 1) : "";
     }
+    */
 
-    public static String hmacSHA512(String data, String key) {
+    public String hmacSHA512(String data, String key) {
         try {
             Mac hmacSHA512 = Mac.getInstance("HmacSHA512");
             SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
             hmacSHA512.init(secretKey);
             byte[] bytes = hmacSHA512.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : bytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
+            return bytesToHex(bytes);
         } catch (Exception e) {
+            log.error("Failed to calculate HMAC SHA512: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to calculate HMAC SHA512", e);
         }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = String.format("%02x", b);
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

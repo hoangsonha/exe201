@@ -2,7 +2,6 @@ package com.hsh.project.controller;
 
 import com.hsh.project.configuration.VNPayConfig;
 import com.hsh.project.dto.internal.ObjectResponse;
-import com.hsh.project.dto.request.PaymentRequestDTO;
 import com.hsh.project.dto.response.PaymentResponseDTO;
 import com.hsh.project.pojo.Payment;
 import com.hsh.project.pojo.User;
@@ -10,11 +9,11 @@ import com.hsh.project.pojo.enums.EnumPaymentStatus;
 import com.hsh.project.repository.PaymentRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.service.spec.PaymentService;
-
+import io.jsonwebtoken.security.InvalidKeyException;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,21 +35,20 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    private VNPayConfig vnpayConfig;
+    private UserRepository userRepository;
 
+    @Autowired
+    private PaymentService paymentService;
 
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/initiate")
-    public ResponseEntity<ObjectResponse> initiatePayment(
+    public ResponseEntity<ObjectResponse> createPayment(
             @RequestParam Integer userId,
             @RequestParam Double amount,
             @RequestParam String orderInfo,
-            @RequestParam(required = false) String returnUrl,
             Principal principal) {
         try {
             if (principal == null) {
@@ -63,38 +61,8 @@ public class PaymentController {
                         .body(new ObjectResponse("Fail", "User not found", null));
             }
 
-            Map<String, String> params = new TreeMap<>(); // Use TreeMap for sorted parameters
-            params.put("vnp_Version", VNPayConfig.VNP_VERSION);
-            params.put("vnp_Command", VNPayConfig.VNP_COMMAND);
-            params.put("vnp_TmnCode", vnpayConfig.getTmnCode());
-            params.put("vnp_Amount", String.valueOf((long) (amount * 100))); // Correct amount (VND * 100)
-            params.put("vnp_CurrCode", "VND");
-            params.put("vnp_TxnRef", userId + "_" + vnpayConfig.getCurrentDateTime());
-            params.put("vnp_OrderInfo", orderInfo != null ? orderInfo : "Payment for user " + userId);
-            params.put("vnp_OrderType", VNPayConfig.ORDER_TYPE);
-            params.put("vnp_Locale", "vn");
-            params.put("vnp_CreateDate", vnpayConfig.getCurrentDateTime());
-            params.put("vnp_ReturnUrl", returnUrl != null ? returnUrl : vnpayConfig.getReturnUrl());
-            params.put("vnp_IpAddr", vnpayConfig.getIpAddress(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
-
-            log.info("VNPay Parameters: {}", params);
-            String hashData = vnpayConfig.hashAllFields(params);
-            params.put("vnp_SecureHash", hashData);
-            log.info("Generated vnp_SecureHash: {}", hashData);
-
-            String querytekijString = VNPayConfig.createQueryString(params);
-            String paymentUrl = VNPayConfig.VNPAY_URL + "?" + querytekijString;
-            log.info("Generated Payment URL: {}", paymentUrl);
-
-            user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-
-            Payment payment = new Payment();
-            payment.setUser(user);
-            payment.setAmount(amount);
-            payment.setStatus(EnumPaymentStatus.PENDING);
-            payment.setTransactionId(params.get("vnp_TxnRef"));
-            paymentRepository.save(payment);
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            String paymentUrl = paymentService.createPaymentUrl(userId, amount, orderInfo, attributes.getRequest());
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment initiated", paymentUrl));
@@ -105,33 +73,53 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/callback")
-    public ResponseEntity<ObjectResponse> processPaymentCallback(
-            @RequestParam String vnp_Amount,
-            @RequestParam String vnp_BankCode,
-            @RequestParam String vnp_BankTranNo,
-            @RequestParam String vnp_CardType,
-            @RequestParam String vnp_OrderInfo,
-            @RequestParam String vnp_PayDate,
-            @RequestParam String vnp_ResponseCode,
-            @RequestParam String vnp_TransactionNo,
-            @RequestParam String vnp_TxnRef
-            ) {
+    @PermitAll
+    @RequestMapping(value = "/callback", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<ObjectResponse> paymentCallback(HttpServletRequest request) {
         try {
-            PaymentResponseDTO payment = paymentService.processPaymentCallback(
-                    "28Y7O1J5", vnp_Amount, vnp_BankCode, vnp_BankTranNo, vnp_CardType,
-                    vnp_OrderInfo, vnp_PayDate, vnp_ResponseCode, vnp_TransactionNo, vnp_TxnRef, "85LBO963AVD9X30N4LKD3SGWA53GZZNE\r\n" + //
-                                                "");
+            PaymentResponseDTO payment = paymentService.processPaymentCallback(request);
             if (payment == null) {
+                log.warn("PaymentService returned null for callback. Check hash or transaction reference.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ObjectResponse("Fail", "Invalid payment callback", null));
             }
+            log.info("Payment processed successfully for transaction reference: {}", request.getParameter("vnp_TxnRef"));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment processed", payment));
+        } catch (InvalidKeyException e) {
+            log.error("Invalid key error processing payment callback: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Fail", "Invalid configuration for payment processing", null));
         } catch (Exception e) {
             log.error("Error processing payment callback: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ObjectResponse("Fail", "Failed to process payment", null));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
+    @GetMapping("/success")
+    public ResponseEntity<ObjectResponse> paymentSuccess(@RequestParam Integer userId, @RequestParam String vnp_TxnRef) {
+        try {
+            Payment payment = paymentRepository.findByUser_UserIdAndTransactionId(userId.longValue(), vnp_TxnRef)
+                    .orElseThrow(() -> new RuntimeException("Payment not found with userId: " + userId + " and txnRef: " + vnp_TxnRef));
+            if (payment.getStatus() != EnumPaymentStatus.SUCCESS) {
+                throw new RuntimeException("Payment not successful for userId: " + userId);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", payment.getUser().getUserId().intValue());
+            response.put("amount", payment.getAmount());
+            response.put("transactionId", payment.getTransactionId());
+            response.put("createdAt", payment.getCreatedAt().toString());
+            response.put("userName", payment.getUser().getUserName());
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ObjectResponse("Success", "Payment details retrieved", response));
+        } catch (Exception e) {
+            log.error("Error fetching payment success details: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ObjectResponse("Fail", "Failed to retrieve payment details", null));
         }
     }
 

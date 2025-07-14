@@ -260,7 +260,7 @@ const Home = () => {
                     ))
                   ) : (
                     <div className="profile-no-content">
-                      <p> {user ? 'Chưa có review nào liên quan tới chủ đề bạn chọn' : 'Chưa có review nào'}</p>
+                      <p> {user ? 'Chưa có review nào liên quan tới chủ đề bạn chọn' : 'Chưa có review nào được đăng'}</p>
                     </div>
                   )}
                 </div>

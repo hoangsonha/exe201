@@ -7,56 +7,12 @@ import toi from '@/assets/toi.png'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
 import { getUserById } from '@/serviceAPI/userService'
+import { getAllSubscriptionType, syncUsers } from '../../serviceAPI/subscriptionService'
+
 import './Upgrade.css'
 
-const getPackages = () => {
-  return [
-    {
-      id: 1,
-      title: "tỏi thường",
-      price: "miễn phí",
-      originalPrice: null,
-      period: "tháng",
-      features: [
-        "không có chức năng tỏi AI tóm tắt",
-        "không có boost tương tác bài viết",
-        "không đổi được tên & ava",
-        "có quảng cáo"
-      ],
-      isCurrentPlan: true,
-      isBuyable: false
-    },
-    {
-      id: 2,
-      title: "tỏi VIP",
-      price: "25.000",
-      originalPrice: "35.000",
-      period: "tháng",
-      features: [
-        "tỏi AI giúp bạn tóm tắt review nhanh hơn",
-        "các bài viết của bạn sẽ được boost tương tác",
-        "bạn có thể customize nhiều thứ hơn- đổi tên & ava xịn sò",
-        "không bị quảng cáo"
-      ],
-      isCurrentPlan: false,
-      isBuyable: true
-    },
-    {
-      id: 3,
-      title: "tỏi business",
-      price: "100.000",
-      originalPrice: null,
-      period: "tháng",
-      features: [
-        "tài khoản được đánh dấu doanh nghiệp - đổi ava và tên, tạo tag review chính thức",
-        "có thể quảng cáo trên toireview",
-        "xem analytics từ tỏi AI - xu hướng của mọi người là gì"
-      ],
-      isCurrentPlan: false,
-      isBuyable: false
-    }
-  ]
-}
+const BANK_ID = "970405"
+const ACCOUNT_NO = "5404205492644"
 
 const Upgrade = () => {
   const [showPayment, setShowPayment] = useState(false)
@@ -67,15 +23,29 @@ const Upgrade = () => {
   const { user } = useContext(UserContext)
   const navigate = useNavigate()
 
+  const info = user.id + selectedPackage
+
+  const URL_PAY = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.jpg?amount=${selectedPackage?.price}&addInfo=&accountName=TOIREVIEW`
+
   useEffect(() => {
     fetchUserInfo()
-    const packageData = getPackages()
-    setPackages(packageData)
+    // const packageData = getPackages()
+    // setPackages(packageData)
   }, [])
+
+  console.log(packages)
 
   const fetchUserInfo = async () => {
     try {
       const result = await getUserById(user.id)
+
+      const subscriptionsType = await getAllSubscriptionType()
+
+      const syncUser = await syncUsers()
+
+      console.log(syncUser)
+
+      setPackages(subscriptionsType.data.data)
       setUserData(result.data)
     } catch (error) {
       console.error("Lỗi khi lấy thông tin người dùng:", error)
@@ -186,23 +156,23 @@ const Upgrade = () => {
                   từ {p.originalPrice} VND
                 </span>
               )}
-              {p.price}{p.price !== "miễn phí" && <span style={{ fontSize: "2rem" }}> VND</span>}
+              {p.price}{p.price !== 0 && <span style={{ fontSize: "2rem" }}> VND</span>}
             </div>
             
-            <div className="package-period">/{p.period}</div>
+            <div className="package-period">/{p.duration == 0 ? "30 ngày" : `${p.duration} ngày`}</div>
             
             <div className="package-features">
-              {p.features.map((feature, index) => (
+              {p.features.split(', ').map((feature, index) => (
                 <div key={index} className="package-feature">{feature}</div>
               ))}
             </div>
             
             <Button 
-              className={`package-button ${p.isCurrentPlan ? 'current-package' : ''}`} 
+              className={`package-button ${userData.subscriptionId == p.id ? 'current-package' : ''}`} 
               onClick={() => p.isBuyable && handleUpgradePackage(p)}
-              disabled={!p.isBuyable || p.isCurrentPlan}
+              disabled={userData.subscriptionId == p.id}
             >
-              {p.title === "tỏi thường" ? "gói của bạn" : "chọn gói này"}
+              {userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}
             </Button>
           </div>
         ))}

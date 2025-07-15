@@ -74,7 +74,7 @@ public class PaymentController {
     }
 
     @PermitAll
-    @getMapping(value = "/callback")
+    @GetMapping(value = "/callback")
     public ResponseEntity<ObjectResponse> paymentCallback(HttpServletRequest request) {
         try {
             PaymentResponseDTO payment = paymentService.processPaymentCallback(request);

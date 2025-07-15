@@ -45,7 +45,7 @@ public class DatabaseInit implements CommandLineRunner {
         initPolicies();
         initUserLegalAcceptances();
         initSubscriptionTypes();
-        initUserSubscriptions();
+//        initUserSubscriptions();
         initHashtags();
         initReviews();
         initReviewHashtags();
@@ -211,21 +211,21 @@ public class DatabaseInit implements CommandLineRunner {
         }
     }
 
-    private void initUserSubscriptions() {
-        if (userSubscriptionRepository.count() == 0) {
-            User premiumUser = userRepository.findByUserName("premium_user");
-            SubscriptionType premiumMonthly = subscriptionTypeRepository.findByName("Premium Monthly");
-
-            UserSubscription subscription = new UserSubscription();
-            subscription.setUser(premiumUser);
-            subscription.setSubscriptionType(premiumMonthly);
-            subscription.setStartDate(LocalDateTime.now());
-            subscription.setEndDate(LocalDateTime.now().plusDays(30));
-            subscription.setIsActive(true);
-
-            userSubscriptionRepository.save(subscription);
-        }
-    }
+//    private void initUserSubscriptions() {
+//        if (userSubscriptionRepository.count() == 0) {
+//            User premiumUser = userRepository.findByUserName("premium_user");
+//            SubscriptionType premiumMonthly = subscriptionTypeRepository.findByName("Premium Monthly");
+//
+//            UserSubscription subscription = new UserSubscription();
+//            subscription.setUser(premiumUser);
+//            subscription.setSubscriptionType(premiumMonthly);
+//            subscription.setStartDate(LocalDateTime.now());
+//            subscription.setEndDate(LocalDateTime.now().plusDays(30));
+//            subscription.setIsActive(true);
+//
+//            userSubscriptionRepository.save(subscription);
+//        }
+//    }
 
     private void initHashtags() {
         if (hashtagRepository.count() == 0) {

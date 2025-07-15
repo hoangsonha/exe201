@@ -1,5 +1,7 @@
 package com.hsh.project.pojo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,5 +32,6 @@ public class UserSubscription extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "subcription_type_id", referencedColumnName = "id")
+    @JsonManagedReference
     SubscriptionType subscriptionType;
 }

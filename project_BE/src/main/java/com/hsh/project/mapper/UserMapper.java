@@ -4,6 +4,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.response.HashTagResponseDTO;
 import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.UserHashtag;
+import com.hsh.project.pojo.UserSubscription;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -24,6 +25,7 @@ public interface UserMapper {
     @Mapping(source = "deleted", target = "deleted")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "subscriptions", target = "subscriptionId", qualifiedByName = "getActiveSubscriptionId")
     @Mapping(source = "userHashtags", target = "listHashTagUser", qualifiedByName = "mapUserHashtagToHashtagDTO")
     UserDTO accountToAccountDTO(User user);
 
@@ -35,5 +37,16 @@ public interface UserMapper {
                 .map(UserHashtag::getHashtag)
                 .map(tag -> new HashTagResponseDTO(tag.getHashtagID(), tag.getTag()))
                 .collect(Collectors.toList());
+    }
+
+    @Named("getActiveSubscriptionId")
+    default Long getActiveSubscriptionId(List<UserSubscription> subscriptions) {
+        if (subscriptions == null) return null;
+
+        return subscriptions.stream()
+                .filter(UserSubscription::getIsActive)
+                .findFirst()
+                .map(v -> v.getSubscriptionType().getId())
+                .orElse(null);
     }
 }

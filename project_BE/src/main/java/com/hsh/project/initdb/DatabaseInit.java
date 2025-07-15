@@ -202,7 +202,7 @@ public class DatabaseInit implements CommandLineRunner {
             free.setFeatures("không có chức năng tỏi AI tóm tắt, không có boost tương tác bài viết, không đổi được tên & ava, có quảng cáo");
 
             SubscriptionType premiumMonthly = new SubscriptionType();
-            premiumMonthly.setName("Premium Monthly");
+            premiumMonthly.setName("VIP");
             premiumMonthly.setPrice(25000F);
             premiumMonthly.setDuration(30);
             premiumMonthly.setFeatures("");
@@ -210,11 +210,11 @@ public class DatabaseInit implements CommandLineRunner {
             premiumMonthly.setTitle("tỏi VIP");
 
             SubscriptionType premiumYearly = new SubscriptionType();
-            premiumYearly.setName("Premium Yearly");
-            premiumYearly.setPrice(99.99f);
-            premiumYearly.setDuration(365);
+            premiumYearly.setName("Business");
+            premiumYearly.setPrice(100000f);
+            premiumYearly.setDuration(30);
             premiumYearly.setFeatures("tài khoản được đánh dấu doanh nghiệp - đổi ava và tên, tạo tag review chính thức, có thể quảng cáo trên toireview, xem analytics từ tỏi AI - xu hướng của mọi người là gì");
-            premiumYearly.setOriginalPrice(100000F);
+            premiumYearly.setOriginalPrice(150000F);
             premiumYearly.setTitle("tỏi business");
 
             subscriptionTypeRepository.saveAll(List.of(free, premiumMonthly, premiumYearly));
@@ -225,7 +225,7 @@ public class DatabaseInit implements CommandLineRunner {
         if (userSubscriptionRepository.count() == 0) {
             List<User> users = userRepository.findAll();
 
-            Optional<SubscriptionType> subscriptionType = subscriptionTypeRepository.findById(1);
+            SubscriptionType subscriptionType = subscriptionTypeRepository.findByName("Free");
 
             if (subscriptionType != null) {
                 for (User user : users) {
@@ -233,7 +233,7 @@ public class DatabaseInit implements CommandLineRunner {
                     LocalDateTime localDate = LocalDateTime.now();
                     UserSubscription userSubscription = UserSubscription.builder()
                             .user(user)
-                            .subscriptionType(subscriptionType.get())
+                            .subscriptionType(subscriptionType)
                             .isActive(true)
                             .startDate(localDate)
                             .endDate(null)

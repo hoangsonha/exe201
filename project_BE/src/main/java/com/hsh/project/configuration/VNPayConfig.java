@@ -25,7 +25,7 @@ public class VNPayConfig {
     @Value("${vnpay.hash.secret:85LBO963AVD9X30N4LKD3SGWA53GZZNE}")
     private String hashSecret;
 
-    @Value("${vnpay.return.url:http://103.176.24.249:8081/api/v1/payments/callback}")
+    @Value("${vnpay.return.url:http://localhost:8081/api/v1/payments/callback}")
     private String returnUrl;
 
     public static final String VNPAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";

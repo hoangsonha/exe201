@@ -43,26 +43,35 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @PostMapping("/initiate")
     public ResponseEntity<ObjectResponse> createPayment(
             @RequestParam Integer userId,
             @RequestParam Double amount,
-            @RequestParam String orderInfo,
-            Principal principal) {
+            @RequestParam String orderInfo) {
         try {
-            if (principal == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ObjectResponse("Fail", "User not authenticated", null));
-            }
-            User user = userRepository.findByEmail(principal.getName());
+            // Find user by userId instead of email from Principal
+            User user = userRepository.findById(userId).orElse(null);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ObjectResponse("Fail", "User not found", null));
             }
 
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            // Retrieve request attributes for payment URL creation
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
+                    .getRequestAttributes();
+            if (attributes == null) {
+                log.error("ServletRequestAttributes is null");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ObjectResponse("Fail", "Request context unavailable", null));
+            }
+
+            // Create payment URL
             String paymentUrl = paymentService.createPaymentUrl(userId, amount, orderInfo, attributes.getRequest());
+            if (paymentUrl == null) {
+                log.error("Payment URL creation failed");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ObjectResponse("Fail", "Failed to create payment URL", null));
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment initiated", paymentUrl));
@@ -73,8 +82,7 @@ public class PaymentController {
         }
     }
 
-    @PermitAll
-    @GetMapping(value = "/callback")
+    @GetMapping("/callback")
     public ResponseEntity<ObjectResponse> paymentCallback(HttpServletRequest request) {
         try {
             PaymentResponseDTO payment = paymentService.processPaymentCallback(request);
@@ -83,7 +91,8 @@ public class PaymentController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ObjectResponse("Fail", "Invalid payment callback", null));
             }
-            log.info("Payment processed successfully for transaction reference: {}", request.getParameter("vnp_TxnRef"));
+            log.info("Payment processed successfully for transaction reference: {}",
+                    request.getParameter("vnp_TxnRef"));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment processed", payment));
         } catch (InvalidKeyException e) {
@@ -97,12 +106,13 @@ public class PaymentController {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/success")
-    public ResponseEntity<ObjectResponse> paymentSuccess(@RequestParam Integer userId, @RequestParam String vnp_TxnRef) {
+    public ResponseEntity<ObjectResponse> paymentSuccess(@RequestParam Integer userId,
+            @RequestParam String vnp_TxnRef) {
         try {
             Payment payment = paymentRepository.findByUser_UserIdAndTransactionId(userId.longValue(), vnp_TxnRef)
-                    .orElseThrow(() -> new RuntimeException("Payment not found with userId: " + userId + " and txnRef: " + vnp_TxnRef));
+                    .orElseThrow(() -> new RuntimeException(
+                            "Payment not found with userId: " + userId + " and txnRef: " + vnp_TxnRef));
             if (payment.getStatus() != EnumPaymentStatus.SUCCESS) {
                 throw new RuntimeException("Payment not successful for userId: " + userId);
             }
@@ -123,20 +133,18 @@ public class PaymentController {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER') or hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/history")
-    public ResponseEntity<ObjectResponse> getPaymentHistory(Principal principal) {
+    public ResponseEntity<ObjectResponse> getPaymentHistory(@RequestParam Integer userId) {
         try {
-            if (principal == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ObjectResponse("Fail", "User not authenticated", null));
-            }
-            User user = userRepository.findByEmail(principal.getName());
+            // Find user by userId
+            User user = userRepository.findById(userId).orElse(null);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ObjectResponse("Fail", "User not found", null));
             }
-            List<PaymentResponseDTO> history = paymentService.getPaymentHistory(user.getUserId().intValue());
+
+            // Retrieve payment history
+            List<PaymentResponseDTO> history = paymentService.getPaymentHistory(userId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment history retrieved", history));
         } catch (Exception e) {

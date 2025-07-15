@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class DatabaseInit implements CommandLineRunner {
         initPolicies();
         initUserLegalAcceptances();
         initSubscriptionTypes();
-//        initUserSubscriptions();
+        initUserSubscriptions();
         initHashtags();
         initReviews();
         initReviewHashtags();
@@ -196,36 +197,57 @@ public class DatabaseInit implements CommandLineRunner {
             free.setName("Free");
             free.setPrice(0f);
             free.setDuration(0);
+            free.setTitle("tỏi thường");
+            free.setOriginalPrice(null);
+            free.setFeatures("không có chức năng tỏi AI tóm tắt, không có boost tương tác bài viết, không đổi được tên & ava, có quảng cáo");
 
             SubscriptionType premiumMonthly = new SubscriptionType();
             premiumMonthly.setName("Premium Monthly");
-            premiumMonthly.setPrice(9.99f);
+            premiumMonthly.setPrice(25000F);
             premiumMonthly.setDuration(30);
+            premiumMonthly.setFeatures("");
+            premiumMonthly.setOriginalPrice(35000F);
+            premiumMonthly.setTitle("tỏi VIP");
 
             SubscriptionType premiumYearly = new SubscriptionType();
             premiumYearly.setName("Premium Yearly");
             premiumYearly.setPrice(99.99f);
             premiumYearly.setDuration(365);
+            premiumYearly.setFeatures("tài khoản được đánh dấu doanh nghiệp - đổi ava và tên, tạo tag review chính thức, có thể quảng cáo trên toireview, xem analytics từ tỏi AI - xu hướng của mọi người là gì");
+            premiumYearly.setOriginalPrice(100000F);
+            premiumYearly.setTitle("tỏi business");
 
             subscriptionTypeRepository.saveAll(List.of(free, premiumMonthly, premiumYearly));
         }
     }
 
-//    private void initUserSubscriptions() {
-//        if (userSubscriptionRepository.count() == 0) {
-//            User premiumUser = userRepository.findByUserName("premium_user");
-//            SubscriptionType premiumMonthly = subscriptionTypeRepository.findByName("Premium Monthly");
-//
-//            UserSubscription subscription = new UserSubscription();
-//            subscription.setUser(premiumUser);
-//            subscription.setSubscriptionType(premiumMonthly);
-//            subscription.setStartDate(LocalDateTime.now());
-//            subscription.setEndDate(LocalDateTime.now().plusDays(30));
-//            subscription.setIsActive(true);
-//
-//            userSubscriptionRepository.save(subscription);
-//        }
-//    }
+    private void initUserSubscriptions() {
+        if (userSubscriptionRepository.count() == 0) {
+            List<User> users = userRepository.findAll();
+
+            Optional<SubscriptionType> subscriptionType = subscriptionTypeRepository.findById(1);
+
+            if (subscriptionType != null) {
+                for (User user : users) {
+                    List<UserSubscription> userSubscriptions = new ArrayList<>();
+                    LocalDateTime localDate = LocalDateTime.now();
+                    UserSubscription userSubscription = UserSubscription.builder()
+                            .user(user)
+                            .subscriptionType(subscriptionType.get())
+                            .isActive(true)
+                            .startDate(localDate)
+                            .endDate(null)
+                            .build();
+
+                    userSubscriptions.add(userSubscription);
+
+                    user.setSubscriptions(userSubscriptions);
+
+                    userRepository.save(user);
+                }
+            }
+        }
+    }
 
     private void initHashtags() {
         if (hashtagRepository.count() == 0) {

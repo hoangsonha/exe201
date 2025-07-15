@@ -48,29 +48,7 @@ public class SubscriptionController {
     @GetMapping("/sync")
     public ResponseEntity<ObjectResponse> syncUserWithPlan() {
 
-        List<User> users = userRepository.findAll();
 
-        Optional<SubscriptionType> subscriptionType = subscriptionTypeRepository.findById(1);
-
-        if (subscriptionType != null) {
-            for (User user : users) {
-                List<UserSubscription> userSubscriptions = new ArrayList<>();
-                LocalDateTime localDate = LocalDateTime.now();
-                UserSubscription userSubscription = UserSubscription.builder()
-                        .user(user)
-                        .subscriptionType(subscriptionType.get())
-                        .isActive(true)
-                        .startDate(localDate)
-                        .endDate(null)
-                        .build();
-
-                userSubscriptions.add(userSubscription);
-
-                user.setSubscriptions(userSubscriptions);
-
-                userRepository.save(user);
-            }
-        }
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ObjectResponse("Success", "sync usser successfully", null));

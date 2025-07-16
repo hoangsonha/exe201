@@ -11,14 +11,3 @@ export const getAllSubscriptionType = async () => {
         return [];
     }
 };
-
-
-export const syncUsers = async () => {
-  try {
-    const res = await get(API + "/sync");
-    return res;
-  } catch (error) {
-        console.log(error);
-        return [];
-    }
-};

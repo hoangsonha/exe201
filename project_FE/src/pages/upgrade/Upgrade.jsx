@@ -7,7 +7,7 @@ import toi from '@/assets/toi.png'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
 import { getUserById } from '@/serviceAPI/userService'
-import { getAllSubscriptionType, syncUsers } from '../../serviceAPI/subscriptionService'
+import { getAllSubscriptionType } from '../../serviceAPI/subscriptionService'
 
 import './Upgrade.css'
 
@@ -23,14 +23,13 @@ const Upgrade = () => {
   const { user } = useContext(UserContext)
   const navigate = useNavigate()
 
-  const info = user.id + selectedPackage
+  const rawInfo = `UID:${userData?.userId} PKGID:${selectedPackage?.id} UN:${userData?.userName}`;
+  const addInfo = encodeURIComponent(rawInfo);
 
-  const URL_PAY = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.jpg?amount=${selectedPackage?.price}&addInfo=&accountName=TOIREVIEW`
+  const URL_PAY = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.jpg?amount=${selectedPackage?.price}&addInfo=${addInfo}&accountName=TOIREVIEW`
 
   useEffect(() => {
     fetchUserInfo()
-    // const packageData = getPackages()
-    // setPackages(packageData)
   }, [])
 
   console.log(packages)
@@ -40,10 +39,6 @@ const Upgrade = () => {
       const result = await getUserById(user.id)
 
       const subscriptionsType = await getAllSubscriptionType()
-
-      const syncUser = await syncUsers()
-
-      console.log(syncUser)
 
       setPackages(subscriptionsType.data.data)
       setUserData(result.data)
@@ -55,6 +50,9 @@ const Upgrade = () => {
   const handleUpgradePackage = (packageData) => {
     setSelectedPackage(packageData)
     setShowPayment(true)
+
+    // xử lí luôn fetch api để kiểm tra xem tài khoản đã vô tiền chưa
+
   }
 
   const handleBack = () => {
@@ -108,8 +106,8 @@ const Upgrade = () => {
           </div>
           
           <div className="qr-container">
-            <div className="qr-code">
-              
+            <div >
+              <img className="qr-code" src={URL_PAY} />
             </div>
           </div>
         </div>
@@ -156,7 +154,7 @@ const Upgrade = () => {
                   từ {p.originalPrice} VND
                 </span>
               )}
-              {p.price}{p.price !== 0 && <span style={{ fontSize: "2rem" }}> VND</span>}
+              {p.price == 0 ? "free" : p.price}{p.price !== 0 && <span style={{ fontSize: "2rem" }}> VND</span>}
             </div>
             
             <div className="package-period">/{p.duration == 0 ? "30 ngày" : `${p.duration} ngày`}</div>
@@ -169,7 +167,7 @@ const Upgrade = () => {
             
             <Button 
               className={`package-button ${userData.subscriptionId == p.id ? 'current-package' : ''}`} 
-              onClick={() => p.isBuyable && handleUpgradePackage(p)}
+              onClick={() => handleUpgradePackage(p)}
               disabled={userData.subscriptionId == p.id}
             >
               {userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}

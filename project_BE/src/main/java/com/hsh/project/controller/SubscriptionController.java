@@ -1,6 +1,7 @@
 package com.hsh.project.controller;
 
 import com.hsh.project.dto.internal.ObjectResponse;
+import com.hsh.project.dto.request.SubscriptionSMS;
 import com.hsh.project.dto.response.HashTagResponseDTO;
 import com.hsh.project.pojo.SubscriptionType;
 import com.hsh.project.pojo.User;
@@ -14,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.control.MappingControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,12 +44,15 @@ public class SubscriptionController {
                 .body(new ObjectResponse("Failed", "get all subscriptions non paging failed", null));
     }
 
-    @GetMapping("/sync")
-    public ResponseEntity<ObjectResponse> syncUserWithPlan() {
+    @PostMapping("/test")
+    public ResponseEntity<String> receiveSmsWebhook(@RequestBody SubscriptionSMS request) {
+        System.out.println("Nội dung SMS: " + request.getKey());
+        System.out.println("Thời gian: " + request.getTime());
 
+        // 👉 Parse dữ liệu từ request.getKey(), ví dụ: "123_2_toi6723"
+        // Sau đó bạn check trong DB, cập nhật trạng thái thanh toán...
 
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ObjectResponse("Success", "sync usser successfully", null));
+        return ResponseEntity.ok("Webhook received");
     }
+
 }

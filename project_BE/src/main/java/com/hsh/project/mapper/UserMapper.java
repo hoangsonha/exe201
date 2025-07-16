@@ -26,6 +26,7 @@ public interface UserMapper {
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "subscriptions", target = "subscriptionId", qualifiedByName = "getActiveSubscriptionId")
+    @Mapping(source = "subscriptions", target = "title", qualifiedByName = "getActiveSubscriptionTitle")
     @Mapping(source = "userHashtags", target = "listHashTagUser", qualifiedByName = "mapUserHashtagToHashtagDTO")
     UserDTO accountToAccountDTO(User user);
 
@@ -49,4 +50,16 @@ public interface UserMapper {
                 .map(v -> v.getSubscriptionType().getId())
                 .orElse(null);
     }
+
+    @Named("getActiveSubscriptionTitle")
+    default String getActiveSubscriptionTitle(List<UserSubscription> subscriptions) {
+        if (subscriptions == null) return null;
+
+        return subscriptions.stream()
+                .filter(UserSubscription::getIsActive)
+                .findFirst()
+                .map(v -> v.getSubscriptionType().getTitle())
+                .orElse(null);
+    }
+
 }

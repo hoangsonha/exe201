@@ -7,7 +7,7 @@ import toi from '@/assets/toi.png'
 import { UserContext } from '../../App'
 import { useNavigate } from 'react-router'
 import { getUserById } from '@/serviceAPI/userService'
-import { getAllSubscriptionType } from '../../serviceAPI/subscriptionService'
+import { getAllSubscriptionType, checkPay } from '../../serviceAPI/subscriptionService'
 
 import './Upgrade.css'
 
@@ -16,6 +16,8 @@ const ACCOUNT_NO = "5404205492644"
 
 const Upgrade = () => {
   const [showPayment, setShowPayment] = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const [packages, setPackages] = useState([])
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [userData, setUserData] = useState(null)
@@ -50,10 +52,41 @@ const Upgrade = () => {
   const handleUpgradePackage = (packageData) => {
     setSelectedPackage(packageData)
     setShowPayment(true)
-
-    // xử lí luôn fetch api để kiểm tra xem tài khoản đã vô tiền chưa
-
+    setChecking(true)
   }
+
+  useEffect(() => {
+    let intervalId
+
+    if (checking && selectedPackage && userData) {
+      intervalId = setInterval(async () => {
+        try {
+          const response = await checkPay({
+            userId: userData.userId,
+            subscriptionTypeId: selectedPackage.id,
+          })
+
+          if (response.status == "Success") {
+            setPaymentSuccess(true)
+            setChecking(false)
+            clearInterval(intervalId)
+
+            setTimeout(() => {
+              setPaymentSuccess(false)
+              window.location.reload()
+            }, 5000)
+          }
+        } catch (err) {
+          console.error("Lỗi khi kiểm tra thanh toán: ", err)
+        }
+      }, 3000)
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [checking, selectedPackage, userData])
+
 
   const handleBack = () => {
     setShowPayment(false)
@@ -62,6 +95,13 @@ const Upgrade = () => {
   if (showPayment) {
     return (
       <div className="upgrade-page">
+
+        {paymentSuccess && (
+          <div className="payment-success-toast">
+            ✅ Thanh toán thành công! Đang tải lại...
+          </div>
+        )}
+
         <div className="upgrade-header">
           <img src={logo} alt="Logo" className="logo-img" onClick={() => navigate('/')} style={{ cursor: 'pointer' }} />
         </div>

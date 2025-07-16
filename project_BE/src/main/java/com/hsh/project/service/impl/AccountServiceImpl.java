@@ -67,7 +67,6 @@ public class AccountServiceImpl implements AccountService {
     private final JavaMailSender javaMailSender;
 
     private final SpringTemplateEngine templateEngine;
-    private final UserMapper userMapper;
 
     @Value("${spring.mail.username}")
     private String from;

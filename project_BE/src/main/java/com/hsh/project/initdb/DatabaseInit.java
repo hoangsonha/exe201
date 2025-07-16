@@ -205,7 +205,7 @@ public class DatabaseInit implements CommandLineRunner {
             premiumMonthly.setName("VIP");
             premiumMonthly.setPrice(25000F);
             premiumMonthly.setDuration(30);
-            premiumMonthly.setFeatures("");
+            premiumMonthly.setFeatures("tỏi AI giúp bạn tóm tắt review nhanh hơn, các bài viết của bạn sẽ được boost tương tác, bạn có thể customize nhiều thứ hơn- đổi tên & ava xịn sò, không bị quảng cáo");
             premiumMonthly.setOriginalPrice(35000F);
             premiumMonthly.setTitle("tỏi VIP");
 

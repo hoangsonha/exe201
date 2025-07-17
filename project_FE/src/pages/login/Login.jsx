@@ -96,7 +96,9 @@ const Login = () => {
                     email: userFetch['email'],
                     id: userFetch['userId'],
                     role: role,
-                    avatar: userFetch['avatar']
+                    avatar: userFetch['avatar'],
+                    subscriptionTypeId: userFetch['subscriptionTypeId'],
+                    title: userFetch['title']
                 }
 
                 signIn(user);

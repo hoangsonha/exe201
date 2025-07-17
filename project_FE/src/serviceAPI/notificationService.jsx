@@ -1,4 +1,4 @@
-import { get, post } from '../utils/request'
+import { get, patch } from '../utils/request'
 
 const API_URL = `/api/v1/notifications`
 
@@ -8,6 +8,7 @@ export const getMyNotifications = async () => {
     return response
   } catch (error) {
     console.log('Error fetching my notifications:', error)
+    throw error
   }
 }
 
@@ -17,6 +18,7 @@ export const getMyUnreadNotifications = async () => {
     return response
   } catch (error) {
     console.log('Error fetching my unread notifications:', error)
+    throw error
   }
 }
 
@@ -26,5 +28,6 @@ export const markNotificationAsRead = async (notificationId) => {
     return response
   } catch (error) {
     console.log('Error marking notification as read:', error)
+    throw error
   }
 }

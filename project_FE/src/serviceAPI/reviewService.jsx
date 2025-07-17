@@ -1,6 +1,7 @@
-import { get, post, put, remove } from "../utils/request";
+import { get, post, put, remove } from "../utils/request"
 
-const API = "/api/v1/reviews";
+const API = "/api/v1/reviews"
+const API_PUB = "/api/v1/public"
 
 export const getTopTradingGlobal = async () => {
   try {
@@ -48,7 +49,7 @@ export const createReview = async (formData) => {
 
 export const getReviewById = async (id) => {
   try {
-    const res = await get(`${API}/${id}`)
+    const res = await get(`${API_PUB}/review/${id}`)
     return res.data
   } catch (error) {
     console.error("Error getting review:", error)

@@ -70,7 +70,6 @@ const Home = () => {
   }, [])
 
   const handleCreatePostClick = () => {
-
     if (!user) {
       setShowLoginPrompt(true)
       return
@@ -100,7 +99,6 @@ const Home = () => {
 
   const createReviewAPI = async (formData) => {
     try {
-      // setLoading(true)
       const resultPurposes = await createReview(formData)
 
       if (resultPurposes.status == "Success") {
@@ -165,7 +163,6 @@ const Home = () => {
   return (
     <div className="home-page">
       <Header />
-      <Advertisement />
       <div className="home-content">
         <Sidebar />
         <div className="main-content">
@@ -263,7 +260,7 @@ const Home = () => {
                     ))
                   ) : (
                     <div className="profile-no-content">
-                      <p>Chưa có review nào</p>
+                      <p> {user ? 'Chưa có review nào liên quan tới chủ đề bạn chọn' : 'Chưa có review nào được đăng'}</p>
                     </div>
                   )}
                 </div>
@@ -271,6 +268,7 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <Advertisement />
       </div>
     </div>
   )

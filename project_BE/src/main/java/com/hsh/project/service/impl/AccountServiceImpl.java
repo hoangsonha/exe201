@@ -11,10 +11,13 @@ import com.hsh.project.exception.ElementExistException;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.exception.EntityNotFoundException;
 import com.hsh.project.mapper.UserMapper;
+import com.hsh.project.pojo.SubscriptionType;
 import com.hsh.project.pojo.User;
 import com.hsh.project.pojo.Role;
+import com.hsh.project.pojo.UserSubscription;
 import com.hsh.project.pojo.enums.EnumRoleNameType;
 import com.hsh.project.pojo.enums.EnumTokenType;
+import com.hsh.project.repository.SubscriptionTypeRepository;
 import com.hsh.project.repository.UserRepository;
 import com.hsh.project.service.spec.AccountService;
 import com.hsh.project.service.spec.RoleService;
@@ -40,7 +43,10 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -55,12 +61,12 @@ public class AccountServiceImpl implements AccountService {
     private final JWTToken jwtToken;
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationManager authenticationManager;
+    private final SubscriptionTypeRepository subscriptionTypeRepository;
 
 
     private final JavaMailSender javaMailSender;
 
     private final SpringTemplateEngine templateEngine;
-    private final UserMapper userMapper;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -75,6 +81,11 @@ public class AccountServiceImpl implements AccountService {
         }
         Role role = roleService.getRoleByRoleName(EnumRoleNameType.ROLE_USER);
 
+        List<UserSubscription> userSubscriptions = new ArrayList<>();
+        LocalDateTime localDate = LocalDateTime.now();
+
+        SubscriptionType subscriptionType = subscriptionTypeRepository.findByName("Free");
+
         User user = User.builder()
                 .email(accountRegisterRequest.getEmail())
                 .password(bCryptPasswordEncoder.encode(accountRegisterRequest.getPassword()))
@@ -87,6 +98,18 @@ public class AccountServiceImpl implements AccountService {
                 .codeVerify(generateSixDigitCode())
                 .avatar("https://firebasestorage.googleapis.com/v0/b/swp391-f046d.appspot.com/o/exe201_project%2Fanonymous.png?alt=media&token=097bad4a-2ec7-4467-ae5e-42f0f5f59048")
                 .build();
+
+        UserSubscription userSubscription = UserSubscription.builder()
+                .user(user)
+                .subscriptionType(subscriptionType)
+                .isActive(true)
+                .startDate(localDate)
+                .endDate(null)
+                .build();
+        userSubscriptions.add(userSubscription);
+
+        user.setSubscriptions(userSubscriptions);
+
         User u = userRepository.save(user);
 
         return sendVerificationEmail(u.getEmail(), u.getUserName(), u.getCodeVerify());
@@ -248,6 +271,16 @@ public class AccountServiceImpl implements AccountService {
                     .token(token)
                     .refreshToken(refreshToken)
                     .avatar(user.getAvatar())
+                    .subscriptionTypeId(user.getSubscriptions().stream()
+                            .filter(UserSubscription::getIsActive)
+                            .findFirst()
+                            .map(v -> v.getSubscriptionType().getId())
+                            .orElse(null))
+                    .title(user.getSubscriptions().stream()
+                            .filter(UserSubscription::getIsActive)
+                            .findFirst()
+                            .map(v -> v.getSubscriptionType().getTitle())
+                            .orElse(null))
                     .build();
         }
         return tokenResponse;

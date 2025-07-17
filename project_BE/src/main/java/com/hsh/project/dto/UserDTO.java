@@ -24,6 +24,8 @@ public class UserDTO {
     boolean enabled;
     boolean nonLocked;
     boolean deleted;
+    Integer subscriptionId;
+    String title;
 
     List<HashTagResponseDTO> listHashTagUser;
 }

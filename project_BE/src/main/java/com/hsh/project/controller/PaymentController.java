@@ -57,7 +57,8 @@ public class PaymentController {
             }
 
             // Retrieve request attributes for payment URL creation
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
+                    .getRequestAttributes();
             if (attributes == null) {
                 log.error("ServletRequestAttributes is null");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -90,7 +91,8 @@ public class PaymentController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ObjectResponse("Fail", "Invalid payment callback", null));
             }
-            log.info("Payment processed successfully for transaction reference: {}", request.getParameter("vnp_TxnRef"));
+            log.info("Payment processed successfully for transaction reference: {}",
+                    request.getParameter("vnp_TxnRef"));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ObjectResponse("Success", "Payment processed", payment));
         } catch (InvalidKeyException e) {
@@ -105,10 +107,12 @@ public class PaymentController {
     }
 
     @GetMapping("/success")
-    public ResponseEntity<ObjectResponse> paymentSuccess(@RequestParam Integer userId, @RequestParam String vnp_TxnRef) {
+    public ResponseEntity<ObjectResponse> paymentSuccess(@RequestParam Integer userId,
+            @RequestParam String vnp_TxnRef) {
         try {
             Payment payment = paymentRepository.findByUser_UserIdAndTransactionId(userId.longValue(), vnp_TxnRef)
-                    .orElseThrow(() -> new RuntimeException("Payment not found with userId: " + userId + " and txnRef: " + vnp_TxnRef));
+                    .orElseThrow(() -> new RuntimeException(
+                            "Payment not found with userId: " + userId + " and txnRef: " + vnp_TxnRef));
             if (payment.getStatus() != EnumPaymentStatus.SUCCESS) {
                 throw new RuntimeException("Payment not successful for userId: " + userId);
             }

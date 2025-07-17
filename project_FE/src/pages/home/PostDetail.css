@@ -11,11 +11,13 @@
 }
 
 .post-detail-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 8rem 20px 2rem;
+  display: flex;
+  flex: 1;
+  padding-top: 8rem;
+  margin-left: 0.5rem;
   position: relative;
-  z-index: 8888;
+  z-index: 9;
+  height: calc(100vh);
 }
 
 .loading {

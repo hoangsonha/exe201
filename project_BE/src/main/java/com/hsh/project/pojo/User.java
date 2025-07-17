@@ -67,8 +67,11 @@ public class User extends BaseEntity {
 
     // Relationships
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<UserSubscription> subscriptions;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Payment> payments;
 
     @OneToMany(mappedBy = "user")
     List<Review> reviews;

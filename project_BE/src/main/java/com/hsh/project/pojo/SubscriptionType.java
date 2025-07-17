@@ -1,5 +1,6 @@
 package com.hsh.project.pojo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,8 +23,15 @@ public class SubscriptionType extends BaseEntity {
 
     Float price;
 
+    String title;
+
+    Float originalPrice;
+
+    String features;
+
     Integer duration; // days
 
     @OneToMany(mappedBy = "subscriptionType")
+    @JsonBackReference
     List<UserSubscription> subscriptions;
 }

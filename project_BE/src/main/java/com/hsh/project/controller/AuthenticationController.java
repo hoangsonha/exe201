@@ -5,9 +5,11 @@ import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.request.AccountLoginRequest;
 import com.hsh.project.dto.request.AccountRegisterRequest;
 import com.hsh.project.dto.request.AccountVerificationRequest;
+import com.hsh.project.dto.response.ReviewResponseDTO;
 import com.hsh.project.dto.response.TokenResponse;
 import com.hsh.project.exception.ElementNotFoundException;
 import com.hsh.project.service.spec.AccountService;
+import com.hsh.project.service.spec.ReviewService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -15,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/public")
@@ -28,6 +27,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AccountService accountService;
+    private final ReviewService reviewService;
+
+    @GetMapping("/review/{id}")
+    public ResponseEntity<ObjectResponse> getReviewByID(@PathVariable("id") long id) {
+        ReviewResponseDTO user = reviewService.getReviewById(id);
+        return user != null
+                ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "Get user by ID successfully", user))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ObjectResponse("Fail", "Get user by ID failed", null));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ObjectResponse> userRegister(@Valid @RequestBody AccountRegisterRequest accountRegisterRequest) {

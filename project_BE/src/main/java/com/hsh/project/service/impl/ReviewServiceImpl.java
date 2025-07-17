@@ -16,6 +16,7 @@ import com.hsh.project.pojo.enums.EnumHashtagStatus;
 import com.hsh.project.pojo.enums.EnumLikeType;
 import com.hsh.project.pojo.enums.EnumReviewStatus;
 import com.hsh.project.pojo.enums.EnumReviewUploadType;
+import com.hsh.project.pojo.enums.EnumRoleNameType;
 import com.hsh.project.pojo.enums.EnumTargetType;
 import com.hsh.project.repository.*;
 import com.hsh.project.service.spec.CheckReviewAIService;
@@ -351,7 +352,6 @@ public class ReviewServiceImpl implements ReviewService {
                 .collect(Collectors.toList());
 
         List<HashTagResponseDTO> hashTagResponseDTOS = new ArrayList<>();
-
         List<ReviewHashtag> reviewHashtags = review.getReviewHashtags();
 
         for (ReviewHashtag reviewHashtag : reviewHashtags) {
@@ -359,7 +359,7 @@ public class ReviewServiceImpl implements ReviewService {
             hashTagResponseDTOS.add(mapHashtagToDTO(hashtag));
         }
 
-        // Build response
+        boolean isPremium = isPremiumUser(review.getUser());
         return ReviewResponseDTO.builder()
                 .reviewID(review.getReviewID())
                 .title(review.getTitle())
@@ -375,6 +375,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewHashtags(hashTagResponseDTOS)
                 .reviewMedias(mediaDTOs)
                 .likes(likeDTOs)
+                .isPremium(isPremium) // Now valid with updated ReviewResponseDTO
                 .build();
     }
 
@@ -451,17 +452,32 @@ public class ReviewServiceImpl implements ReviewService {
         // 2. Lấy review thuộc các hashtag đó
         List<Review> reviews = reviewRepository.findDistinctReviewsByHashtagIds(topHashtagIds);
 
-        // 3. Tính tương tác (like + comment)
+        // 3. Tính tương tác (like + comment) và ưu tiên premium users
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
-                .map(this::mapReviewToDTOWithoutUser)
+                .map(review -> {
+                    boolean isPremium = isPremiumUser(review.getUser()); // CHANGED: Use updated isPremiumUser
+                    ReviewResponseDTO dto = mapReviewToDTOWithoutUser(review);
+                    dto.setIsPremium(isPremium); // Set isPremium in DTO
+                    return dto;
+                })
                 .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED.name()))
-                .sorted(Comparator.comparingInt(r -> -((r.getLikes() != null ? r.getLikes().size() : 0) + (r.getComments() != null ? r.getComments().size() : 0))))
+                .sorted((r1, r2) -> {
+                    // Prioritize premium users
+                    boolean isPremium1 = r1.getIsPremium();
+                    boolean isPremium2 = r2.getIsPremium();
+                    if (isPremium1 && !isPremium2) return -1; // r1 is premium, r2 is not
+                    if (!isPremium1 && isPremium2) return 1;  // r2 is premium, r1 is not
+                    // If both are premium or both are not, sort by engagement
+                    int engagement1 = (r1.getLikes() != null ? r1.getLikes().size() : 0) + (r1.getComments() != null ? r1.getComments().size() : 0);
+                    int engagement2 = (r2.getLikes() != null ? r2.getLikes().size() : 0) + (r2.getComments() != null ? r2.getComments().size() : 0);
+                    return Integer.compare(engagement2, engagement1); // Descending order
+                })
                 .collect(Collectors.toList());
 
         return reviewDTOs;
     }
 
-    @Override
+   @Override
     public List<ReviewResponseDTO> searchReview(String search, List<String> hashtags) {
         List<Review> reviews = new ArrayList<>();
 
@@ -477,16 +493,12 @@ public class ReviewServiceImpl implements ReviewService {
                 : null;
 
         if (normalizedHashtags != null) {
-            // Trường hợp có hashtags
             if (searchTerm != null) {
-                // Có cả search text và hashtags
                 reviews = reviewRepository.findByTitleContainingAndHashtags(searchTerm, normalizedHashtags);
             } else {
-                // Chỉ có hashtags
                 reviews = reviewRepository.findByHashtagsIn(normalizedHashtags);
             }
         } else {
-            // Trường hợp không có hashtags
             reviews = reviewRepository.findByTitleContainingIgnoreCaseAndStatus(
                     searchTerm != null ? searchTerm : "",
                     EnumReviewStatus.PUBLISHED
@@ -494,7 +506,19 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return reviews.stream()
-                .map(this::mapReviewToDTOWithoutUser)
+                .map(review -> {
+                    boolean isPremium = isPremiumUser(review.getUser());
+                    ReviewResponseDTO dto = mapReviewToDTOWithoutUser(review);
+                    dto.setIsPremium(isPremium); // Now valid with updated ReviewResponseDTO
+                    return dto;
+                })
+                .sorted((r1, r2) -> {
+                    boolean isPremium1 = r1.getIsPremium();
+                    boolean isPremium2 = r2.getIsPremium();
+                    if (isPremium1 && !isPremium2) return -1; // r1 is premium, r2 is not
+                    if (!isPremium1 && isPremium2) return 1;  // r2 is premium, r1 is not
+                    return 0; // Maintain original order if same premium status
+                })
                 .collect(Collectors.toList());
     }
 
@@ -506,16 +530,29 @@ public class ReviewServiceImpl implements ReviewService {
         // 2. Lấy review thuộc các hashtag đó
         List<Review> reviews = reviewRepository.findDistinctReviewsByHashtagIds(userHashtagIds);
 
-        // 3. Lọc những review không bị block
+        // 3. Lọc những review không bị block và ưu tiên premium users
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .filter(review -> !blockReviewRepository.existsByUser_UserIdAndReview_ReviewID(userId, review.getReviewID()))
                 .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED))
                 .filter(re -> !re.getUser().getUserId().equals(userId))
                 .map(review -> {
                     boolean isSaved = savedReviewRepository.existsByUser_UserIdAndReview_ReviewIDAndStatusTrue(userId, review.getReviewID());
-                    return mapReviewToDTOWithUser(review, userId, isSaved);
+                    boolean isPremium = isPremiumUser(review.getUser());
+                    ReviewResponseDTO dto = mapReviewToDTOWithUser(review, userId, isSaved);
+                    dto.setIsPremium(isPremium); // Now valid with updated ReviewResponseDTO
+                    return dto;
                 })
-                .sorted(Comparator.comparingInt(r -> -((r.getLikes() != null ? r.getLikes().size() : 0) + (r.getComments() != null ? r.getComments().size() : 0))))
+                .sorted((r1, r2) -> {
+                    // Prioritize premium users
+                    boolean isPremium1 = r1.getIsPremium();
+                    boolean isPremium2 = r2.getIsPremium();
+                    if (isPremium1 && !isPremium2) return -1; // r1 is premium, r2 is not
+                    if (!isPremium1 && isPremium2) return 1;  // r2 is premium, r1 is not
+                    // If both are premium or both are not, sort by engagement
+                    int engagement1 = (r1.getLikes() != null ? r1.getLikes().size() : 0) + (r1.getComments() != null ? r1.getComments().size() : 0);
+                    int engagement2 = (r2.getLikes() != null ? r2.getLikes().size() : 0) + (r2.getComments() != null ? r2.getComments().size() : 0);
+                    return Integer.compare(engagement2, engagement1); // Descending order
+                })
                 .collect(Collectors.toList());
 
         return reviewDTOs;
@@ -662,6 +699,11 @@ public class ReviewServiceImpl implements ReviewService {
                 .userId(creator.getUserId())
                 .userName(creator.getUserName())
                 .build();
+    }
+
+    private boolean isPremiumUser(User user) {
+        Role role = user.getRole(); // CHANGED: Use getRole() instead of getRoles()
+        return role != null && role.getRoleName() == EnumRoleNameType.ROLE_PREMIUM;
     }
 
 }

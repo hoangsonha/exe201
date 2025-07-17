@@ -30,5 +30,6 @@ public class ReviewResponseDTO {
 
      Boolean isSaved;
 //     Boolean isBlocked;
+     Boolean isPremium;
 
 }

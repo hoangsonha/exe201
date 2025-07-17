@@ -271,6 +271,16 @@ public class AccountServiceImpl implements AccountService {
                     .token(token)
                     .refreshToken(refreshToken)
                     .avatar(user.getAvatar())
+                    .subscriptionTypeId(user.getSubscriptions().stream()
+                            .filter(UserSubscription::getIsActive)
+                            .findFirst()
+                            .map(v -> v.getSubscriptionType().getId())
+                            .orElse(null))
+                    .title(user.getSubscriptions().stream()
+                            .filter(UserSubscription::getIsActive)
+                            .findFirst()
+                            .map(v -> v.getSubscriptionType().getTitle())
+                            .orElse(null))
                     .build();
         }
         return tokenResponse;

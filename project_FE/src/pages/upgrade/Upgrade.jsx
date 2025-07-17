@@ -22,7 +22,7 @@ const Upgrade = () => {
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [userData, setUserData] = useState(null)
   const [paymentMethod, setPaymentMethod] = useState("banking")
-  const { user } = useContext(UserContext)
+  const { user, updateUser } = useContext(UserContext)
   const navigate = useNavigate()
 
   const rawInfo = `UID:${userData?.userId} PKGID:${selectedPackage?.id} UN:${userData?.userName}`;
@@ -67,6 +67,15 @@ const Upgrade = () => {
           })
 
           if (response.status == "Success") {
+
+            const updatedUser = {
+              ...user,
+              subscriptionTypeId: selectedPackage.id,
+              title: selectedPackage.title,
+            };
+
+            updateUser(updatedUser)
+
             setPaymentSuccess(true)
             setChecking(false)
             clearInterval(intervalId)

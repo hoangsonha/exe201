@@ -16,4 +16,6 @@ public class TokenResponse {
     Long userId;
     String email;
     String avatar;
+    Long subscriptionTypeId;
+    String title;
 }

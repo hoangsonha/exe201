@@ -274,4 +274,33 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('PREMIUM')")
+    @PutMapping("/premium/{id}/username")
+    public ResponseEntity<ObjectResponse> updatePremiumUserName(@PathVariable("id") int id,
+                                                               @RequestBody UpdateUserNameRequest req) {
+        try {
+            UserDTO user = userService.updateUserName(id, req.getUserName());
+            if (user != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ObjectResponse("Success", "Update premium username successfully", user));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update premium username failed. user is null", null));
+        } catch (BadRequestException e) {
+            log.error("Error updating premium username", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", e.getMessage(), null));
+        } catch (ElementExistException e) {
+            log.error("Error while updating premium username", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ObjectResponse("Fail", e.getMessage(), null));
+        } catch (ElementNotFoundException e) {
+            log.error("Error while updating premium username", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update premium username failed. user not found", null));
+        } catch (Exception e) {
+            log.error("Error updating premium username", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ObjectResponse("Fail", "Update premium username failed", null));
+        }
+    }
+
 }

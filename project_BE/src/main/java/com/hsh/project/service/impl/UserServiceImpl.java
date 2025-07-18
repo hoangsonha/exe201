@@ -200,6 +200,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO updateUserName(int id, String newUserName) {
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            throw new ElementNotFoundException("User not found");
+        }
+
+        if (!StringUtils.hasText(newUserName)) {
+            throw new BadRequestException("New username cannot be empty");
+        }
+
+        // Check if new username is already taken
+        User existingUser = userRepository.findByUserName(newUserName);
+        if (existingUser != null && !existingUser.getUserId().equals(user.getUserId())) {
+            throw new ElementExistException("Username already exists");
+        }
+
+        user.setUserName(newUserName);
+        return userMapper.accountToAccountDTO(userRepository.save(user));
+    }
+
+    @Override
     public UserDTO updateUserRole(UpdateUserRoleRequest request, int id) {
 
         User user = userRepository.findById(id).orElse(null);
@@ -315,5 +337,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.accountToAccountDTO(userRepository.save(user));
     }
 
+    
 
 }

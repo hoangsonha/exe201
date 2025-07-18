@@ -6,15 +6,14 @@ import pointLogo from '@/assets/logo.png'
 import { RiArrowGoBackFill } from 'react-icons/ri'
 import { FaTimes, FaPlus } from 'react-icons/fa'
 import { getHashtags } from '@/serviceAPI/hashtagService'
-import { getUserById, updateAccount } from '@/serviceAPI/userService'
+import { getUserById, updateAccount, changeUsername } from '@/serviceAPI/userService'
 import { UserContext } from '../../App'
 import './EditUser.css'
 import { useToast } from '../../component/Toast'
-import { jwtDecode } from 'jwt-decode'
 
 const EditUser = () => {
   const navigate = useNavigate()
-  const { user, updateUser } = useContext(UserContext)
+  const { user } = useContext(UserContext)
   const [loading, setLoading] = useState(true)
   const [hashtags, setHashtags] = useState([])
   const [showTagDropdown, setShowTagDropdown] = useState(false)
@@ -44,16 +43,21 @@ const EditUser = () => {
         ])
         
         if (userResult.status === "Success") {
+          console.log("User data fetched successfully:", userResult.data)
           setFormData(prev => ({
             ...prev,
             username: userResult.data.userName || '',
             gender: userResult.data.gender || '',
             selectedTags: userResult.data.listHashTagUser || [],
             point: userResult.data.point || 0,
-            avatar: userResult.data.avatar || ''
+            avatar: userResult.data.avatar || '',
+            title: userResult.data.title,
+            subscriptionId: userResult.data.subscriptionId,
           }))
-          setIsVIP(false)
         }
+
+        if (userResult.data.subscriptionId != 1 && userResult.data.title != null) setIsVIP(true)
+        else setIsVIP(false)
         
         setHashtags(hashtagsResult.data.data || [])
         setLoading(false)
@@ -78,42 +82,48 @@ const EditUser = () => {
     }
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
+    if (formData.username.length > 20) {
+      addToast("Tên người dùng không được dài hơn 20 ký tự", false, true)
+      return
+    }
+
     if (!formData.gender) {
-      addToast("Vui lòng chọn giới tính", false, true);
-      return;
+      addToast("Vui lòng chọn giới tính", false, true)
+      return
     }
     
     if (formData.selectedTags.length === 0) {
-      addToast("Vui lòng chọn ít nhất một hashtag", false, true);
-      return;
-    } 
-    const updateData = {
-      gender: formData.gender.toUpperCase(),
-      hashTags: formData.selectedTags.map(tags => tags.name),
+      addToast("Vui lòng chọn ít nhất một hashtag", false, true)
+      return
     }
 
-    createReviewAPI(updateData)
-  }
-
-  const createReviewAPI = async (formData) => {
     try {
-      // setLoading(true)
-      const resultPurposes = await updateAccount(formData, user.id)
-      console.log(resultPurposes)
+      const promises = []
+      if (isVIP) {
+        promises.push(changeUsername(user.id, formData.username))
+      }
 
-      if (resultPurposes.status == "Success") {
-        addToast("Bạn đã sửa thông tin tài khoản thành công.", true, false);
+      const updateData = {
+        gender: formData.gender.toUpperCase(),
+        hashTags: formData.selectedTags.map(tags => tags.name),
+      }
+      promises.push(updateAccount(updateData, user.id))
+      const results = await Promise.all(promises)
+      
+      if (results.every(result => result.status === "Success")) {
+        addToast("Bạn đã sửa thông tin tài khoản thành công.", true, false)
         navigate('/profile')
       } else {
-        addToast(`Đã có lỗi xảy ra, vui lòng thử lại.`, false, true);
+        addToast(`Đã có lỗi xảy ra, vui lòng thử lại.`, false, true)
       }
+      
     } catch (error) {
-      console.error("Có lỗi xảy ra khi gọi api review:", error)
-      alert(error.error)
-      } 
+      console.error("Có lỗi xảy ra khi gọi api:", error)
+      addToast(`Đã có lỗi xảy ra, vui lòng thử lại.`, false, true)
+    }
   }
 
   const handleSwitchChange = (name) => {
@@ -206,20 +216,15 @@ const EditUser = () => {
               <h2>tên tài khoản</h2>
             </div>
 
-            <Form.Group className="mb-4 edit-username-group">
+            <div className="username-wrapper mb-4">
               <Form.Control
                 type="text"
-                value={`@${formData.username}`}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                value={formData.username}
+                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value}))}
                 disabled={!isVIP}
                 className="edit-profile-username-input"
               />
-              {!isVIP && (
-                <div className="input-vip-notice">
-                  <i>** bạn cần là tỏi vip để sử dụng chức năng này</i>
-                </div>
-              )}
-            </Form.Group>
+            </div>
 
             <div className="gender-selection">
               <div className="info-header">

@@ -56,7 +56,7 @@ const EditUser = () => {
           }))
         }
 
-        if (userResult.data.subscriptionId != 1 && userResult.data.title != null) setIsVIP(true)
+        if (userResult.data.title != 'tỏi thường') setIsVIP(true)
         else setIsVIP(false)
         
         setHashtags(hashtagsResult.data.data || [])

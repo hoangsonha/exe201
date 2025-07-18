@@ -441,32 +441,6 @@
   transform: translateX(15px);
 }
 
-.back-button {
-  position: fixed;
-  top: 100px;
-  left: 20px;
-  background-color: white !important;
-  border: 2px solid #000000 !important;
-  border-radius: 50% !important;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 2px 2px 0px #000000;
-  z-index: 1000;
-  color: #000000 !important;
-  font-size: 1.5rem;
-  transition: all 0.2s ease;
-}
-
-.back-button:hover {
-  background-color: #e1f62b !important;
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 0px #000000;
-  color: #000000 !important;
-}
-
 .logo-img {
   height: 60px;
   width: auto;

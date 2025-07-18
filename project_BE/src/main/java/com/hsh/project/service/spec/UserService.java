@@ -31,4 +31,6 @@ public interface UserService {
     UserDTO createHashTagUser(UserRegisterHashTagRequest request);
 
     UserDTO createImageUser(UserCreateImageRequest request);
+    
+    UserDTO updateUserName(int id, String newUserName);
 }

@@ -216,11 +216,11 @@ const Upgrade = () => {
             <Button 
               className={`package-button ${
                 userData.subscriptionId == p.id ? 'current-package' : ''
-              } ${p.id === 3 ? 'locked-package' : ''}`} 
+              } ${p.id === 12 ? 'locked-package' : ''}`} 
               onClick={() => handleUpgradePackage(p)}
-              disabled={userData.subscriptionId == p.id || p.id === 3}
+              disabled={userData.subscriptionId == p.id || p.id === 12}
             >
-              {p.id === 3 ? "sắp ra mắt" : userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}
+              {p.id === 12 ? "sắp ra mắt" : userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}
             </Button>
           </div>
         ))}

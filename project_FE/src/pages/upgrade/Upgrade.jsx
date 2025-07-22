@@ -41,6 +41,7 @@ const Upgrade = () => {
       const result = await getUserById(user.id)
       const subscriptionsType = await getAllSubscriptionType()
 
+      console.log(result.data)
       setPackages(subscriptionsType.data.data)
       setUserData(result.data)
     } catch (error) {
@@ -122,34 +123,6 @@ const Upgrade = () => {
             <div className="form-group">
               <label className="form-label">tên tài khoản</label>
               <div className="form-control-readonly">@{userData?.userName}</div>
-            </div>
-            
-            <div className="form-group">
-              <label className="form-label">chọn phương thức thanh toán</label>
-              <div className="payment-options">
-                <label className="payment-option">
-                  <input 
-                    type="radio" 
-                    name="payment-method" 
-                    checked={paymentMethod === "momo"} 
-                    onChange={() => setPaymentMethod("momo")}
-                  />
-                  <div className="payment-option-text">
-                    <div className="payment-option-label">thanh toán bằng momo</div>
-                  </div>
-                </label>
-                <label className="payment-option">
-                  <input 
-                    type="radio" 
-                    name="payment-method" 
-                    checked={paymentMethod === "banking"} 
-                    onChange={() => setPaymentMethod("banking")}
-                  />
-                  <div className="payment-option-text">
-                    <div className="payment-option-label">chuyển khoản qua online banking</div>
-                  </div>
-                </label>
-              </div>
             </div>
           </div>
           

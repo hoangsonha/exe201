@@ -39,7 +39,6 @@ const Upgrade = () => {
   const fetchUserInfo = async () => {
     try {
       const result = await getUserById(user.id)
-
       const subscriptionsType = await getAllSubscriptionType()
 
       setPackages(subscriptionsType.data.data)
@@ -215,11 +214,13 @@ const Upgrade = () => {
             </div>
             
             <Button 
-              className={`package-button ${userData.subscriptionId == p.id ? 'current-package' : ''}`} 
+              className={`package-button ${
+                userData.subscriptionId == p.id ? 'current-package' : ''
+              } ${p.id === 3 ? 'locked-package' : ''}`} 
               onClick={() => handleUpgradePackage(p)}
-              disabled={userData.subscriptionId == p.id}
+              disabled={userData.subscriptionId == p.id || p.id === 3}
             >
-              {userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}
+              {p.id === 3 ? "sắp ra mắt" : userData.subscriptionId == p.id ? "gói của bạn" : "chọn gói này"}
             </Button>
           </div>
         ))}

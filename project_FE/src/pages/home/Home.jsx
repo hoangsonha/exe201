@@ -34,6 +34,7 @@ const Home = () => {
   const { addToast } = useToast();
   
   useEffect(() => {
+    console.log(user)
     const apiAll = async () => {
       try {
         setLoading(true)
@@ -268,7 +269,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <Advertisement />
+        {(!user || user.subscriptionTypeId !== 11) && <Advertisement />}
       </div>
     </div>
   )

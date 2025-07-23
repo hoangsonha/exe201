@@ -268,7 +268,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {user.subscriptionId !== 11 && <Advertisement />}
+        <Advertisement />
       </div>
     </div>
   )

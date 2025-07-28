@@ -274,15 +274,23 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('PREMIUM')")
-    @PutMapping("/premium/{id}/username")
+   @PutMapping("/premium/{id}/username")
     public ResponseEntity<ObjectResponse> updatePremiumUserName(@PathVariable("id") int id,
                                                                @RequestBody UpdateUserNameRequest req) {
         try {
-            UserDTO user = userService.updateUserName(id, req.getUserName());
-            if (user != null) {
+            // Kiểm tra nếu người dùng có gói đăng ký cao cấp (subscription ID = 11)
+            User user = userService.getUserById(id);
+            if (user == null) {
+                throw new ElementNotFoundException("User not found");
+            }
+            if (user.getSubscriptions() == null || !user.getSubscriptions().equals(11L)) {
+                throw new BadRequestException("Only premium users with subscription ID 11 can update their username");
+            }
+
+            UserDTO updatedUser = userService.updateUserName(id, req.getUserName());
+            if (updatedUser != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ObjectResponse("Success", "Update premium username successfully", user));
+                        .body(new ObjectResponse("Success", "Update premium username successfully", updatedUser));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ObjectResponse("Fail", "Update premium username failed. user is null", null));

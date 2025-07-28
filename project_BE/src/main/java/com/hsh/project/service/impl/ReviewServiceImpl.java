@@ -702,8 +702,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private boolean isPremiumUser(User user) {
-        Role role = user.getRole(); // CHANGED: Use getRole() instead of getRoles()
-        return role != null && role.getRoleName() == EnumRoleNameType.ROLE_PREMIUM;
+        // Kiểm tra nếu subscriptionId của người dùng là 11 (gói cao cấp)
+        return user.getSubscriptions() != null && user.getSubscriptions().equals(11);
     }
 
 }

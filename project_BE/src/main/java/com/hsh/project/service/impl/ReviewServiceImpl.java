@@ -207,17 +207,20 @@ public class ReviewServiceImpl implements ReviewService {
                     stringNoti = tag.getTag() + com;
 
                     List<UserHashtag> userHashtags = tag.getUserHashtags();
-                    for (UserHashtag userHashtag : userHashtags) {
-                        users.add(userHashtag.getUser());
+
+                    if (userHashtags != null) {
+                        for (UserHashtag userHashtag : userHashtags) {
+                            users.add(userHashtag.getUser());
+                        }
                     }
                 }
             }
 
-            users = users.stream().filter(u -> u != user).toList();
+            if (!users.isEmpty()) {
+                users = users.stream().filter(u -> u != user).toList();
 
-            List<Notification> notifications = new ArrayList<>();
+                List<Notification> notifications = new ArrayList<>();
 
-            if (users.size() > 0) {
                 for (User user1 : users) {
                     Notification notification = Notification.builder()
                             .isRead(false)
@@ -229,10 +232,9 @@ public class ReviewServiceImpl implements ReviewService {
                             .build();
                     notifications.add(notification);
                 }
+                review.setNotifications(notifications);
             }
-            review.setNotifications(notifications);
         }
-
         return this.mapReviewToDTOWithoutUser(reviewRepository.save(review));
     }
 

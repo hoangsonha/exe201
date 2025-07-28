@@ -34,6 +34,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import java.util.stream.Collectors;
@@ -452,25 +453,27 @@ public class ReviewServiceImpl implements ReviewService {
         // 2. Lấy review thuộc các hashtag đó
         List<Review> reviews = reviewRepository.findDistinctReviewsByHashtagIds(topHashtagIds);
 
-        // 3. Tính tương tác (like + comment) và ưu tiên premium users
+        // 3. Tính tương tác (like + comment) và ưu tiên người dùng có gói đăng ký cao cấp
         List<ReviewResponseDTO> reviewDTOs = reviews.stream()
                 .map(review -> {
-                    boolean isPremium = isPremiumUser(review.getUser()); // CHANGED: Use updated isPremiumUser
+                    boolean isPremium = isPremiumUser(review.getUser()); // Sử dụng phương thức isPremiumUser đã cập nhật
                     ReviewResponseDTO dto = mapReviewToDTOWithoutUser(review);
                     dto.setIsPremium(isPremium); // Set isPremium in DTO
                     return dto;
                 })
                 .filter(re -> re.getStatus().equals(EnumReviewStatus.PUBLISHED.name()))
                 .sorted((r1, r2) -> {
-                    // Prioritize premium users
+                    // Ưu tiên người dùng có gói đăng ký cao cấp
                     boolean isPremium1 = r1.getIsPremium();
                     boolean isPremium2 = r2.getIsPremium();
-                    if (isPremium1 && !isPremium2) return -1; // r1 is premium, r2 is not
-                    if (!isPremium1 && isPremium2) return 1;  // r2 is premium, r1 is not
-                    // If both are premium or both are not, sort by engagement
-                    int engagement1 = (r1.getLikes() != null ? r1.getLikes().size() : 0) + (r1.getComments() != null ? r1.getComments().size() : 0);
-                    int engagement2 = (r2.getLikes() != null ? r2.getLikes().size() : 0) + (r2.getComments() != null ? r2.getComments().size() : 0);
-                    return Integer.compare(engagement2, engagement1); // Descending order
+                    if (isPremium1 && !isPremium2) return -1; // r1 có gói cao cấp, r2 không có
+                    if (!isPremium1 && isPremium2) return 1;  // r2 có gói cao cấp, r1 không có
+                    // Nếu cả hai đều có hoặc không có gói cao cấp, sắp xếp theo mức độ tương tác
+                    int engagement1 = (r1.getLikes() != null ? r1.getLikes().size() : 0) + 
+                                     (r1.getComments() != null ? r1.getComments().size() : 0);
+                    int engagement2 = (r2.getLikes() != null ? r2.getLikes().size() : 0) + 
+                                     (r2.getComments() != null ? r2.getComments().size() : 0);
+                    return Integer.compare(engagement2, engagement1); // Sắp xếp giảm dần
                 })
                 .collect(Collectors.toList());
 
@@ -702,8 +705,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private boolean isPremiumUser(User user) {
-        // Kiểm tra nếu subscriptionId của người dùng là 11 (gói cao cấp)
-        return user.getSubscriptions() != null && user.getSubscriptions().equals(11);
+        // Kiểm tra nếu người dùng có gói đăng ký cao cấp (subscriptionType.id = 11)
+        return user.getSubscriptions() != null && user.getSubscriptions().stream()
+                .anyMatch(sub -> sub.getIsActive()
+                        && sub.getSubscriptionType() != null
+                        && sub.getSubscriptionType().getId().equals(11L)
+                        && (sub.getStartDate().isBefore(LocalDateTime.now()) || sub.getStartDate().isEqual(LocalDateTime.now()))
+                        && (sub.getEndDate().isAfter(LocalDateTime.now()) || sub.getEndDate().isEqual(LocalDateTime.now())));
     }
+
 
 }

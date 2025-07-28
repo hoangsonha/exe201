@@ -26,11 +26,11 @@ const ReviewActions = ({ post, onToggleComments }) => {
   const likeCount = review.likes?.filter((like) => like.type === "LIKE").length || 0
   const heartCount = review.likes?.filter((like) => like.type === "HEART").length || 0
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const [hasRated, setHasRated] = useState(false)
   const navigate = useNavigate()
   const { addToast } = useToast()
 
   useEffect(() => {
-    console.log("ReviewActions post:", post)
     const initPostInteractionStates = async () => {
       if (!user) return
 
@@ -44,9 +44,10 @@ const ReviewActions = ({ post, onToggleComments }) => {
       setLiked(isLiked)
       setHearted(isHearted)
 
-      const existingRating = post.ratings?.find(rating => rating.userId === user.id)
+      const existingRating = review.ratings?.find(rating => rating.user?.userId === user.id)
       if (existingRating) {
         setUserRating(existingRating.stars)
+        setHasRated(true)
       }
 
       try {
@@ -60,7 +61,16 @@ const ReviewActions = ({ post, onToggleComments }) => {
     }
 
     initPostInteractionStates()
-  }, [user, post.reviewID, post.likes, post.ratings])
+  }, [user, review.reviewID, review.likes, review.ratings])
+
+  useEffect(() => {
+    if (user && review?.ratings?.length > 0) {
+      const existingRating = review.ratings.find(rating => rating.userId === user.id)
+      if (existingRating) {
+        setUserRating(existingRating.stars)
+      }
+    }
+  }, [user, review, showRatingModal])
 
   const handleLikeClick = async () => {
     if (!user) {
@@ -157,6 +167,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
       
       if (response.status === "Success" || response.data) {
         setUserRating(rating)
+        setHasRated(true)
         addToast("Đánh giá của bạn đã được lưu thành công", true, false)
         
         const updatedRatings = review.ratings ? [...review.ratings] : []
@@ -167,7 +178,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         } else {
           updatedRatings.push({ userId: user.id, stars: rating })
         }
-        
+
         setReview(prev => ({ ...prev, ratings: updatedRatings }))
       } else {
         addToast("Đã có lỗi khi lưu đánh giá", false, true)
@@ -223,7 +234,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
         <span>{likeCount}</span>
       </div>
 
-      <div className={`action-item ${hearted ? 'hearted' : ''}`} 
+      {/* <div className={`action-item ${hearted ? 'hearted' : ''}`} 
         onClick={(e) => {
           e.stopPropagation()
           handleHeartClick()
@@ -233,7 +244,7 @@ const ReviewActions = ({ post, onToggleComments }) => {
           {hearted ? <FaHeart /> : <FaRegHeart />}
         </span>
         <span>{heartCount}</span>
-      </div>
+      </div> */}
 
       <div className="action-item" onClick={onToggleComments}>
         <span className="comment-icon">
@@ -352,23 +363,32 @@ const ReviewActions = ({ post, onToggleComments }) => {
 
             <div className="star-rating-section">
               <div className="star-rating-section-title">Đánh giá chung:</div>
-              <StarRating rating={post.ratings?.find(r => r.userId !== user?.id)?.stars || 0} />
+              <StarRating rating={review.ratings?.find(r => r.userId !== user?.id)?.stars || 0} />
             </div>
 
             <div className="star-rating-section">
               <div className="star-rating-section-title">Đánh giá của bạn:</div>
               <div className="user-rating-stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span 
-                    key={star} 
-                    className={`star interactive-star ${star <= (hoveredRating || userRating) ? 'filled' : 'empty'}`}
-                    onClick={() => handleUserRatingClick(star)}
-                    onMouseEnter={() => setHoveredRating(star)}
-                    onMouseLeave={() => setHoveredRating(0)}
-                  >
-                    <IoStar />
-                  </span>
-                ))}
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isFilled = star <= (hoveredRating || userRating)
+                  return (
+                    <span 
+                      key={star}
+                      className={`star interactive-star ${isFilled ? 'filled' : 'empty'}`}
+                      onClick={() => {
+                        handleUserRatingClick(star)
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredRating(star)
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredRating(0)
+                      }}
+                    >
+                      <IoStar />
+                    </span>
+                  )
+                })}
               </div>
             </div>
           </div>

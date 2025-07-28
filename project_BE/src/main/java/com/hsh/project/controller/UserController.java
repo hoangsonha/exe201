@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -278,13 +279,19 @@ public class UserController {
     public ResponseEntity<ObjectResponse> updatePremiumUserName(@PathVariable("id") int id,
                                                                @RequestBody UpdateUserNameRequest req) {
         try {
-            // Kiểm tra nếu người dùng có gói đăng ký cao cấp (subscription ID = 11)
+            // Kiểm tra nếu người dùng có gói đăng ký cao cấp (subscriptionType.id = 11)
             User user = userService.getUserById(id);
             if (user == null) {
                 throw new ElementNotFoundException("User not found");
             }
-            if (user.getSubscriptions() == null || !user.getSubscriptions().equals(11L)) {
-                throw new BadRequestException("Only premium users with subscription ID 11 can update their username");
+            boolean isPremium = user.getSubscriptions().stream()
+                    .anyMatch(sub -> sub.getIsActive() 
+                            && sub.getSubscriptionType() != null 
+                            && sub.getSubscriptionType().getId().equals(11L)
+                            && (sub.getStartDate().isBefore(LocalDateTime.now()) || sub.getStartDate().isEqual(LocalDateTime.now()))
+                            && (sub.getEndDate().isAfter(LocalDateTime.now()) || sub.getEndDate().isEqual(LocalDateTime.now())));
+            if (!isPremium) {
+                throw new BadRequestException("Only users with an active premium subscription (type ID 11) can update their username");
             }
 
             UserDTO updatedUser = userService.updateUserName(id, req.getUserName());

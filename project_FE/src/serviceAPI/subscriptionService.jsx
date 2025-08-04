@@ -12,6 +12,16 @@ export const getAllSubscriptionType = async () => {
     }
 };
 
+export const getAllStatistic = async () => {
+  try {
+    const res = await get(API + "/statistic");
+    return res;
+  } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
 export const checkPay = async (params) => {
   try {
     const res = await post(API + '/check-pay', params);

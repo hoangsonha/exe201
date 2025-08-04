@@ -4,6 +4,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.request.CheckSubscription;
 import com.hsh.project.dto.request.SubscriptionSMS;
 import com.hsh.project.dto.response.HashTagResponseDTO;
+import com.hsh.project.dto.response.StatisticResponseDTO;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.mapper.HashtagMapper;
 import com.hsh.project.mapper.UserMapper;
@@ -33,6 +34,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionTypeRepository subscriptionTypeRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    @Override
+    public StatisticResponseDTO getStatistic() {
+
+        Integer countVIP = subscriptionTypeRepository.getSubscriptionTypeVIPCount();
+        Double sumVIP = subscriptionTypeRepository.getSubscriptionTypeVIPSum();
+        Integer countBusiness = subscriptionTypeRepository.getSubscriptionTypeBusinessCount();
+        Double sumBusiness = subscriptionTypeRepository.getSubscriptionTypeBusinessSum();
+
+        if (countVIP != null && countVIP >= 0 || sumVIP != null && sumVIP >= 0 || sumBusiness != null && sumBusiness >= 0 || countBusiness != null && countBusiness >= 0) {
+            return StatisticResponseDTO.builder()
+                    .countVIP(countVIP)
+                    .sumVIP(sumVIP)
+                    .countBusiness(countBusiness)
+                    .sumBusiness(sumBusiness)
+                    .build();
+        }
+        return null;
+    }
 
     @Override
     public List<SubscriptionType> getAllSubscriptionType() {

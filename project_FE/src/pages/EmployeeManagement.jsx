@@ -33,6 +33,9 @@ import {
   getEmployeePaging,
   search
 } from "../serviceAPI/userService";
+
+import { getAllStatistic } from "../serviceAPI/subscriptionService"
+
 import { useToast } from '../component/Toast';
 import { UserContext } from '../App';
 import Informations from "../component/Informations";
@@ -41,6 +44,8 @@ function EmployeeManagement() {
 
   const { user } = useContext(UserContext);
 
+
+  const [statistic, setStatistic] = useState(null)
   const [employees, setEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -97,8 +102,12 @@ function EmployeeManagement() {
 
         try {
             const resultPurposes = await getEmployeePaging(params);
+
+            const resultStatistic = await getAllStatistic();
+
             const rolesRes = await getRoles();
 
+            setStatistic(resultStatistic.data.data)
             setRoles(rolesRes.data);
             setTotalElement(resultPurposes.data.totalElements);
             setTotalPage(resultPurposes.data.totalPages);
@@ -284,14 +293,90 @@ function EmployeeManagement() {
     </Badge>
   );
 
+  const formatCurrency = (value) => {
+    if (value === null || value === undefined) return '0 VNĐ';
+    return new Intl.NumberFormat('vi-VN', {
+      maximumFractionDigits: 0
+    }).format(value) + ' VNĐ';
+  };
+
   return (
     <Container fluid className="py-4">
 
       <Row className="mb-4">
         <Col>
           <h2 className="fw-bold text-center">
+            <i className="bi-bar-chart-line-fill me-2"></i>
+            THỐNG KÊ
+          </h2>
+          <hr />
+        </Col>
+      </Row>
+
+      {/* Thêm phần thống kê ở đây */}
+  <Row className="mb-4">
+    {/* Thống kê VIP Count */}
+    <Col md={3} className="mb-3">
+      <Card className="h-100 shadow-sm border-primary">
+        <Card.Body className="text-center">
+          <div className="d-flex justify-content-center align-items-center mb-2">
+            <i className="bi bi-star-fill fs-3 text-warning me-2"></i>
+            <h5 className="mb-0">VIP</h5>
+          </div>
+          <h2 className="fw-bold text-primary">{statistic?.countVIP ? statistic?.countVIP : 0}</h2>
+          <p className="text-muted mb-0">Tổng người dùng nâng cấp gói VIP</p>
+        </Card.Body>
+      </Card>
+    </Col>
+
+    {/* Thống kê VIP Sum */}
+    <Col md={3} className="mb-3">
+      <Card className="h-100 shadow-sm border-success">
+        <Card.Body className="text-center">
+          <div className="d-flex justify-content-center align-items-center mb-2">
+            <i className="bi bi-currency-dollar fs-3 text-success me-2"></i>
+            <h5 className="mb-0">Doanh thu VIP</h5>
+          </div>
+          <h2 className="fw-bold text-success">{formatCurrency(statistic?.sumVIP)}</h2>
+          <p className="text-muted mb-0">Tổng doanh thu từ gói VIP</p>
+        </Card.Body>
+      </Card>
+    </Col>
+
+    {/* Thống kê Business Count */}
+    <Col md={3} className="mb-3">
+      <Card className="h-100 shadow-sm border-info">
+        <Card.Body className="text-center">
+          <div className="d-flex justify-content-center align-items-center mb-2">
+            <i className="bi bi-briefcase-fill fs-3 text-info me-2"></i>
+            <h5 className="mb-0">Business</h5>
+          </div>
+          <h2 className="fw-bold text-info">{statistic?.countBusiness ?statistic?.countBusiness: 0 }</h2>
+          <p className="text-muted mb-0">Tổng người dùng nâng cấp gói Business</p>
+        </Card.Body>
+      </Card>
+    </Col>
+
+    {/* Thống kê Business Sum */}
+    <Col md={3} className="mb-3">
+      <Card className="h-100 shadow-sm border-danger">
+        <Card.Body className="text-center">
+          <div className="d-flex justify-content-center align-items-center mb-2">
+            <i className="bi bi-currency-dollar fs-3 text-danger me-2"></i>
+            <h5 className="mb-0">Doanh thu Business</h5>
+          </div>
+          <h2 className="fw-bold text-danger">{formatCurrency(statistic?.sumBusiness)}</h2>
+          <p className="text-muted mb-0">Tổng doanh thu từ gói Business</p>
+        </Card.Body>
+      </Card>
+    </Col>
+  </Row>
+
+      <Row className="mb-4">
+        <Col>
+          <h2 className="fw-bold text-center">
             <i className="bi bi-people-fill me-2"></i>
-            MANAGER EMPLOYEES
+            QUẢN LÍ NGƯỜI DÙNG
           </h2>
           <hr />
         </Col>
@@ -308,14 +393,14 @@ function EmployeeManagement() {
         <Card.Header className="bg-light">
           <h5 className="mb-0">
             <FaFilter className="me-2" />
-            Search
+            Tìm kiếm
           </h5>
         </Card.Header>
         <Card.Body>
           <Row>
             <Col md={4}>
               <Form.Group className="mb-3">
-                <Form.Label>User name</Form.Label>
+                <Form.Label>Tên người dùng</Form.Label>
                 <InputGroup>
                   <Form.Control
                     placeholder="Tìm theo tên đăng nhập"
@@ -332,7 +417,7 @@ function EmployeeManagement() {
             </Col>
             <Col md={4}>
               <Form.Group className="mb-3">
-                <Form.Label>Full name</Form.Label>
+                <Form.Label>Họ tên</Form.Label>
                 <InputGroup>
                   <Form.Control
                     placeholder="Tìm theo họ tên"
@@ -372,7 +457,7 @@ function EmployeeManagement() {
               onClick={() => setFilters({ userName: "", fullName: "", email: "" })}
             >
               <FaSync className="me-2" />
-              Refresh
+              Làm mới
             </Button>
 
             <Button
@@ -381,7 +466,7 @@ function EmployeeManagement() {
               onClick={() => setShowFormModal(true)}
             >
               <FaPlus className="me-2" />
-              Add new employee
+              Thêm tài khoản
             </Button>
           </div>
         </Card.Body>
@@ -389,13 +474,13 @@ function EmployeeManagement() {
 
       <Modal show={showModalDetail} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Detail Employee</Modal.Title>
+          <Modal.Title>Chi tiết người dùng</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!selectedEmployee ? (
               <div className="text-center my-5">
                 <Spinner animation="border" variant="primary" />
-                <p className="mt-3">Loading...</p>
+                <p className="mt-3">Đang tải ...</p>
               </div>
             ) : selectedEmployee ? (
               <Informations employee={selectedEmployee} />
@@ -413,13 +498,13 @@ function EmployeeManagement() {
       {/* Employee Table */}
       <Card className="shadow-sm">
         <Card.Header className="bg-light">
-          <h5 className="mb-0">List employees</h5>
+          <h5 className="mb-0">Danh sách người dùng</h5>
         </Card.Header>
         <Card.Body>
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="primary" />
-              <p className="mt-3">Loading...</p>
+              <p className="mt-3">Đang tải ...</p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -427,14 +512,14 @@ function EmployeeManagement() {
                 <thead className="table-dark">
                   <tr>
                     <th width="5%">#</th>
-                    <th width="15%">User name</th>
-                    <th width="15%">Full name</th>
-                    <th width="10%">Code</th>
+                    <th width="15%">Tên người dùng</th>
+                    <th width="15%">Họ tên</th>
+                    <th width="10%">Mã</th>
                     <th width="15%">Email</th>
-                    <th width="10%">Phone</th>
+                    <th width="10%">SĐT</th>
                     <th width="10%">Role</th>
-                    <th width="10%">Status</th>
-                    <th width="10%">Actions</th>
+                    <th width="10%">Trạng thái</th>
+                    <th width="10%">Hành động</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -456,7 +541,7 @@ function EmployeeManagement() {
                       </td>
                       <td>
                         <div className="d-flex">
-                          {emp.email == user.email ? <>Your account</> : <>{emp.deleted ? (
+                          {emp.email == user.email ? <>Tài khoản của bạn</> : <>{emp.deleted ? (
                             <Button
                               variant="outline-success"
                               size="sm"
@@ -521,11 +606,11 @@ function EmployeeManagement() {
     <Modal.Title className="d-flex align-items-center">
       {isEditing ? (
         <>
-          <FaEdit className="me-2" /> Edit
+          <FaEdit className="me-2" /> Sửa
         </>
       ) : (
         <>
-          <FaPlus className="me-2" /> Add
+          <FaPlus className="me-2" /> Thêm
         </>
       )}
     </Modal.Title>
@@ -537,7 +622,7 @@ function EmployeeManagement() {
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold fs-5">User name</Form.Label>
+            <Form.Label className="fw-semibold fs-5">Tên người dùng</Form.Label>
             <Form.Control
               type="text"
               name="userName"
@@ -551,7 +636,7 @@ function EmployeeManagement() {
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold fs-5">Full name</Form.Label>
+            <Form.Label className="fw-semibold fs-5">Họ tên</Form.Label>
             <Form.Control
               type="text"
               name="fullName"
@@ -584,7 +669,7 @@ function EmployeeManagement() {
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold fs-5">Phone</Form.Label>
+            <Form.Label className="fw-semibold fs-5">SĐT</Form.Label>
             <Form.Control
               type="text"
               name="phone"
@@ -601,7 +686,7 @@ function EmployeeManagement() {
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold fs-5">Code</Form.Label>
+            <Form.Label className="fw-semibold fs-5">Mã</Form.Label>
             <Form.Control
               type="text"
               name="code"
@@ -635,7 +720,7 @@ function EmployeeManagement() {
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label className="fw-semibold fs-5">Password</Form.Label>
+              <Form.Label className="fw-semibold fs-5">Mật khẩu</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
@@ -657,13 +742,13 @@ function EmployeeManagement() {
           resetForm();
           setIsEditing(false);
         }}>
-          Cancel
+          Hủy
         </Button>
         <Button variant="primary" type="submit" disabled={loading}>
           {loading ? (
             <>
               <Spinner animation="border" size="sm" className="me-2" />
-              Saving...
+              Đang lưu ...
             </>
           ) : isEditing ? "Edit" : "Add"}
         </Button>

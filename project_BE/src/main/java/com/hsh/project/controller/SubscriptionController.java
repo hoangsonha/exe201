@@ -4,6 +4,7 @@ import com.hsh.project.dto.UserDTO;
 import com.hsh.project.dto.internal.ObjectResponse;
 import com.hsh.project.dto.request.CheckSubscription;
 import com.hsh.project.dto.request.SubscriptionSMS;
+import com.hsh.project.dto.response.StatisticResponseDTO;
 import com.hsh.project.exception.BadRequestException;
 import com.hsh.project.pojo.SubscriptionType;
 import com.hsh.project.service.spec.SubscriptionService;
@@ -34,6 +35,16 @@ public class SubscriptionController {
                 .body(new ObjectResponse("Failed", "get all subscriptions non paging failed", null));
     }
 
+    @GetMapping("/statistic")
+    public ResponseEntity<ObjectResponse> getAllStatistic() {
+        StatisticResponseDTO results = subscriptionService.getStatistic();
+        return results != null
+                ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ObjectResponse("Success", "get all statistic successfully", results))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ObjectResponse("Failed", "get all statistic failed", null));
+    }
+
     @PostMapping("/pay")
     public ResponseEntity<String> receiveSmsWebhook(@RequestBody SubscriptionSMS request) {
         UserDTO userDTO = subscriptionService.subscribe(request);
@@ -55,5 +66,7 @@ public class SubscriptionController {
                     .body(new ObjectResponse("Fail", "Check pay failed", null));
         }
     }
+
+
 
 }

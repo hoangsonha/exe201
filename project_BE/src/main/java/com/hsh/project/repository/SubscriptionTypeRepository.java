@@ -10,16 +10,16 @@ import org.springframework.stereotype.Repository;
 public interface SubscriptionTypeRepository extends JpaRepository<SubscriptionType, Integer> {
     SubscriptionType findByName(String name);
 
-    @Query("select count(*) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 2")
+    @Query("select count(*) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 11")
     Integer getSubscriptionTypeVIPCount();
 
-    @Query("select sum(st.price) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 2")
+    @Query("select sum(st.price) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 11")
     Double getSubscriptionTypeVIPSum();
 
-    @Query("select count(*) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 3")
+    @Query("select count(*) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 12")
     Integer getSubscriptionTypeBusinessCount();
 
-    @Query("select sum(st.price) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 3")
+    @Query("select sum(st.price) from UserSubscription as us, SubscriptionType as st where us.subscriptionType.id = st.id and st.id = 12")
     Double getSubscriptionTypeBusinessSum();
 
 }

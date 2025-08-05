@@ -343,7 +343,7 @@ function EmployeeManagement() {
       </Card>
     </Col>
 
-    {/* Thống kê Business Count */}
+    {/* Thống kê Business Count
     <Col md={3} className="mb-3">
       <Card className="h-100 shadow-sm border-info">
         <Card.Body className="text-center">
@@ -358,7 +358,7 @@ function EmployeeManagement() {
     </Col>
 
     {/* Thống kê Business Sum */}
-    <Col md={3} className="mb-3">
+    {/* <Col md={3} className="mb-3">
       <Card className="h-100 shadow-sm border-danger">
         <Card.Body className="text-center">
           <div className="d-flex justify-content-center align-items-center mb-2">
@@ -369,7 +369,7 @@ function EmployeeManagement() {
           <p className="text-muted mb-0">Tổng doanh thu từ gói Business</p>
         </Card.Body>
       </Card>
-    </Col>
+    </Col> */}
   </Row>
 
       <Row className="mb-4">

@@ -316,7 +316,7 @@ function EmployeeManagement() {
       {/* Thêm phần thống kê ở đây */}
   <Row className="mb-4">
     {/* Thống kê VIP Count */}
-    <Col md={3} className="mb-3">
+    <Col md={6} className="mb-3">
       <Card className="h-100 shadow-sm border-primary">
         <Card.Body className="text-center">
           <div className="d-flex justify-content-center align-items-center mb-2">
@@ -330,7 +330,7 @@ function EmployeeManagement() {
     </Col>
 
     {/* Thống kê VIP Sum */}
-    <Col md={3} className="mb-3">
+    <Col md={6} className="mb-3">
       <Card className="h-100 shadow-sm border-success">
         <Card.Body className="text-center">
           <div className="d-flex justify-content-center align-items-center mb-2">

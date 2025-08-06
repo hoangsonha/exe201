@@ -513,11 +513,10 @@ function EmployeeManagement() {
                   <tr>
                     <th width="5%">#</th>
                     <th width="15%">Tên người dùng</th>
-                    <th width="15%">Họ tên</th>
-                    <th width="10%">Mã</th>
                     <th width="15%">Email</th>
                     <th width="10%">SĐT</th>
                     <th width="10%">Role</th>
+                    <th width="10%">Title</th>
                     <th width="10%">Trạng thái</th>
                     <th width="10%">Hành động</th>
                   </tr>
@@ -527,12 +526,13 @@ function EmployeeManagement() {
                     <tr key={emp.id}>
                       <td>{idx + 1}</td>
                       <td>{emp.userName}</td>
-                      <td>{emp.fullName}</td>
-                      <td>{emp.code}</td>
                       <td>{emp.email}</td>
                       <td>{emp.phone}</td>
                       <td>
                         <Badge bg="info">{emp.roleName}</Badge>
+                      </td>
+                      <td>
+                        <Badge bg="info">{emp.title}</Badge>
                       </td>
                       <td>
                         <div className="d-flex flex-column">
